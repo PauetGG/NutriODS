@@ -1,21 +1,18 @@
 -- sql provisional pendent de revisar entre el grup pero veure si cambiem alguna cosa
-Create Database nutri
-USE nutri
-CREATE TABLE usuario (Add commentMore actions
+DROP DATABASE IF EXISTS nutri;
+CREATE DATABASE IF NOT EXISTS nutri;
+USE nutri;
+
+CREATE TABLE usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     correo VARCHAR(100) NOT NULL UNIQUE,
     contraseña VARCHAR(255) NOT NULL,
-    nombre VARCHAR(50) ,
+    nombre VARCHAR(50) NOT NULL,
     apellidos VARCHAR(100),
     altura DECIMAL(5,2),             
-    peso DECIMAL(5,2),                 
     peso DECIMAL(5,2),               
     fecha_nacimiento DATE,
     genero ENUM('masculino', 'femenino', 'otro') DEFAULT 'otro',
-    objetivo TEXT,
-    alergias TEXT,
-    enfermedades TEXT,
-    preferencias_comida TEXT,
     objetivo VARCHAR(255),                     -- antes TEXT
     alergias VARCHAR(255),                     -- antes TEXT
     enfermedades VARCHAR(255),                 -- antes TEXT
@@ -24,8 +21,7 @@ CREATE TABLE usuario (Add commentMore actions
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-Show tables
-describe usuario;
+
 -- aqui esta la tabla de la dieta
 CREATE TABLE dieta (
     id INT AUTO_INCREMENT PRIMARY KEY,
