@@ -39,17 +39,25 @@ CREATE TABLE dieta (
 );
 ----------------------------
 -- vale aqui eh puesto la tabla de los alimentos / ingredientes como le queramos llamar ya lo veremos y si cambiamos alguna cosa
-CREATE TABLE alimento_ingrediente (
+CREATE TABLE ingrediente (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
-    descripcion TEXT,
-    calorias INT NOT NULL,               -- kcal por 100g
-    proteinas DECIMAL(5,2),             -- gramos por 100g
+    descripcion VARCHAR(300),
+    calorias INT NOT NULL,                -- kcal por 100g
+    proteinas DECIMAL(5,2),
     grasas DECIMAL(5,2),
     carbohidratos DECIMAL(5,2),
     fibra DECIMAL(5,2),
     azucar DECIMAL(5,2),
-    tipo ENUM('fruta', 'verdura', 'carne', 'pescado', 'cereal', 'lácteo', 'legumbre', 'otro') DEFAULT 'otro',
+
+    tipo ENUM('fruta', 'verdura', 'carne', 'pescado', 'cereal', 'lácteo', 'legumbre', 'fruto seco', 'semilla', 'bebida', 'otro') DEFAULT 'otro',
+
+    sin_gluten BOOLEAN DEFAULT FALSE,
+    sin_lactosa BOOLEAN DEFAULT FALSE,
+    vegano BOOLEAN DEFAULT FALSE,
+
+    imagen_url VARCHAR(255),
+
     creado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modificado TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
