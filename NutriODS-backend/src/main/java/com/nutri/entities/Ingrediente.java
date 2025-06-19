@@ -46,19 +46,25 @@ public class Ingrediente {
     private BigDecimal azucar;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private TipoIngrediente tipo = TipoIngrediente.otro;
 
+    @NotNull(message = "Debe indicarse si contiene gluten o no")
     private Boolean sinGluten = false;
+
+    @NotNull(message = "Debe indicarse si contiene lactosa o no")
     private Boolean sinLactosa = false;
+
+    @NotNull(message = "Debe indicarse si es apto para veganos o no")
     private Boolean vegano = false;
 
     @Size(max = 255, message = "La URL de la imagen no puede superar los 255 caracteres")
     private String imagenUrl;
 
-    @Column(updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime creado;
 
+    @Column(nullable = false)
     private LocalDateTime modificado;
 
     @PrePersist
@@ -73,6 +79,26 @@ public class Ingrediente {
     }
 
     public enum TipoIngrediente {
-        fruta, verdura, carne, pescado, cereal, lácteo, legumbre, fruto_seco, semilla, bebida, otro
+        fruta("Fruta"),
+        verdura("Verdura"),
+        carne("Carne"),
+        pescado("Pescado"),
+        cereal("Cereal"),
+        lácteo("Lácteo"),
+        legumbre("Legumbre"),
+        fruto_seco("Fruto seco"),
+        semilla("Semilla"),
+        bebida("Bebida"),
+        otro("Otro");
+
+        private final String label;
+
+        TipoIngrediente(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 }
