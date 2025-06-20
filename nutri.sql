@@ -858,3 +858,43 @@ VALUES
   TRUE,
   0
 );
+
+INSERT INTO comida_modelo (
+    nombre, tipo_comida, calorias_totales,
+    apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
+    apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
+    sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+) VALUES
+-- Desayuno 1: Avena con bebida de almendra, plátano y semillas de chía
+('Avena con bebida de almendra, plátano y semillas de chía', 'desayuno', 350,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, FALSE),
+
+-- Desayuno 2: Pan sin gluten con hummus y tomate cherry
+('Pan sin gluten con hummus y tomate cherry', 'desayuno', 300,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, FALSE, FALSE, FALSE),
+
+-- Desayuno 3: Yogur vegetal con frambuesas y semillas de lino
+('Yogur vegetal con frambuesas y semillas de lino', 'desayuno', 250,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, FALSE, TRUE, FALSE);
+
+INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
+(1, 127, 40, 'g'),    -- avena en copos
+(1, 171, 200, 'ml'),  -- bebida de almendra
+(1, 37, 1, 'unidad'),-- plátano
+(1, 227, 10, 'g'),    -- semillas de chía
+(2, 154, 60, 'g'),    -- pan sin gluten
+(2, 6, 40, 'g'),    -- hummus
+(2, 7, 50, 'g'),    -- tomate cherry
+(3, 8, 125, 'g'),   -- yogur vegetal
+(3, 9, 50, 'g'),    -- frambuesas
+(3, 10, 10, 'g');   -- semillas de lino
