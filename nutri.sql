@@ -68,7 +68,7 @@ CREATE TABLE ingrediente (
     carbohidratos DECIMAL(5,2),
     fibra DECIMAL(5,2),
     azucar DECIMAL(5,2),
-    tipo ENUM('fruta', 'verdura', 'carne', 'pescado', 'cereal', 'lácteo', 'legumbre', 'fruto_seco', 'semilla', 'bebida', 'otro') DEFAULT 'otro',
+    tipo ENUM('fruta', 'verdura', 'carne', 'pescado', 'cereal', 'lácteo', 'legumbre', 'fruto_seco', 'semilla', 'bebida', 'huevo', 'otro') DEFAULT 'otro',
     creado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modificado TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -411,7 +411,7 @@ INSERT INTO ingrediente (nombre, descripcion, calorias, proteinas, grasas, carbo
 ('Cerveza sin alcohol', 'Bebida fermentada con bajo contenido en alcohol.', 22, 0.3, 0.0, 5.0, 0.0, 1.7, 'bebida'),
 ('Bebida vegetal de almendra', 'Alternativa vegetal a la leche, baja en calorías.', 17, 0.6, 1.1, 0.3, 0.2, 0.2, 'bebida'),
 ('Bebida vegetal de soja', 'Alternativa vegetal rica en proteína vegetal.', 33, 3.3, 1.8, 0.6, 0.4, 0.4, 'bebida'),
-('Té verde infusionado', 'Bebida antioxidante sin calorías si se toma sin azúcar.', 0, 0.0, 0.0, 0.0, 0.0, 0.0, 'bebida'),
+('Infusión', 'Bebida antioxidante sin calorías si se toma sin azúcar.', 0, 0.0, 0.0, 0.0, 0.0, 0.0, 'bebida'),
 ('Café solo', 'Infusión estimulante sin calorías si se toma sin azúcar.', 2, 0.3, 0.0, 0.0, 0.0, 0.0, 'bebida'),
 ('Bebida de soja', 'Alternativa vegetal rica en proteínas, similar nutricionalmente a la leche.', 33, 3.3, 1.8, 0.6, 0.4, 0.4, 'bebida'),
 ('Bebida de almendra sin azúcar', 'Bebida vegetal ligera y baja en calorías.', 13, 0.5, 1.1, 0.1, 0.3, 0.1, 'bebida'),
@@ -495,6 +495,44 @@ INSERT INTO ingrediente (nombre, descripcion, calorias, proteinas, grasas, carbo
 ('Levadura química (impulsor)', 'Gasificante usado en bizcochos y repostería.', 97, 0.0, 0.0, 24.3, 0.0, 0.0, 'otro'),
 ('Masa madre deshidratada', 'Fermento natural en polvo, da sabor y textura al pan.', 255, 11.0, 1.5, 52.0, 3.0, 1.2, 'otro'),
 ('Bicarbonato sódico', 'Agente alcalino usado como gasificante o antiácido.', 0, 0.0, 0.0, 0.0, 0.0, 0.0, 'otro');
+
+INSERT INTO ingrediente (nombre, descripcion, calorias, proteinas, grasas, carbohidratos, fibra, azucar, tipo) VALUES
+('Hummus', 'Puré de garbanzos con aceite y tahini, rico en proteínas vegetales.', 166, 7.9, 9.6, 14.3, 6.0, 0.3, 'legumbre'),
+('Tomate cherry', 'Variedad pequeña de tomate, dulce y bajo en calorías.', 18, 0.9, 0.2, 3.9, 1.2, 2.6, 'verdura'),
+('Yogur vegetal', 'Alternativa sin lácteos, hecho a base de bebidas vegetales.', 55, 1.6, 2.4, 6.5, 0.7, 2.5, 'lácteo'),
+('Tostada de arroz', 'Tostada ligera hecha con arroz inflado, sin gluten.', 380, 7.9, 2.8, 81.0, 3.5, 0.4, 'cereal'),
+('Aguacate', 'Fruta rica en grasas saludables y fibra.', 160, 2.0, 14.7, 8.5, 6.7, 0.7, 'fruta'),
+('Huevo duro', 'Huevo cocido, fuente de proteína y grasas saludables.', 155, 13.0, 11.0, 1.1, 0.0, 1.1, 'huevo'),
+('Galletas sin gluten', 'Galletas elaboradas con harinas alternativas sin gluten.', 470, 5.0, 21.0, 65.0, 3.0, 18.0, 'cereal'),
+('Compota de manzana', 'Purée natural de manzana cocida sin azúcar añadido.', 50, 0.2, 0.1, 13.0, 1.3, 10.0, 'fruta'),
+('Tomate triturado', 'Tomate cocido y triturado, base para salsas.', 32, 1.3, 0.2, 6.0, 1.4, 4.0, 'verdura'),
+('Bebida vegetal de coco', 'Bebida sin lactosa con sabor suave y tropical.', 24, 0.2, 1.1, 3.0, 0.2, 1.9, 'bebida'),
+('Avena sin gluten', 'Cereal integral sin gluten, ideal para desayuno.', 370, 12.0, 7.0, 60.0, 9.0, 1.0, 'cereal'),
+('Tostadas de maíz', 'Tostadas crujientes elaboradas con harina de maíz.', 370, 6.0, 4.5, 75.0, 5.0, 1.5, 'cereal'),
+('Galletas sin lactosa', 'Galletas elaboradas sin ingredientes lácteos.', 460, 5.5, 20.0, 65.0, 2.0, 18.0, 'cereal'),
+('Compota de pera', 'Purée de pera cocida, sin azúcar añadido.', 55, 0.2, 0.1, 14.0, 2.0, 10.0, 'fruta'),
+('Tostadas de arroz', 'Variante ligera sin gluten, crujiente y saciante.', 380, 7.9, 2.8, 81.0, 3.5, 0.4, 'cereal'),
+('Crema de almendras', 'Pasta de almendras rica en grasas saludables.', 610, 20.0, 55.0, 18.0, 10.0, 4.5, 'fruto_seco'),
+('Pan de centeno', 'Pan integral con alto contenido en fibra y sabor intenso.', 250, 8.0, 3.3, 48.0, 5.0, 1.2, 'cereal'),
+('Frutos rojos', 'Mezcla de frutas antioxidantes como arándanos, fresas y moras.', 45, 0.7, 0.3, 11.0, 3.0, 6.0, 'fruta'),
+('Mermelada sin azúcar', 'Conserva de fruta edulcorada sin azúcares añadidos.', 30, 0.2, 0.1, 7.5, 1.0, 3.5, 'fruta'),
+('Huevo', 'Alimento completo rico en proteínas de alto valor biológico.', 155, 13.0, 11.0, 1.1, 0.0, 1.1, 'huevo'),
+('Galletas sin huevo', 'Galletas elaboradas sin trazas ni ingredientes con huevo.', 470, 5.0, 21.0, 65.0, 3.0, 18.0, 'cereal'),
+('Tostadas integrales', 'Tostadas elaboradas con pan integral, altas en fibra.', 360, 10.0, 4.5, 65.0, 7.0, 2.5, 'cereal'),
+('Tostadas sin huevo', 'Tostadas elaboradas sin huevo, aptas para alérgicos.', 360, 8.0, 4.5, 70.0, 6.0, 2.5, 'cereal'),
+('Pisto', 'Mezcla de verduras cocinadas como base de plato vegetal.', 80, 1.5, 4.0, 8.0, 2.0, 4.0, 'verdura'),
+('Pollo', 'Carne blanca magra rica en proteínas.', 165, 31.0, 3.6, 0.0, 0.0, 0.0, 'carne'),
+('Patata', 'Tubérculo rico en hidratos de carbono complejos.', 77, 2.0, 0.1, 17.0, 2.2, 0.9, 'verdura'),
+('Pasta sin gluten', 'Pasta elaborada con harinas sin gluten como arroz o maíz.', 350, 6.0, 1.5, 75.0, 2.5, 1.0, 'cereal'),
+('Ensalada verde', 'Mezcla de lechugas, canónigos y otras hojas verdes.', 18, 1.0, 0.2, 3.0, 1.5, 1.5, 'verdura'),
+('Tofu', 'Proteína vegetal derivada de la soja, rica en calcio.', 145, 15.0, 8.0, 3.9, 1.0, 0.6, 'legumbre'),
+('Verduras salteadas', 'Mezcla de verduras ligeramente cocinadas en sartén.', 90, 2.0, 4.0, 10.0, 3.0, 4.0, 'verdura'),
+('Calabaza', 'Hortaliza dulce rica en betacarotenos y fibra.', 26, 1.0, 0.1, 6.5, 0.5, 2.0, 'verdura'),
+('Verduras asadas', 'Mezcla de pimientos, cebolla y calabacín al horno.', 75, 1.5, 2.5, 10.0, 3.0, 5.0, 'verdura'),
+('Pasta integral', 'Pasta elaborada con trigo integral, rica en fibra.', 350, 12.0, 2.0, 68.0, 6.5, 2.0, 'cereal'),
+('Crema de girasol', 'Pasta vegetal elaborada con semillas de girasol.', 595, 18.0, 52.0, 20.0, 6.0, 2.0, 'semilla'),
+('Pescado blanco', 'Pescado bajo en grasa y alto en proteínas como merluza.', 90, 20.0, 1.5, 0.0, 0.0, 0.0, 'pescado'),
+('Verduras al vapor', 'Mezcla cocida al vapor de brócoli, coliflor y zanahoria.', 40, 2.0, 0.5, 6.5, 3.0, 3.5, 'verdura');
 
 INSERT INTO glosario (termino, definicion, fuente, categoria, imagen_url, visible)
 VALUES
@@ -885,7 +923,385 @@ INSERT INTO comida_modelo (
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, FALSE);
+ TRUE, FALSE, TRUE, FALSE),
+ -- Desayuno 4: Tostadas de arroz con aguacate y huevo duro
+('Tostadas de arroz con aguacate y huevo duro', 'desayuno', 330,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ FALSE, TRUE, TRUE, TRUE),
+
+-- Desayuno 5: Smoothie de bebida vegetal con fresa y kiwi
+('Smoothie de bebida vegetal con fresa y kiwi', 'desayuno', 220,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
+-- Desayuno 6: Galletas sin gluten con compota de manzana e infusión
+('Galletas sin gluten con compota de manzana e infusión', 'desayuno', 280,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
+-- Desayuno 7: Yogur vegetal con plátano y nuez moscada
+('Yogur vegetal con plátano y nuez moscada', 'desayuno', 260,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
+-- Desayuno 8: Tostadas sin gluten con aceite de oliva y tomate triturado
+('Tostadas sin gluten con aceite de oliva y tomate triturado', 'desayuno', 300,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
+ -- Desayuno 9: Smoothie de plátano, bebida de coco y avena sin gluten
+('Smoothie de plátano, bebida de coco y avena sin gluten', 'desayuno', 270,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
+-- Desayuno 10: Tostadas de maíz con aguacate y tomate
+('Tostadas de maíz con aguacate y tomate', 'desayuno', 320,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
+-- Desayuno 11: Galletas sin lactosa con compota de pera
+('Galletas sin lactosa con compota de pera', 'desayuno', 280,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
+-- Desayuno 12: Yogur vegetal de soja con arándanos y avena sin gluten
+('Yogur vegetal de soja con arándanos y avena sin gluten', 'desayuno', 290,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, FALSE, TRUE, TRUE),
+
+-- Desayuno 13: Tostadas de arroz con crema de almendras y plátano
+('Tostadas de arroz con crema de almendras y plátano', 'desayuno', 330,
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
+ -- Diabetes tipo 2: Tostadas de centeno integral con aguacate y tomate
+('Tostadas de centeno integral con aguacate y tomate', 'desayuno', 300,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- Hipertensión: Avena cocida en agua con manzana y canela
+('Avena cocida en agua con manzana y canela', 'desayuno', 270,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- Hipercolesterolemia: Smoothie de frutos rojos y bebida de avena
+('Smoothie de frutos rojos y bebida de avena', 'desayuno', 250,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- Enfermedad celíaca: Pan sin gluten con hummus y pepino
+('Pan sin gluten con hummus y pepino', 'desayuno', 310,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, FALSE, FALSE),
+
+-- Insuficiencia renal: Tostadas de arroz con mermelada sin azúcar
+('Tostadas de arroz con mermelada sin azúcar', 'desayuno', 260,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- Anemia: Avena cocida con bebida de almendra y fresas
+('Avena con bebida de almendra y fresas', 'desayuno', 290,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- Obesidad: Yogur vegetal sin azúcar con kiwi y semillas de lino
+('Yogur vegetal sin azúcar con kiwi y semillas de lino', 'desayuno', 230,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- Hipotiroidismo: Pan integral con aguacate y tomate triturado
+('Pan integral con aguacate y tomate triturado', 'desayuno', 320,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- Colon irritable (SII): Tortilla de calabacín con tostadas de arroz
+('Tortilla de calabacín con tostadas de arroz', 'desayuno', 310,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- Alergia a frutos secos: Yogur vegetal con mango y avena
+('Yogur vegetal con mango y avena', 'desayuno', 280,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- Alergia al marisco: Pan integral con aguacate y semillas de lino
+('Pan integral con aguacate y semillas de lino', 'desayuno', 310,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- Alergia a pescado azul: Smoothie de plátano con bebida de avena
+('Smoothie de plátano con bebida de avena', 'desayuno', 240,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- Alergia al huevo: Galletas sin huevo con compota de manzana
+('Galletas sin huevo con compota de manzana', 'desayuno', 290,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- Alergia a la soja: Tostadas de arroz con aceite de oliva y tomate
+('Tostadas de arroz con aceite de oliva y tomate', 'desayuno', 300,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 28. Diabetes tipo 2
+('1 manzana + puñado de nueces', 'almuerzo', 200,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 29. Hipertensión
+('1 plátano + tostadas de arroz', 'almuerzo', 220,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 30. Hipercolesterolemia
+('Yogur vegetal + semillas de chía', 'almuerzo', 180,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, FALSE),
+
+-- 31. Celiaquía
+('Pan sin gluten con hummus', 'almuerzo', 240,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, FALSE, FALSE),
+
+-- 32. Insuficiencia renal
+('1 pera + bebida vegetal de arroz', 'almuerzo', 190,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 33. Anemia
+('Zumo de naranja natural + puñado de almendras', 'almuerzo', 210,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 34. Obesidad
+('1 kiwi + yogur vegetal sin azúcar', 'almuerzo', 170,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 35. Intolerancia a la lactosa
+('Smoothie vegetal con fruta', 'almuerzo', 200,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 36. Hipotiroidismo
+('Tostadas integrales con aguacate', 'almuerzo', 230,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 37. Colon irritable
+('1 plátano + yogur vegetal sin FODMAP', 'almuerzo', 210,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 38. Alergia a frutos secos
+('1 mandarina + pan integral', 'almuerzo', 190,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 39. Alergia al marisco
+('1 manzana + yogur vegetal', 'almuerzo', 180,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 40. Alergia a pescado azul
+('Smoothie vegetal con fresas', 'almuerzo', 200,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 41. Alergia al huevo
+('1 manzana + tostadas sin huevo', 'almuerzo', 190,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 42. Alergia a la soja
+('1 plátano + pan integral', 'almuerzo', 210,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 43. Diabetes tipo 2
+('Arroz integral con pisto y huevo a la plancha', 'comida', 520,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 44. Hipertensión
+('Pollo hervido con patata y judías verdes', 'comida', 500,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, FALSE, TRUE),
+
+-- 45. Hipercolesterolemia
+('Lentejas estofadas con zanahoria y espinacas', 'comida', 530,
+TRUE, TRUE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, FALSE, TRUE),
+
+-- 46. Celiaquía
+('Pasta sin gluten con brócoli y atún', 'comida', 510,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 47. Insuficiencia renal
+('Arroz blanco con tortilla francesa y calabacín hervido', 'comida', 480,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 48. Anemia
+('Ternera con quinoa, pimiento rojo y espinacas', 'comida', 550,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 49. Obesidad
+('Crema de calabacín con huevo duro y ensalada verde', 'comida', 470,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 50. Intolerancia a la lactosa
+('Arroz salteado con tofu y verduras', 'comida', 500,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE),
+
+-- 51. Hipotiroidismo
+('Pollo al horno con calabaza asada y arroz integral', 'comida', 520,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 52. Colon irritable
+('Merluza a la plancha con arroz y zanahoria hervida', 'comida', 510,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 53. Alergia a frutos secos
+('Tortilla de patata con pisto y ensalada', 'comida', 530,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 54. Alergia al marisco
+('Arroz con pollo al curry suave y calabacín', 'comida', 500,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 55. Alergia a pescado azul
+('Quinoa con verduras asadas y huevo cocido', 'comida', 490,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 56. Alergia al huevo
+('Macarrones integrales con tomate natural y tofu', 'comida', 510,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE),
+
+-- 57. Alergia a la soja
+('Arroz integral con pollo y espinacas', 'comida', 520,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE);
+
 
 INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
 (1, 127, 40, 'g'),    -- avena en copos
@@ -893,8 +1309,626 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (1, 37, 1, 'unidad'),-- plátano
 (1, 227, 10, 'g'),    -- semillas de chía
 (2, 154, 60, 'g'),    -- pan sin gluten
-(2, 6, 40, 'g'),    -- hummus
-(2, 7, 50, 'g'),    -- tomate cherry
-(3, 8, 125, 'g'),   -- yogur vegetal
-(3, 9, 50, 'g'),    -- frambuesas
-(3, 10, 10, 'g');   -- semillas de lino
+(2, 257, 40, 'g'),    -- hummus
+(2, 258, 50, 'g'),    -- tomate cherry
+(3, 259, 125, 'g'),   -- yogur vegetal
+(3, 56, 50, 'g'),    -- frambuesas
+(3, 228, 10, 'g'),   -- semillas de lino
+-- Desayuno 4
+(4, 260, 30, 'g'),   -- tostadas de arroz
+(4, 261, 50, 'g'),    -- aguacate
+(4, 43, 1, 'unidad'),-- huevo duro
+
+-- Desayuno 5
+(5, 171, 200, 'ml'), -- bebida de almendra
+(5, 43, 60, 'g'),    -- fresa
+(5, 44, 1, 'unidad'),-- kiwi
+
+-- Desayuno 6
+(6, 263, 40, 'g'),   -- galletas sin gluten
+(6, 264, 60, 'g'),   -- compota de manzana
+(6, 173, 1, 'unidad'), -- infusión
+
+-- Desayuno 7
+(7, 259, 125, 'g'),  -- yogur vegetal
+(7, 37, 1, 'unidad'),-- plátano
+(7, 156, 1, 'g'),    -- nuez moscada
+
+-- Desayuno 8
+(8, 154, 60, 'g'),   -- pan sin gluten
+(8, 242, 10, 'ml'),  -- aceite de oliva
+(8, 265, 50, 'g'),    -- tomate triturado
+
+-- Desayuno 9
+(9, 37, 1, 'unidad'),    -- plátano
+(9, 266, 200, 'ml'),     -- bebida vegetal de coco
+(9, 267, 30, 'g'),       -- avena sin gluten
+
+-- Desayuno 10
+(10, 268, 2, 'unidad'),  -- tostadas de maíz
+(10, 261, 50, 'g'),       -- aguacate
+(10, 265, 50, 'g'),       -- tomate triturado
+
+-- Desayuno 11
+(11, 269, 40, 'g'),      -- galletas sin lactosa
+(11, 270, 60, 'g'),      -- compota de pera
+
+-- Desayuno 12
+(12, 259, 125, 'g'),     -- yogur vegetal de soja
+(12, 57, 40, 'g'),       -- arándanos
+(12, 267, 30, 'g'),      -- avena sin gluten
+
+-- Desayuno 13
+(13, 271, 30, 'g'),      -- tostadas de arroz
+(13, 272, 15, 'g'),      -- crema de almendras
+(13, 37, 1, 'unidad'),   -- plátano
+
+-- Desayuno 14: Diabetes tipo 2
+(14, 273, 60, 'g'),    -- pan_centeno
+(14, 261, 50, 'g'),     -- aguacate
+(14, 7, 50, 'g'),     -- tomate
+
+-- Desayuno 15: Hipertensión
+(15, 127, 40, 'g'),    -- avena
+(15, 36, 1, 'unidad'), -- manzana
+(15, 248, 1, 'g'),     -- canela
+
+-- Desayuno 16: Hipercolesterolemia
+(16, 274, 80, 'g'),    -- frutos_rojos
+(16, 177, 200, 'ml'),  -- bebida_avena
+
+-- Desayuno 17: Celiaquía
+(17, 154, 60, 'g'),    -- pan sin gluten
+(17, 257, 40, 'g'),    -- hummus
+(17, 25, 50, 'g'),    -- pepino
+
+-- Desayuno 18: Insuficiencia renal
+(18, 271, 30, 'g'),    -- tostadas de arroz
+(18, 275, 20, 'g'),    -- mermelada sin azúcar
+
+-- Desayuno 19: Anemia
+(19, 127, 40, 'g'),    -- avena
+(19, 171, 200, 'ml'),  -- bebida de almendra
+(19, 43, 50, 'g'),     -- fresas
+
+-- Desayuno 20: Obesidad
+(20, 259, 125, 'g'),   -- yogur vegetal
+(20, 44, 1, 'unidad'), -- kiwi
+(20, 228, 10, 'g'),    -- semillas de lino
+
+-- Desayuno 21: Hipotiroidismo
+(21, 130, 60, 'g'),    -- pan integral
+(21, 261, 50, 'g'),     -- aguacate
+(21, 265, 50, 'g'),    -- tomate triturado
+
+-- Desayuno 22: Colon irritable (SII)
+(22, 4, 60, 'g'),    -- calabacín
+(22, 276, 1, 'unidad'), -- huevo
+(22, 260, 30, 'g'),    -- tostadas de arroz
+
+-- Desayuno 23: Alergia a frutos secos
+(23, 259, 125, 'g'),   -- yogur vegetal
+(23, 47, 50, 'g'),    -- mango
+(23, 127, 30, 'g'),    -- avena
+
+-- Desayuno 24: Alergia al marisco
+(24, 130, 60, 'g'),    -- pan integral
+(24, 261, 40, 'g'),     -- aguacate
+(24, 228, 10, 'g'),    -- semillas de lino
+
+-- Desayuno 25: Alergia a pescado azul
+(25, 37, 1, 'unidad'), -- plátano
+(25, 177, 200, 'ml'),  -- bebida de avena
+
+-- Desayuno 26: Alergia al huevo
+(26, 277, 40, 'g'),    -- galletas sin huevo
+(26, 264, 60, 'g'),    -- compota de manzana
+
+-- Desayuno 27: Alergia a la soja
+(27, 271, 30, 'g'),    -- tostadas de arroz
+(27, 242, 10, 'ml'),   -- aceite de oliva
+(27, 7, 50, 'g'),    -- tomate
+
+-- 28. Diabetes tipo 2
+(28, 36, 1, 'unidad'),       -- manzana
+(28, 156, 15, 'g'),          -- nueces
+
+-- 29. Hipertensión
+(29, 37, 1, 'unidad'),       -- plátano
+(29, 271, 30, 'g'),          -- tostadas de arroz
+
+-- 30. Hipercolesterolemia
+(30, 259, 125, 'g'),         -- yogur vegetal
+(30, 227, 10, 'g'),          -- semillas de chía
+
+-- 31. Celiaquía
+(31, 154, 60, 'g'),          -- pan sin gluten
+(31, 257, 40, 'g'),          -- hummus
+
+-- 32. Insuficiencia renal
+(32, 39, 1, 'unidad'),       -- pera
+(32, 178, 200, 'ml'),        -- bebida vegetal de arroz
+
+-- 33. Anemia
+(33, 166, 200, 'ml'),        -- zumo de naranja natural
+(33, 155, 15, 'g'),          -- almendras
+
+-- 34. Obesidad
+(34, 44, 1, 'unidad'),       -- kiwi
+(34, 259, 125, 'g'),         -- yogur vegetal sin azúcar
+
+-- 35. Intolerancia a la lactosa
+(35, 171, 150, 'ml'),        -- bebida de almendra
+(35, 37, 1, 'unidad'),       -- plátano
+(35, 44, 1, 'unidad'),       -- kiwi
+
+-- 36. Hipotiroidismo
+(36, 278, 30, 'g'),          -- tostadas integrales
+(36, 261, 50, 'g'),           -- aguacate
+
+-- 37. Colon irritable
+(37, 37, 1, 'unidad'),       -- plátano
+(37, 259, 125, 'g'),         -- yogur vegetal sin FODMAP
+
+-- 38. Alergia a frutos secos
+(38, 74, 1, 'unidad'),      -- mandarina
+(38, 130, 40, 'g'),          -- pan integral
+
+-- 39. Alergia al marisco
+(39, 36, 1, 'unidad'),       -- manzana
+(39, 259, 125, 'g'),         -- yogur vegetal
+
+-- 40. Alergia a pescado azul
+(40, 177, 150, 'ml'),        -- bebida de avena
+(40, 44, 80, 'g'),         -- fresas
+
+-- 41. Alergia al huevo
+(41, 36, 1, 'unidad'),       -- manzana
+(41, 279, 30, 'g'),          -- tostadas sin huevo
+
+-- 42. Alergia a la soja
+(42, 37, 1, 'unidad'),       -- plátano
+(42, 130, 40, 'g');          -- pan integral
+
+INSERT INTO comida_modelo (
+    nombre, tipo_comida, calorias_totales,
+    apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
+    apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
+    sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+) VALUES
+-- 58. Diabetes tipo 2
+('Yogur vegetal con plátano en rodajas', 'merienda', 180,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 59. Hipertensión
+('Batido de fresa con bebida de avena', 'merienda', 170,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 60. Hipercolesterolemia
+('Tostadas de arroz con aguacate', 'merienda', 200,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 61. Celiaquía
+('Galletas sin gluten con compota de manzana', 'merienda', 190,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 62. Insuficiencia renal
+('1 plátano con bebida vegetal de arroz', 'merienda', 160,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 63. Anemia
+('Zumo de naranja + pan integral con espinacas', 'merienda', 220,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 64. Obesidad
+('Yogur vegetal sin azúcar + kiwi', 'merienda', 170,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 65. Intolerancia a la lactosa
+('Smoothie vegetal de fresa y plátano', 'merienda', 180,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 66. Hipotiroidismo
+('Tostadas integrales con aguacate y tomate', 'merienda', 210,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 67. Colon irritable
+('Yogur vegetal sin FODMAP con arándanos', 'merienda', 180,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 68. Alergia a frutos secos
+('Batido de frutas con pan integral', 'merienda', 200,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 69. Alergia al marisco
+('Pan integral con aguacate y plátano', 'merienda', 220,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 70. Alergia a pescado azul
+('Smoothie de fresa y bebida vegetal de avena', 'merienda', 180,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 71. Alergia al huevo
+('Galletas sin huevo con compota de pera', 'merienda', 190,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 72. Alergia a la soja
+('Tostadas de arroz con plátano y crema de girasol', 'merienda', 210,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 73. Diabetes tipo 2
+('Crema de calabacín + huevo duro + tostadas integrales', 'cena', 390,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 74. Hipertensión
+('Pescado blanco con patata hervida y zanahoria', 'cena', 400,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 75. Hipercolesterolemia
+('Verduras al vapor + tortilla francesa + pan integral', 'cena', 410,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 76. Celiaquía
+('Pasta sin gluten con tomate natural y calabacín', 'cena', 420,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 77. Insuficiencia renal
+('Arroz blanco + tortilla francesa + calabacín hervido', 'cena', 380,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 78. Anemia
+('Revuelto de espinacas y huevo + pan integral', 'cena', 400,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 79. Obesidad
+('Sopa de verduras + yogur vegetal sin azúcar', 'cena', 360,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 80. Intolerancia a la lactosa
+('Tofu a la plancha con verduras y arroz integral', 'cena', 410,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE),
+
+-- 81. Hipotiroidismo
+('Pollo a la plancha + puré de calabaza', 'cena', 430,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 82. Colon irritable
+('Merluza al vapor con zanahoria y arroz blanco', 'cena', 390,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 83. Alergia a frutos secos
+('Huevos revueltos + patata hervida + ensalada verde', 'cena', 400,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 84. Alergia al marisco
+('Pollo al curry suave + arroz + calabacín al horno', 'cena', 410,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 85. Alergia a pescado azul
+('Tortilla francesa + verduras salteadas + pan integral', 'cena', 420,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 86. Alergia al huevo
+('Pasta integral con tomate natural y tofu', 'cena', 430,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE),
+
+-- 87. Alergia a la soja
+('Crema de verduras + pan integral + plátano', 'cena', 410,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE);
+
+
+INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
+-- 43. Diabetes tipo 2
+(43, 146, 60, 'g'),    -- arroz_integral
+(43, 280, 100, 'g'),   -- pisto
+(43, 276, 1, 'unidad'), -- huevo
+
+-- 44. Hipertensión
+(44, 281, 100, 'g'),   -- pollo
+(44, 282, 120, 'g'),   -- patata
+(44, 24, 100, 'g'),   -- judías verdes
+
+-- 45. Hipercolesterolemia
+(45, 96, 60, 'g'),    -- lentejas
+(45, 3, 50, 'g'),     -- zanahoria
+(45, 1, 50, 'g'),      -- espinacas
+
+-- 46. Celiaquía
+(46, 283, 70, 'g'),    -- pasta sin gluten
+(46, 8, 60, 'g'),    -- brócoli
+(46, 118, 80, 'g'),    -- atún
+
+-- 47. Insuficiencia renal
+(47, 145, 60, 'g'),    -- arroz blanco
+(47, 276, 1, 'unidad'),-- tortilla francesa
+(47, 4, 80, 'g'),     -- calabacín
+
+-- 48. Anemia
+(48, 197, 100, 'g'),   -- ternera
+(48, 149, 60, 'g'),    -- quinoa
+(48, 6, 50, 'g'),    -- pimiento rojo
+(48, 1, 40, 'g'),      -- espinacas
+
+-- 49. Obesidad
+(49, 4, 100, 'g'),    -- calabacín
+(49, 276, 1, 'unidad'), -- huevo
+(49, 284, 50, 'g'),    -- ensalada verde
+
+-- 50. Intolerancia a la lactosa
+(50, 146, 60, 'g'),    -- arroz integral
+(50, 285, 80, 'g'),    -- tofu
+(50, 286, 100, 'g'),   -- verduras salteadas
+
+-- 51. Hipotiroidismo
+(51, 281, 100, 'g'),   -- pollo
+(51, 287, 80, 'g'),    -- calabaza
+(51, 146, 60, 'g'),    -- arroz integral
+
+-- 52. Colon irritable
+(52, 116, 100, 'g'),   -- merluza
+(52, 145, 60, 'g'),    -- arroz blanco
+(52, 3, 50, 'g'),     -- zanahoria
+
+-- 53. Alergia a frutos secos
+(53, 282, 100, 'g'),   -- patata
+(53, 276, 2, 'unidad'), -- huevo
+(53, 280, 80, 'g'),    -- pisto
+(53, 284, 50, 'g'),    -- ensalada verde
+
+-- 54. Alergia al marisco
+(54, 145, 60, 'g'),    -- arroz blanco
+(54, 281, 100, 'g'),   -- pollo
+(54, 250, 5, 'g'),     -- curry suave
+(54, 4, 60, 'g'),     -- calabacín
+
+-- 55. Alergia a pescado azul
+(55, 149, 60, 'g'),    -- quinoa
+(55, 288, 100, 'g'),   -- verduras asadas
+(55, 276, 1, 'unidad'), -- huevo
+
+-- 56. Alergia al huevo
+(56, 289, 70, 'g'),    -- macarrones integrales
+(56, 265, 60, 'g'),    -- tomate natural
+(56, 285, 80, 'g'),    -- tofu
+
+-- 57. Alergia a la soja
+(57, 146, 60, 'g'),    -- arroz integral
+(57, 281, 100, 'g'),   -- pollo
+(57, 1, 60, 'g'),   -- espinacas
+
+-- 58. Diabetes tipo 2
+(58, 259, 125, 'g'),       -- yogur vegetal
+(58, 37, 1, 'unidad'),     -- plátano
+
+-- 59. Hipertensión
+(59, 43, 60, 'g'),         -- fresa
+(59, 177, 150, 'ml'),      -- bebida de avena
+
+-- 60. Hipercolesterolemia
+(60, 260, 30, 'g'),        -- tostadas de arroz
+(60, 261, 40, 'g'),         -- aguacate
+
+-- 61. Celiaquía
+(61, 263, 40, 'g'),        -- galletas sin gluten
+(61, 264, 60, 'g'),        -- compota de manzana
+
+-- 62. Insuficiencia renal
+(62, 37, 1, 'unidad'),     -- plátano
+(62, 178, 150, 'ml'),      -- bebida vegetal de arroz
+
+-- 63. Anemia
+(63, 166, 200, 'ml'),      -- zumo de naranja
+(63, 130, 30, 'g'),        -- pan integral
+(63, 1, 20, 'g'),          -- espinacas
+
+-- 64. Obesidad
+(64, 259, 125, 'g'),       -- yogur vegetal sin azúcar
+(64, 44, 1, 'unidad'),     -- kiwi
+
+-- 65. Intolerancia a la lactosa
+(65, 43, 50, 'g'),         -- fresa
+(65, 37, 1, 'unidad'),     -- plátano
+(65, 177, 150, 'ml'),      -- bebida de avena
+
+-- 66. Hipotiroidismo
+(66, 278, 30, 'g'),        -- tostadas integrales
+(66, 261, 40, 'g'),         -- aguacate
+(66, 7, 30, 'g'),         -- tomate
+
+-- 67. Colon irritable
+(67, 259, 125, 'g'),       -- yogur vegetal sin FODMAP
+(67, 57, 40, 'g'),         -- arándanos
+
+-- 68. Alergia a frutos secos
+(68, 37, 1, 'unidad'),     -- plátano
+(68, 43, 50, 'g'),         -- fresa
+(68, 178, 150, 'ml'),      -- bebida vegetal de arroz
+(68, 130, 30, 'g'),      -- pan integral
+
+-- 69. Alergia al marisco
+(69, 130, 30, 'g'),        -- pan integral
+(69, 261, 30, 'g'),         -- aguacate
+(69, 37, 1, 'unidad'),     -- plátano
+
+-- 70. Alergia a pescado azul
+(70, 43, 60, 'g'),         -- fresa
+(70, 177, 150, 'ml'),      -- bebida de avena
+
+-- 71. Alergia al huevo
+(71, 263, 40, 'g'),        -- galletas sin huevo
+(71, 264, 60, 'g'),        -- compota de pera
+
+-- 72. Alergia a la soja
+(72, 271, 30, 'g'),        -- tostadas de arroz
+(72, 37, 1, 'unidad'),     -- plátano
+(72, 290, 15, 'g'),       -- crema de girasol
+
+-- 73. Diabetes tipo 2
+(73, 4, 100, 'g'),        -- calabacín
+(73, 276, 1, 'unidad'),     -- huevo
+(73, 278, 30, 'g'),        -- tostadas integrales
+
+-- 74. Hipertensión
+(74, 291, 100, 'g'),       -- pescado blanco
+(74, 282, 120, 'g'),       -- patata
+(74, 3, 50, 'g'),         -- zanahoria
+
+-- 75. Hipercolesterolemia
+(75, 292, 120, 'g'),       -- verduras al vapor
+(75, 276, 1, 'unidad'),    -- tortilla francesa
+(75, 130, 30, 'g'),        -- pan integral
+
+-- 76. Celiaquía
+(76, 283, 70, 'g'),        -- pasta sin gluten
+(76, 265, 60, 'g'),        -- tomate natural
+(76, 4, 60, 'g'),         -- calabacín
+
+-- 77. Insuficiencia renal
+(77, 145, 60, 'g'),        -- arroz blanco
+(77, 276, 1, 'unidad'),    -- tortilla francesa
+(77, 4, 60, 'g'),         -- calabacín
+
+-- 78. Anemia
+(78, 1, 80, 'g'),          -- espinacas
+(78, 276, 1, 'unidad'),     -- huevo
+(78, 130, 30, 'g'),        -- pan integral
+
+-- 79. Obesidad
+(79, 3, 60, 'g'),         -- zanahoria  
+(79, 14, 40, 'g'),        -- puerro  
+(79, 4, 50, 'g'),         -- calabacín  
+(79, 265, 50, 'g'),        -- tomate natural  
+(79, 259, 125, 'g'),        -- yogur vegetal sin azúcar  
+
+-- 80. Intolerancia a la lactosa
+(80, 285, 100, 'g'),       -- tofu
+(80, 286, 100, 'g'),       -- verduras salteadas
+(80, 146, 60, 'g'),        -- arroz integral
+
+-- 81. Hipotiroidismo
+(81, 281, 100, 'g'),       -- pollo
+(81, 287, 150, 'g'),       -- puré de calabaza
+
+-- 82. Colon irritable
+(82, 116, 100, 'g'),       -- merluza
+(82, 3, 50, 'g'),         -- zanahoria
+(82, 145, 60, 'g'),        -- arroz blanco
+
+-- 83. Alergia a frutos secos
+(83, 276, 2, 'unidad'),     -- huevo
+(83, 282, 100, 'g'),       -- patata
+(83, 284, 50, 'g'),        -- ensalada verde
+
+-- 84. Alergia al marisco
+(84, 281, 100, 'g'),       -- pollo
+(84, 250, 5, 'g'),         -- curry suave
+(84, 145, 60, 'g'),        -- arroz blanco
+(84, 4, 60, 'g'),         -- calabacín
+
+-- 85. Alergia a pescado azul
+(85, 276, 1, 'unidad'),    -- tortilla francesa
+(85, 286, 100, 'g'),       -- verduras salteadas
+(85, 130, 30, 'g'),        -- pan integral
+
+-- 86. Alergia al huevo
+(86, 289, 70, 'g'),        -- pasta integral
+(86, 265, 60, 'g'),        -- tomate natural
+(86, 285, 80, 'g'),        -- tofu
+
+-- 87. Alergia a la soja
+(87, 8, 60, 'g'),        -- brócoli  
+(87, 3, 60, 'g'),         -- zanahoria  
+(87, 287, 80, 'g'),        -- calabaza  
+(87, 130, 30, 'g'),        -- pan integral  
+(87, 37, 1, 'unidad')      -- plátano

@@ -49,18 +49,6 @@ public class Ingrediente {
     @Column(length = 20, nullable = false)
     private TipoIngrediente tipo = TipoIngrediente.otro;
 
-    @NotNull(message = "Debe indicarse si contiene gluten o no")
-    private Boolean sinGluten = false;
-
-    @NotNull(message = "Debe indicarse si contiene lactosa o no")
-    private Boolean sinLactosa = false;
-
-    @NotNull(message = "Debe indicarse si es apto para veganos o no")
-    private Boolean vegano = false;
-
-    @Size(max = 255, message = "La URL de la imagen no puede superar los 255 caracteres")
-    private String imagenUrl;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime creado;
 
@@ -89,6 +77,7 @@ public class Ingrediente {
         fruto_seco("Fruto seco"),
         semilla("Semilla"),
         bebida("Bebida"),
+        huevo("Huevo"), // <-- AÑADIDO
         otro("Otro");
 
         private final String label;

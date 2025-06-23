@@ -1,14 +1,14 @@
 package com.nutri.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "dieta")
@@ -32,15 +32,10 @@ public class Dieta {
 
     private String descripcion;
 
-    @Min(value = 0, message = "Las calorías no pueden ser negativas")
-    private Integer caloriasTotales;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private Objetivo objetivo = Objetivo.mantener;
-
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
+    @Min(value = 3, message = "Debe haber al menos 3 comidas al día")
+    @Max(value = 5, message = "No puede haber más de 5 comidas al día")
+    @Column(name = "numero_comidas_dia")
+    private Integer numeroComidasDia;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime created;
@@ -49,7 +44,8 @@ public class Dieta {
     private LocalDateTime modified;
 
     @OneToMany(mappedBy = "dieta", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<SeguimientoDieta> seguimiento = new HashSet<>();
+    @JsonManagedReference
+    private List<ComidaDiaria> comidasDiarias = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
@@ -60,11 +56,5 @@ public class Dieta {
     @PreUpdate
     protected void onUpdate() {
         this.modified = LocalDateTime.now();
-    }
-
-    public enum Objetivo {
-        perder_peso,
-        mantener,
-        ganar_peso
     }
 }
