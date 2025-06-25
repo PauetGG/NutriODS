@@ -1932,3 +1932,493 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (87, 287, 80, 'g'),        -- calabaza  
 (87, 130, 30, 'g'),        -- pan integral  
 (87, 37, 1, 'unidad')      -- plátano
+
+INSERT INTO comida_modelo (
+    nombre, tipo_comida, calorias_totales,
+    apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
+    apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
+    sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+) VALUES
+
+-- 88. Ensalada de quinoa y garbanzos
+('Ensalada de quinoa y garbanzos', 'comida', 390,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, FALSE, TRUE),
+
+-- 89. Crema de calabaza con pan de centeno
+('Crema de calabaza con pan de centeno', 'cena', 350,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 90. Desayuno de yogur vegetal con frutas rojas
+('Desayuno de yogur vegetal con frutas rojas', 'desayuno', 310,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 91. Hamburguesa vegetal con ensalada verde
+('Hamburguesa vegetal con ensalada verde', 'comida', 430,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
+
+-- 92. Tofu con verduras al vapor y arroz integral
+('Tofu con verduras al vapor y arroz integral', 'cena', 440,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE),
+
+-- 93. Bowl de lentejas beluga con espinacas
+('Bowl de lentejas beluga con espinacas', 'comida', 410,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, FALSE, TRUE),
+
+-- 94. Pan sin gluten con aguacate y tomate
+('Pan sin gluten con aguacate y tomate', 'desayuno', 360,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 95. Merluza al horno con puré de patata
+('Merluza al horno con puré de patata', 'cena', 420,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 96. Batido vegetal con avena y plátano
+('Batido vegetal con avena y plátano', 'desayuno', 330,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 97. Espaguetis integrales con verduras salteadas
+('Espaguetis integrales con verduras salteadas', 'comida', 450,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+ -- 98. Bowl de arroz integral con verduras y huevo
+('Bowl de arroz integral con verduras y huevo', 'comida', 440,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 99. Pasta sin gluten con hummus y tomate cherry
+('Pasta sin gluten con hummus y tomate cherry', 'cena', 420,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 100. Tostadas de maíz con aguacate y kiwi
+('Tostadas de maíz con aguacate y kiwi', 'desayuno', 360,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 101. Crema de zanahoria y lentejas rojas
+('Crema de zanahoria y lentejas rojas', 'comida', 410,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, FALSE, TRUE),
+
+-- 102. Revuelto de tofu con verduras
+('Revuelto de tofu con verduras', 'cena', 400,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE),
+
+-- 103. Pan integral con tomate y aceite de oliva
+('Pan integral con tomate y aceite de oliva', 'desayuno', 370,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 104. Curry de garbanzos y arroz
+('Curry de garbanzos y arroz', 'comida', 450,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, FALSE, TRUE),
+
+-- 105. Sopa de verduras con huevo duro
+('Sopa de verduras con huevo duro', 'cena', 390,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 106. Smoothie de frutas con bebida vegetal de coco
+('Smoothie de frutas con bebida vegetal de coco', 'desayuno', 330,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 107. Hamburguesa de lentejas y ensalada verde
+('Hamburguesa de lentejas y ensalada verde', 'comida', 420,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE),
+
+-- 108. Tacos de tofu con verduras y maíz
+('Tacos de tofu con verduras y maíz', 'comida', 430,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE),
+
+-- 109. Galletas sin gluten con compota de manzana
+('Galletas sin gluten con compota de manzana', 'desayuno', 360,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 110. Merluza a la plancha con ensalada verde
+('Merluza a la plancha con ensalada verde', 'cena', 400,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 111. Batido de avena con plátano y fresa
+('Batido de avena con plátano y fresa', 'desayuno', 320,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 112. Pasta integral con espinacas y tomate
+('Pasta integral con espinacas y tomate', 'comida', 440,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 113. Guiso de lentejas verdes con zanahoria
+('Guiso de lentejas verdes con zanahoria', 'cena', 410,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, FALSE, TRUE),
+
+-- 114. Bocadillo de pan sin gluten con hummus y espinaca
+('Bocadillo de pan sin gluten con hummus y espinaca', 'comida', 380,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 115. Yogur vegetal con granada y nuez
+('Yogur vegetal con granada y nuez', 'desayuno', 350,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 116. Trucha al horno con calabacín y arroz
+('Trucha al horno con calabacín y arroz', 'cena', 440,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 117. Crema de espinacas con pan integral
+('Crema de espinacas con pan integral', 'comida', 400,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 118. Ensalada de garbanzos con tomate y cebolla
+('Ensalada de garbanzos con tomate y cebolla', 'comida', 410,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, FALSE, TRUE),
+
+-- 119. Porridge de avena con manzana y canela
+('Porridge de avena con manzana y canela', 'desayuno', 360,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 120. Pechuga de pavo con quinoa y calabacín
+('Pechuga de pavo con quinoa y calabacín', 'cena', 430,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 121. Bocadillo de pan integral con aguacate y huevo
+('Bocadillo de pan integral con aguacate y huevo', 'comida', 420,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
+-- 122. Yogur vegetal con frambuesas y sirope de agave
+('Yogur vegetal con frambuesas y sirope de agave', 'desayuno', 330,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 123. Lentejas con arroz y zanahoria
+('Lentejas con arroz y zanahoria', 'comida', 440,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, FALSE, TRUE),
+
+-- 124. Sopa de fideos de arroz con espinacas
+('Sopa de fideos de arroz con espinacas', 'cena', 400,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 125. Tostadas integrales con tomate y jamón cocido
+('Tostadas integrales con tomate y jamón cocido', 'desayuno', 390,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
+-- 126. Hamburguesa vegetal con arroz y verduras
+('Hamburguesa vegetal con arroz y verduras', 'comida', 450,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, TRUE),
+
+-- 127. Pisto de verduras con huevo y pan integral
+('Pisto de verduras con huevo y pan integral', 'cena', 440,
+TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE);
+
+INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
+-- 88. Ensalada de quinoa y garbanzos
+(88, 149, 60, 'g'),  -- Quinoa
+(88, 97, 100, 'g'),  -- Garbanzos cocidos
+(88, 1, 30, 'g'),    -- Espinaca
+
+-- 89. Crema de calabaza con pan de centeno
+(89, 287, 150, 'g'), -- Calabaza
+(89, 273, 50, 'g'),  -- Pan de centeno
+(89, 14, 20, 'g'),   -- Puerro
+
+-- 90. Desayuno de yogur vegetal con frutas rojas
+(90, 259, 125, 'g'), -- Yogur vegetal
+(90, 274, 40, 'g'),  -- Frutos rojos
+(90, 36, 1, 'unidad'), -- Manzana
+
+-- 91. Hamburguesa vegetal con ensalada verde
+(91, 220, 100, 'g'), -- Hamburguesa vegetal (no vegana)
+(91, 284, 60, 'g'),  -- Ensalada verde
+(91, 265, 40, 'g'),  -- Tomate triturado
+
+-- 92. Tofu con verduras al vapor y arroz integral
+(92, 285, 100, 'g'), -- Tofu
+(92, 292, 100, 'g'), -- Verduras al vapor
+(92, 146, 60, 'g'),  -- Arroz integral
+
+-- 93. Bowl de lentejas beluga con espinacas
+(93, 106, 80, 'g'),  -- Lenteja beluga cocida
+(93, 1, 50, 'g'),    -- Espinaca
+(93, 130, 30, 'g'),  -- Pan integral
+
+-- 94. Pan sin gluten con aguacate y tomate
+(94, 154, 50, 'g'),  -- Pan sin gluten
+(94, 261, 30, 'g'),  -- Aguacate
+(94, 7, 30, 'g'),    -- Tomate
+
+-- 95. Merluza al horno con puré de patata
+(95, 116, 100, 'g'), -- Merluza
+(95, 282, 150, 'g'), -- Patata
+(95, 4, 50, 'g'),    -- Calabacín
+
+-- 96. Batido vegetal con avena y plátano
+(96, 177, 150, 'ml'),-- Bebida de avena
+(96, 127, 30, 'g'),  -- Avena en copos
+(96, 37, 1, 'unidad'),-- Plátano
+
+-- 97. Espaguetis integrales con verduras salteadas
+(97, 289, 80, 'g'),  -- Pasta integral
+(97, 286, 100, 'g'), -- Verduras salteadas
+(97, 265, 40, 'g'),  -- Tomate triturado
+
+-- 98. Bowl de arroz integral con verduras y huevo
+(98, 146, 60, 'g'),     -- Arroz integral
+(98, 286, 100, 'g'),    -- Verduras salteadas
+(98, 276, 1, 'unidad'), -- Huevo
+
+-- 99. Pasta sin gluten con hummus y tomate cherry
+(99, 283, 80, 'g'),     -- Pasta sin gluten
+(99, 257, 50, 'g'),     -- Hummus
+(99, 258, 40, 'g'),     -- Tomate cherry
+
+-- 100. Tostadas de maíz con aguacate y kiwi
+(100, 268, 40, 'g'),    -- Tostadas de maíz
+(100, 261, 30, 'g'),    -- Aguacate
+(100, 44, 1, 'unidad'), -- Kiwi
+
+-- 101. Crema de zanahoria y lentejas rojas
+(101, 3, 80, 'g'),      -- Zanahoria
+(101, 104, 60, 'g'),    -- Lenteja roja cocida
+(101, 14, 30, 'g'),     -- Puerro
+
+-- 102. Revuelto de tofu con verduras
+(102, 285, 100, 'g'),   -- Tofu
+(102, 286, 80, 'g'),    -- Verduras salteadas
+(102, 265, 30, 'g'),    -- Tomate triturado
+
+-- 103. Pan integral con tomate y aceite de oliva
+(103, 130, 40, 'g'),    -- Pan integral
+(103, 265, 30, 'g'),    -- Tomate triturado
+(103, 242, 10, 'ml'),   -- Aceite de oliva virgen extra
+
+-- 104. Curry de garbanzos y arroz
+(104, 97, 100, 'g'),    -- Garbanzos cocidos
+(104, 145, 60, 'g'),    -- Arroz blanco
+(104, 250, 5, 'g'),     -- Curry
+
+-- 105. Sopa de verduras con huevo duro
+(105, 292, 100, 'g'),   -- Verduras al vapor
+(105, 276, 1, 'unidad'),-- Huevo
+(105, 1, 20, 'g'),      -- Espinaca
+
+-- 106. Smoothie de frutas con bebida vegetal de coco
+(106, 179, 150, 'ml'),  -- Bebida de coco
+(106, 274, 50, 'g'),    -- Frutos rojos
+(106, 36, 1, 'unidad'), -- Manzana
+
+-- 107. Hamburguesa de lentejas y ensalada verde
+(107, 96, 80, 'g'),     -- Lenteja cocida
+(107, 220, 1, 'unidad'),-- Hamburguesa vegetal (no vegana)
+(107, 284, 50, 'g'),  -- Ensalada verde
+
+-- 108. Tacos de tofu con verduras y maíz
+(108, 285, 80, 'g'),    -- Tofu
+(108, 286, 100, 'g'),   -- Verduras salteadas
+(108, 147, 40, 'g'),    -- Maíz
+
+-- 109. Galletas sin gluten con compota de manzana
+(109, 263, 40, 'g'),    -- Galletas sin gluten
+(109, 264, 60, 'g'),    -- Compota de manzana
+(109, 36, 1, 'unidad'), -- Manzana
+
+-- 110. Merluza a la plancha con ensalada verde
+(110, 116, 100, 'g'),   -- Merluza
+(110, 284, 60, 'g'),    -- Ensalada verde
+(110, 3, 50, 'g'),      -- Zanahoria
+
+-- 111. Batido de avena con plátano y fresa
+(111, 177, 150, 'ml'),  -- Bebida de avena
+(111, 37, 1, 'unidad'), -- Plátano
+(111, 43, 50, 'g'),     -- Fresa
+
+-- 112. Pasta integral con espinacas y tomate
+(112, 289, 80, 'g'),    -- Pasta integral
+(112, 1, 50, 'g'),      -- Espinaca
+(112, 7, 40, 'g'),      -- Tomate
+
+-- 113. Guiso de lentejas verdes con zanahoria
+(113, 107, 80, 'g'),    -- Lenteja verde cocida
+(113, 3, 60, 'g'),      -- Zanahoria
+(113, 14, 30, 'g'),     -- Puerro
+
+-- 114. Bocadillo de pan sin gluten con hummus y espinaca
+(114, 154, 50, 'g'),    -- Pan sin gluten
+(114, 257, 40, 'g'),    -- Hummus
+(114, 1, 30, 'g'),      -- Espinaca
+
+-- 115. Yogur vegetal con granada y nuez
+(115, 259, 125, 'g'),   -- Yogur vegetal
+(115, 68, 40, 'g'),     -- Granada
+(115, 156, 10, 'g'),    -- Nuez
+
+-- 116. Trucha al horno con calabacín y arroz
+(116, 124, 100, 'g'),   -- Trucha
+(116, 4, 60, 'g'),      -- Calabacín
+(116, 145, 60, 'g'),    -- Arroz blanco
+
+-- 117. Crema de espinacas con pan integral
+(117, 1, 100, 'g'),     -- Espinaca
+(117, 14, 30, 'g'),     -- Puerro
+(117, 130, 40, 'g'),    -- Pan integral
+
+-- 118. Ensalada de garbanzos con tomate y cebolla
+(118, 97, 100, 'g'),    -- Garbanzos cocidos
+(118, 7, 50, 'g'),      -- Tomate
+(118, 10, 30, 'g'),     -- Cebolla
+
+-- 119. Porridge de avena con manzana y canela
+(119, 127, 50, 'g'),    -- Avena en copos
+(119, 36, 1, 'unidad'), -- Manzana
+(119, 239, 1, 'g'),     -- Canela en polvo
+
+-- 120. Pechuga de pavo con quinoa y calabacín
+(120, 207, 100, 'g'),   -- Pechuga de pavo cocida
+(120, 149, 60, 'g'),    -- Quinoa cocida
+(120, 4, 60, 'g'),      -- Calabacín
+
+-- 121. Bocadillo de pan integral con aguacate y huevo
+(121, 130, 40, 'g'),    -- Pan integral
+(121, 261, 30, 'g'),    -- Aguacate
+(121, 276, 1, 'unidad'),-- Huevo
+
+-- 122. Yogur vegetal con frambuesas y sirope de agave
+(122, 259, 125, 'g'),   -- Yogur vegetal
+(122, 53, 40, 'g'),     -- Frambuesa
+(122, 244, 5, 'ml'),    -- Sirope de agave
+
+-- 123. Lentejas con arroz y zanahoria
+(123, 96, 80, 'g'),     -- Lenteja cocida
+(123, 145, 60, 'g'),    -- Arroz blanco
+(123, 3, 50, 'g'),      -- Zanahoria
+
+-- 124. Sopa de fideos de arroz con espinacas
+(124, 142, 60, 'g'),    -- Fideos de arroz
+(124, 1, 40, 'g'),      -- Espinaca
+(124, 14, 20, 'g'),     -- Puerro
+
+-- 125. Tostadas integrales con tomate y jamón cocido
+(125, 278, 30, 'g'),    -- Tostadas integrales
+(125, 7, 40, 'g'),      -- Tomate
+(125, 199, 60, 'g'),    -- Jamón cocido (York)
+
+-- 126. Hamburguesa vegetal con arroz y verduras
+(126, 220, 1, 'unidad'),-- Hamburguesa vegetal (no vegana)
+(126, 146, 60, 'g'),    -- Arroz integral
+(126, 292, 80, 'g'),    -- Verduras al vapor
+
+-- 127. Pisto de verduras con huevo y pan integral
+(127, 280, 100, 'g'),   -- Pisto
+(127, 276, 1, 'unidad'),-- Huevo
+(127, 130, 30, 'g');    -- Pan integral
+
