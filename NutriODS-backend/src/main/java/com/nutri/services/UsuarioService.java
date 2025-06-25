@@ -94,7 +94,7 @@ public class UsuarioService {
         usuario.setGenero(Usuario.Genero.valueOf(dto.getGenero()));
         usuario.setObjetivo(dto.getObjetivo());
         usuario.setAlergias(dto.getAlergias());
-        usuario.setEnfermedades(dto.getEnfermedades());
+        usuario.setEnfermedades(dto.getEnfermedades()); 
         usuario.setPreferenciasComida(dto.getPreferencias());
         usuario.setActividadFisica(Usuario.ActividadFisica.valueOf(dto.getActividad().replace(" ", "_")));
         return usuarioRepository.save(usuario);

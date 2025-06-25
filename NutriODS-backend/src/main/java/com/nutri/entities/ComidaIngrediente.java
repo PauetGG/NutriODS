@@ -32,12 +32,12 @@ public class ComidaIngrediente {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comida_modelo_id", nullable = false)
-    @JsonBackReference // Ignora esta parte para evitar bucle infinito
+    @JsonBackReference
     private ComidaModelo comidaModelo;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "ingrediente_id", nullable = false)
-    @JsonIgnore // ⚠️ Evita serializar toda la entidad ingrediente (o crea getter para campos concretos si los necesitas)
+    @JsonIgnore
     private Ingrediente ingrediente;
 
     @Column(nullable = false, precision = 6, scale = 2)
