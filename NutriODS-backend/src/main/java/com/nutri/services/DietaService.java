@@ -199,4 +199,8 @@ public class DietaService {
         // 5. Guardar la dieta (esto guarda también las comidas diarias por cascade)
         return dietaRepository.save(dieta);
     }
+    
+    public List<Dieta> findAllConUsuario() {
+        return dietaRepository.findAllConUsuario();
+    }
 }

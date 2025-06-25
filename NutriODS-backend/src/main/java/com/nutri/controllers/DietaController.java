@@ -35,7 +35,7 @@ public class DietaController {
 
     @GetMapping
     public List<Dieta> getAll() {
-        return dietaService.findAll();
+        return dietaService.findAllConUsuario();
     }
 
     @GetMapping("/{id}")
