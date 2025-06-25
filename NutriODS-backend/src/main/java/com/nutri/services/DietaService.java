@@ -1,15 +1,22 @@
 package com.nutri.services;
 
-import com.nutri.entities.*;
-import com.nutri.repositories.ComidaModeloRepository;
-import com.nutri.repositories.DietaRepository;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.nutri.entities.ComidaDiaria;
+import com.nutri.entities.ComidaModelo;
+import com.nutri.entities.Dieta;
+import com.nutri.entities.Usuario;
+import com.nutri.repositories.ComidaModeloRepository;
+import com.nutri.repositories.DietaRepository;
 
 @Service
 public class DietaService {
@@ -38,114 +45,158 @@ public class DietaService {
         dietaRepository.deleteById(id);
     }
 
-    // 🚀 MÉTODO CLAVE: genera una dieta personalizada según el usuario
-    public Dieta generarDietaParaUsuario(Usuario usuario) {
-        int caloriasObjetivo = calcularCaloriasTotales(usuario);
-        int numeroComidasPorDia = 4; // valor fijo o configurable según usuario u opciones
-
-        List<ComidaModelo> comidasAptas = comidaModeloRepository.findAll().stream()
-            .filter(c -> esAptaParaUsuario(c, usuario))
+    public List<ComidaModelo> obtenerComidasCompatibles(Usuario usuario) {
+        List<ComidaModelo> todasLasComidas = comidaModeloRepository.findAll();
+    
+        return todasLasComidas.stream()
+            // Enfermedades
+            .filter(c -> !usuario.getEnfermedades().contains("diabetes") || Boolean.TRUE.equals(c.getAptaDiabetes()))
+            .filter(c -> !usuario.getEnfermedades().contains("hipertensión") || Boolean.TRUE.equals(c.getAptaHipertension()))
+            .filter(c -> !usuario.getEnfermedades().contains("hipercolesterolemia") || Boolean.TRUE.equals(c.getAptaHipercolesterolemia()))
+            .filter(c -> !usuario.getEnfermedades().contains("celíaca") || Boolean.TRUE.equals(c.getAptaCeliacos()))
+            .filter(c -> !usuario.getEnfermedades().contains("renal") || Boolean.TRUE.equals(c.getAptaRenal()))
+            .filter(c -> !usuario.getEnfermedades().contains("anemia") || Boolean.TRUE.equals(c.getAptaAnemia()))
+            .filter(c -> !usuario.getEnfermedades().contains("obesidad") || Boolean.TRUE.equals(c.getAptaObesidad()))
+            .filter(c -> !usuario.getEnfermedades().contains("hipotiroidismo") || Boolean.TRUE.equals(c.getAptaHipotiroidismo()))
+            .filter(c -> !usuario.getEnfermedades().contains("colon irritable") || Boolean.TRUE.equals(c.getAptaColonIrritable()))
+    
+            // Alergias
+            .filter(c -> !usuario.getAlergias().contains("lactosa") || Boolean.TRUE.equals(c.getSinLactosa()))
+            .filter(c -> !usuario.getAlergias().contains("frutos secos") || Boolean.TRUE.equals(c.getSinFrutosSecos()))
+            .filter(c -> !usuario.getAlergias().contains("marisco") || Boolean.TRUE.equals(c.getSinMarisco()))
+            .filter(c -> !usuario.getAlergias().contains("pescado azul") || Boolean.TRUE.equals(c.getSinPescadoAzul()))
+            .filter(c -> !usuario.getAlergias().contains("huevo") || Boolean.TRUE.equals(c.getSinHuevo()))
+            .filter(c -> !usuario.getAlergias().contains("soja") || Boolean.TRUE.equals(c.getSinSoja()))
+            .filter(c -> !usuario.getAlergias().contains("legumbres") || Boolean.TRUE.equals(c.getSinLegumbres()))
+            .filter(c -> !usuario.getAlergias().contains("sésamo") || Boolean.TRUE.equals(c.getSinSesamo()))
+    
             .collect(Collectors.toList());
+    }    
 
-        List<ComidaDiaria> planSemanal = generarPlanSemanal(comidasAptas, caloriasObjetivo, numeroComidasPorDia);
+    public int calcularEdad(LocalDate fechaNacimiento) {
+        return Period.between(fechaNacimiento, LocalDate.now()).getYears();
+    }
+    public double calcularMetabolismoBasal(double peso, double altura, int edad, String genero) {
+        if (genero.equalsIgnoreCase("masculino")) {
+            return 10 * peso + 6.25 * altura - 5 * edad + 5;
+        } else {
+            return 10 * peso + 6.25 * altura - 5 * edad - 161;
+        }
+    }
+    public double calcularGET(double metabolismoBasal, String nivelActividad) {
+        Map<String, Double> factores = new HashMap<>();
+        factores.put("sedentario", 1.2);
+        factores.put("ligero", 1.375);
+        factores.put("moderado", 1.55);
+        factores.put("intenso", 1.725);
+        factores.put("muy intenso", 1.9);
+    
+        return metabolismoBasal * factores.getOrDefault(nivelActividad.toLowerCase(), 1.2);
+    }
+    public double ajustarCaloriasPorObjetivo(double GET, String objetivo) {
+        switch (objetivo.toLowerCase()) {
+            case "perder peso":
+                return GET * 0.8;
+            case "ganar peso":
+                return GET * 1.15;
+            default: // mantener peso
+                return GET;
+        }
+    }
+    public Map<String, Double> calcularMacronutrientes(double caloriasObjetivo) {
+        Map<String, Double> macros = new HashMap<>();
+        // Proteínas: 25%, 4 kcal/g
+        macros.put("proteinas", (caloriasObjetivo * 0.25) / 4);
+        // Grasas: 25%, 9 kcal/g
+        macros.put("grasas", (caloriasObjetivo * 0.25) / 9);
+        // Carbohidratos: 50%, 4 kcal/g
+        macros.put("carbohidratos", (caloriasObjetivo * 0.5) / 4);
+        return macros;
+    }
+    
+    public Dieta generarDietaParaUsuario(Usuario usuario, String nombreDieta, String descripcion, int numeroComidasDia) {
+        // 1. Filtrar comidas compatibles
+        List<ComidaModelo> comidasCompatibles = obtenerComidasCompatibles(usuario);
 
+        // 2. Calcular calorías y macronutrientes
+        int edad = calcularEdad(usuario.getFechaNacimiento());
+        double peso = usuario.getPeso().doubleValue();
+        double altura = usuario.getAltura().doubleValue();
+        String genero = usuario.getGenero().name();
+        String nivelActividad = usuario.getActividadFisica().name();
+        String objetivo = usuario.getObjetivo();
+
+        double metabolismoBasal = calcularMetabolismoBasal(peso, altura, edad, genero);
+        double GET = calcularGET(metabolismoBasal, nivelActividad);
+        double caloriasObjetivo = ajustarCaloriasPorObjetivo(GET, objetivo);
+        Map<String, Double> macros = calcularMacronutrientes(caloriasObjetivo);
+
+        // 3. Crear la dieta
         Dieta dieta = new Dieta();
         dieta.setUsuario(usuario);
-        dieta.setNombre("Dieta personalizada");
-        dieta.setDescripcion("Dieta generada automáticamente en función del perfil del usuario");
-        dieta.setNumeroComidasDia(numeroComidasPorDia);
-        dieta.setCaloriasTotales(caloriasObjetivo); // opcional, si lo tienes en tu entidad
-        dieta.setCreated(LocalDateTime.now());
-        dieta.setModified(LocalDateTime.now());
+        dieta.setNombre(nombreDieta);
+        dieta.setDescripcion(descripcion);
+        dieta.setNumeroComidasDia(numeroComidasDia);
+        dieta.setProteinasObjetivo(macros.get("proteinas"));
+        dieta.setGrasasObjetivo(macros.get("grasas"));
+        dieta.setCarbohidratosObjetivo(macros.get("carbohidratos"));
 
-        for (ComidaDiaria comidaDiaria : planSemanal) {
-            comidaDiaria.setDieta(dieta);
+        // 4. Definir el reparto de calorías por tipo de comida según el número de comidas
+        Map<ComidaModelo.TipoComida, Double> reparto = new HashMap<>();
+        if (numeroComidasDia == 3) {
+            reparto.put(ComidaModelo.TipoComida.desayuno, 0.25);
+            reparto.put(ComidaModelo.TipoComida.comida, 0.5);
+            reparto.put(ComidaModelo.TipoComida.cena, 0.25);
+        } else if (numeroComidasDia == 4) {
+            reparto.put(ComidaModelo.TipoComida.desayuno, 0.2);
+            reparto.put(ComidaModelo.TipoComida.comida, 0.4);
+            reparto.put(ComidaModelo.TipoComida.merienda, 0.1);
+            reparto.put(ComidaModelo.TipoComida.cena, 0.3);
+        } else { // 5 comidas
+            reparto.put(ComidaModelo.TipoComida.desayuno, 0.2);
+            reparto.put(ComidaModelo.TipoComida.almuerzo, 0.1);
+            reparto.put(ComidaModelo.TipoComida.comida, 0.4);
+            reparto.put(ComidaModelo.TipoComida.merienda, 0.1);
+            reparto.put(ComidaModelo.TipoComida.cena, 0.2);
         }
 
-        dieta.setComidasDiarias(planSemanal);
-
-        return dietaRepository.save(dieta);
-    }
-
-    private boolean esAptaParaUsuario(ComidaModelo comida, Usuario usuario) {
-        String alergias = Optional.ofNullable(usuario.getAlergias()).orElse("").toLowerCase();
-        String enfermedades = Optional.ofNullable(usuario.getEnfermedades()).orElse("").toLowerCase();
-
-        if (alergias.contains("lactosa") && !Boolean.TRUE.equals(comida.getSinLactosa())) return false;
-        if (alergias.contains("huevo") && !Boolean.TRUE.equals(comida.getSinHuevo())) return false;
-        if (alergias.contains("frutos") && !Boolean.TRUE.equals(comida.getSinFrutosSecos())) return false;
-        if (alergias.contains("marisco") && !Boolean.TRUE.equals(comida.getSinMarisco())) return false;
-        if (alergias.contains("pescado") && !Boolean.TRUE.equals(comida.getSinPescadoAzul())) return false;
-        if (alergias.contains("soja") && !Boolean.TRUE.equals(comida.getSinSoja())) return false;
-        if (alergias.contains("legumbre") && !Boolean.TRUE.equals(comida.getSinLegumbres())) return false;
-        if (alergias.contains("sésamo") && !Boolean.TRUE.equals(comida.getSinSesamo())) return false;
-
-        if (enfermedades.contains("diabetes") && !Boolean.TRUE.equals(comida.getAptaDiabetes())) return false;
-        if (enfermedades.contains("hipertension") && !Boolean.TRUE.equals(comida.getAptaHipertension())) return false;
-        if (enfermedades.contains("colesterol") && !Boolean.TRUE.equals(comida.getAptaHipercolesterolemia())) return false;
-        if (enfermedades.contains("celiac") && !Boolean.TRUE.equals(comida.getAptaCeliacos())) return false;
-        if (enfermedades.contains("renal") && !Boolean.TRUE.equals(comida.getAptaRenal())) return false;
-        if (enfermedades.contains("anemia") && !Boolean.TRUE.equals(comida.getAptaAnemia())) return false;
-        if (enfermedades.contains("obesidad") && !Boolean.TRUE.equals(comida.getAptaObesidad())) return false;
-        if (enfermedades.contains("hipotiroidismo") && !Boolean.TRUE.equals(comida.getAptaHipotiroidismo())) return false;
-        if (enfermedades.contains("colon") && !Boolean.TRUE.equals(comida.getAptaColonIrritable())) return false;
-
-        return true;
-    }
-
-    private int calcularCaloriasTotales(Usuario usuario) {
-        int edad = Period.between(usuario.getFechaNacimiento(), LocalDate.now()).getYears();
-        double peso = usuario.getPeso().doubleValue();
-        double altura = usuario.getAltura().doubleValue(); // en cm
-
-        double tmb = usuario.getGenero().equals("masculino")
-            ? 10 * peso + 6.25 * altura - 5 * edad + 5
-            : 10 * peso + 6.25 * altura - 5 * edad - 161;
-
-        double factorActividad = switch (usuario.getActividadFisica()) {
-            case "sedentario" -> 1.2;
-            case "ligero" -> 1.375;
-            case "moderado" -> 1.55;
-            case "intenso" -> 1.725;
-            case "muy intenso" -> 1.9;
-            default -> 1.55;
-        };
-
-        double mantenimiento = tmb * factorActividad;
-
-        return switch (usuario.getObjetivo()) {
-            case "perder_peso" -> (int)(mantenimiento - 500);
-            case "ganar_peso" -> (int)(mantenimiento + 500);
-            default -> (int)mantenimiento;
-        };
-    }
-
-    private List<ComidaDiaria> generarPlanSemanal(List<ComidaModelo> comidas, int caloriasTotales, int comidasPorDia) {
-        List<ComidaDiaria> plan = new ArrayList<>();
-        Random random = new Random();
-        int caloriasPorComida = caloriasTotales / comidasPorDia;
-
-        // Mapea los tipos permitidos
-        List<ComidaModelo.TipoComida> tiposPermitidos = switch (comidasPorDia) {
-            case 3 -> List.of(ComidaModelo.TipoComida.desayuno, ComidaModelo.TipoComida.comida, ComidaModelo.TipoComida.cena);
-            case 4 -> List.of(ComidaModelo.TipoComida.desayuno, ComidaModelo.TipoComida.comida, ComidaModelo.TipoComida.merienda, ComidaModelo.TipoComida.cena);
-            case 5 -> List.of(ComidaModelo.TipoComida.desayuno, ComidaModelo.TipoComida.almuerzo, ComidaModelo.TipoComida.comida, ComidaModelo.TipoComida.merienda, ComidaModelo.TipoComida.cena);
-            default -> List.of(ComidaModelo.TipoComida.desayuno, ComidaModelo.TipoComida.comida, ComidaModelo.TipoComida.cena);
-        };
-
+        List<ComidaDiaria> comidasDiarias = new ArrayList<>();
         for (ComidaDiaria.DiaSemana dia : ComidaDiaria.DiaSemana.values()) {
-            for (ComidaModelo.TipoComida tipo : tiposPermitidos) {
-                List<ComidaModelo> candidatas = comidas.stream()
-                    .filter(c -> c.getTipoComida() == tipo && Math.abs(c.getCaloriasTotales() - caloriasPorComida) <= 200)
-                    .toList();
+            for (ComidaModelo.TipoComida tipo : reparto.keySet()) {
+                double caloriasObjetivoComida = caloriasObjetivo * reparto.get(tipo);
+
+                // Buscar comidas compatibles para ese tipo
+                List<ComidaModelo> candidatas = comidasCompatibles.stream()
+                    .filter(c -> c.getTipoComida() == tipo)
+                    .collect(Collectors.toList());
 
                 if (!candidatas.isEmpty()) {
-                    ComidaModelo seleccionada = candidatas.get(random.nextInt(candidatas.size()));
-                    plan.add(new ComidaDiaria(null, null, dia, tipo, seleccionada));
+                    ComidaModelo seleccionada = candidatas.get((int) (Math.random() * candidatas.size()));
+
+                    // Calcular macros totales de la comida seleccionada
+                    // Suponiendo que tienes un método en comidaModeloService:
+                    // Map<String, Double> macrosComida = comidaModeloService.calcularMacrosTotales(seleccionada);
+                    // Por ahora, usamos caloriasTotales como aproximación:
+                    double caloriasComida = seleccionada.getCaloriasTotales();
+                    double factor = caloriasComida > 0 ? caloriasObjetivoComida / caloriasComida : 1.0;
+
+                    // Ajustar las cantidades de los ingredientes
+                    for (com.nutri.entities.ComidaIngrediente ci : seleccionada.getIngredientes()) {
+                        ci.setCantidad(ci.getCantidad().multiply(java.math.BigDecimal.valueOf(factor)));
+                    }
+
+                    ComidaDiaria comidaDiaria = new ComidaDiaria();
+                    comidaDiaria.setDieta(dieta);
+                    comidaDiaria.setDiaSemana(dia);
+                    comidaDiaria.setTipoComida(tipo);
+                    comidaDiaria.setComidaModelo(seleccionada);
+                    comidasDiarias.add(comidaDiaria);
                 }
             }
         }
+        dieta.setComidasDiarias(comidasDiarias);
 
-        return plan;
+        // 5. Guardar la dieta (esto guarda también las comidas diarias por cascade)
+        return dietaRepository.save(dieta);
     }
 }

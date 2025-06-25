@@ -47,6 +47,15 @@ public class Dieta {
     @JsonManagedReference
     private List<ComidaDiaria> comidasDiarias = new ArrayList<>();
 
+    @Column(name = "proteinas_objetivo")
+    private Double proteinasObjetivo;
+
+    @Column(name = "grasas_objetivo")
+    private Double grasasObjetivo;
+
+    @Column(name = "carbohidratos_objetivo")
+    private Double carbohidratosObjetivo;
+
     @PrePersist
     protected void onCreate() {
         this.created = LocalDateTime.now();

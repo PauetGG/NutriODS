@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -70,15 +71,17 @@ public class Usuario {
     @Size(max = 255)
     private String objetivo;
 
-    @Size(max = 255)
-    private String alergias;
+    @ElementCollection
+    @Column(name = "alergias")
+    private java.util.List<String> alergias = new java.util.ArrayList<>();
 
-    @Size(max = 255)
-    private String enfermedades;
+    @ElementCollection
+    @Column(name = "enfermedades")
+    private java.util.List<String> enfermedades = new java.util.ArrayList<>();
 
-    @Column(name = "preferencias_comida")
-    @Size(max = 255)
-    private String preferenciasComida;
+    @ElementCollection
+    @Column(name = "preferencia_comida")
+    private java.util.List<String> preferenciasComida = new java.util.ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "actividad_fisica", columnDefinition = "ENUM('sedentario', 'ligero', 'moderado', 'intenso', 'muy_intenso') DEFAULT 'moderado'")
