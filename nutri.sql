@@ -28,6 +28,9 @@ CREATE TABLE dieta (
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
     numero_comidas_dia INT CHECK (numero_comidas_dia >= 3 AND numero_comidas_dia <= 5),
+    proteinas_objetivo DOUBLE,
+    grasas_objetivo DOUBLE,
+    carbohidratos_objetivo DOUBLE,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_usuario_dieta FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
@@ -1306,7 +1309,7 @@ TRUE, TRUE, TRUE, TRUE);
 INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
 (1, 127, 40, 'g'),    -- avena en copos
 (1, 171, 200, 'ml'),  -- bebida de almendra
-(1, 37, 1, 'unidad'),-- plátano
+(1, 37, 120, 'g'),-- plátano
 (1, 227, 10, 'g'),    -- semillas de chía
 (2, 154, 60, 'g'),    -- pan sin gluten
 (2, 257, 40, 'g'),    -- hummus
@@ -1317,21 +1320,21 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 -- Desayuno 4
 (4, 260, 30, 'g'),   -- tostadas de arroz
 (4, 261, 50, 'g'),    -- aguacate
-(4, 43, 1, 'unidad'),-- huevo duro
+(4, 43, 60, 'g'),-- huevo duro
 
 -- Desayuno 5
 (5, 171, 200, 'ml'), -- bebida de almendra
 (5, 43, 60, 'g'),    -- fresa
-(5, 44, 1, 'unidad'),-- kiwi
+(5, 44, 75, 'g'),-- kiwi
 
 -- Desayuno 6
 (6, 263, 40, 'g'),   -- galletas sin gluten
 (6, 264, 60, 'g'),   -- compota de manzana
-(6, 173, 1, 'unidad'), -- infusión
+(6, 173, 200, 'ml'), -- infusión
 
 -- Desayuno 7
 (7, 259, 125, 'g'),  -- yogur vegetal
-(7, 37, 1, 'unidad'),-- plátano
+(7, 37, 120, 'g'),-- plátano
 (7, 156, 1, 'g'),    -- nuez moscada
 
 -- Desayuno 8
@@ -1340,12 +1343,12 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (8, 265, 50, 'g'),    -- tomate triturado
 
 -- Desayuno 9
-(9, 37, 1, 'unidad'),    -- plátano
+(9, 37, 120, 'g'),    -- plátano
 (9, 266, 200, 'ml'),     -- bebida vegetal de coco
 (9, 267, 30, 'g'),       -- avena sin gluten
 
 -- Desayuno 10
-(10, 268, 2, 'unidad'),  -- tostadas de maíz
+(10, 268, 30, 'g'),  -- tostadas de maíz
 (10, 261, 50, 'g'),       -- aguacate
 (10, 265, 50, 'g'),       -- tomate triturado
 
@@ -1361,7 +1364,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 -- Desayuno 13
 (13, 271, 30, 'g'),      -- tostadas de arroz
 (13, 272, 15, 'g'),      -- crema de almendras
-(13, 37, 1, 'unidad'),   -- plátano
+(13, 37, 120, 'g'),   -- plátano
 
 -- Desayuno 14: Diabetes tipo 2
 (14, 273, 60, 'g'),    -- pan_centeno
@@ -1370,7 +1373,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 
 -- Desayuno 15: Hipertensión
 (15, 127, 40, 'g'),    -- avena
-(15, 36, 1, 'unidad'), -- manzana
+(15, 36, 150, 'g'), -- manzana
 (15, 248, 1, 'g'),     -- canela
 
 -- Desayuno 16: Hipercolesterolemia
@@ -1393,7 +1396,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 
 -- Desayuno 20: Obesidad
 (20, 259, 125, 'g'),   -- yogur vegetal
-(20, 44, 1, 'unidad'), -- kiwi
+(20, 44, 75, 'g'), -- kiwi
 (20, 228, 10, 'g'),    -- semillas de lino
 
 -- Desayuno 21: Hipotiroidismo
@@ -1403,7 +1406,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 
 -- Desayuno 22: Colon irritable (SII)
 (22, 4, 60, 'g'),    -- calabacín
-(22, 276, 1, 'unidad'), -- huevo
+(22, 276, 60, 'g'), -- huevo
 (22, 260, 30, 'g'),    -- tostadas de arroz
 
 -- Desayuno 23: Alergia a frutos secos
@@ -1417,7 +1420,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (24, 228, 10, 'g'),    -- semillas de lino
 
 -- Desayuno 25: Alergia a pescado azul
-(25, 37, 1, 'unidad'), -- plátano
+(25, 37, 120, 'g'), -- plátano
 (25, 177, 200, 'ml'),  -- bebida de avena
 
 -- Desayuno 26: Alergia al huevo
@@ -1430,11 +1433,11 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (27, 7, 50, 'g'),    -- tomate
 
 -- 28. Diabetes tipo 2
-(28, 36, 1, 'unidad'),       -- manzana
+(28, 36, 150, 'g'),       -- manzana
 (28, 156, 15, 'g'),          -- nueces
 
 -- 29. Hipertensión
-(29, 37, 1, 'unidad'),       -- plátano
+(29, 37, 120, 'g'),       -- plátano
 (29, 271, 30, 'g'),          -- tostadas de arroz
 
 -- 30. Hipercolesterolemia
@@ -1446,7 +1449,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (31, 257, 40, 'g'),          -- hummus
 
 -- 32. Insuficiencia renal
-(32, 39, 1, 'unidad'),       -- pera
+(32, 39, 160, 'g'),       -- pera
 (32, 178, 200, 'ml'),        -- bebida vegetal de arroz
 
 -- 33. Anemia
@@ -1454,28 +1457,28 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (33, 155, 15, 'g'),          -- almendras
 
 -- 34. Obesidad
-(34, 44, 1, 'unidad'),       -- kiwi
+(34, 44, 75, 'g'),       -- kiwi
 (34, 259, 125, 'g'),         -- yogur vegetal sin azúcar
 
 -- 35. Intolerancia a la lactosa
 (35, 171, 150, 'ml'),        -- bebida de almendra
-(35, 37, 1, 'unidad'),       -- plátano
-(35, 44, 1, 'unidad'),       -- kiwi
+(35, 37, 120, 'g'),       -- plátano
+(35, 44, 75, 'g'),       -- kiwi
 
 -- 36. Hipotiroidismo
 (36, 278, 30, 'g'),          -- tostadas integrales
 (36, 261, 50, 'g'),           -- aguacate
 
 -- 37. Colon irritable
-(37, 37, 1, 'unidad'),       -- plátano
+(37, 37, 120, 'g'),       -- plátano
 (37, 259, 125, 'g'),         -- yogur vegetal sin FODMAP
 
 -- 38. Alergia a frutos secos
-(38, 74, 1, 'unidad'),      -- mandarina
+(38, 74, 120, 'g'),      -- mandarina
 (38, 130, 40, 'g'),          -- pan integral
 
 -- 39. Alergia al marisco
-(39, 36, 1, 'unidad'),       -- manzana
+(39, 36, 150, 'g'),       -- manzana
 (39, 259, 125, 'g'),         -- yogur vegetal
 
 -- 40. Alergia a pescado azul
@@ -1483,11 +1486,11 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (40, 44, 80, 'g'),         -- fresas
 
 -- 41. Alergia al huevo
-(41, 36, 1, 'unidad'),       -- manzana
+(41, 36, 150, 'g'),       -- manzana
 (41, 279, 30, 'g'),          -- tostadas sin huevo
 
 -- 42. Alergia a la soja
-(42, 37, 1, 'unidad'),       -- plátano
+(42, 37, 120, 'g'),       -- plátano
 (42, 130, 40, 'g');          -- pan integral
 
 INSERT INTO comida_modelo (
@@ -1712,7 +1715,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 -- 43. Diabetes tipo 2
 (43, 146, 60, 'g'),    -- arroz_integral
 (43, 280, 100, 'g'),   -- pisto
-(43, 276, 1, 'unidad'), -- huevo
+ (43, 276, 60, 'g'), -- huevo
 
 -- 44. Hipertensión
 (44, 281, 100, 'g'),   -- pollo
@@ -1731,7 +1734,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 
 -- 47. Insuficiencia renal
 (47, 145, 60, 'g'),    -- arroz blanco
-(47, 276, 1, 'unidad'),-- tortilla francesa
+(47, 276, 60, 'g'),-- tortilla francesa
 (47, 4, 80, 'g'),     -- calabacín
 
 -- 48. Anemia
@@ -1742,7 +1745,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 
 -- 49. Obesidad
 (49, 4, 100, 'g'),    -- calabacín
-(49, 276, 1, 'unidad'), -- huevo
+ (49, 276, 60, 'g'), -- huevo
 (49, 284, 50, 'g'),    -- ensalada verde
 
 -- 50. Intolerancia a la lactosa
@@ -1762,7 +1765,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 
 -- 53. Alergia a frutos secos
 (53, 282, 100, 'g'),   -- patata
-(53, 276, 2, 'unidad'), -- huevo
+ (53, 276, 120, 'g'), -- huevo
 (53, 280, 80, 'g'),    -- pisto
 (53, 284, 50, 'g'),    -- ensalada verde
 
@@ -1775,7 +1778,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 -- 55. Alergia a pescado azul
 (55, 149, 60, 'g'),    -- quinoa
 (55, 288, 100, 'g'),   -- verduras asadas
-(55, 276, 1, 'unidad'), -- huevo
+ (55, 276, 60, 'g'), -- huevo
 
 -- 56. Alergia al huevo
 (56, 289, 70, 'g'),    -- macarrones integrales
@@ -1789,7 +1792,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 
 -- 58. Diabetes tipo 2
 (58, 259, 125, 'g'),       -- yogur vegetal
-(58, 37, 1, 'unidad'),     -- plátano
+(59, 37, 120, 'g'),     -- plátano
 
 -- 59. Hipertensión
 (59, 43, 60, 'g'),         -- fresa
@@ -1804,7 +1807,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (61, 264, 60, 'g'),        -- compota de manzana
 
 -- 62. Insuficiencia renal
-(62, 37, 1, 'unidad'),     -- plátano
+(62, 37, 120, 'g'),     -- plátano
 (62, 178, 150, 'ml'),      -- bebida vegetal de arroz
 
 -- 63. Anemia
@@ -1814,11 +1817,11 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 
 -- 64. Obesidad
 (64, 259, 125, 'g'),       -- yogur vegetal sin azúcar
-(64, 44, 1, 'unidad'),     -- kiwi
+(64, 44, 75, 'g'),     -- kiwi
 
 -- 65. Intolerancia a la lactosa
 (65, 43, 50, 'g'),         -- fresa
-(65, 37, 1, 'unidad'),     -- plátano
+(65, 37, 120, 'g'),     -- plátano
 (65, 177, 150, 'ml'),      -- bebida de avena
 
 -- 66. Hipotiroidismo
@@ -1831,7 +1834,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (67, 57, 40, 'g'),         -- arándanos
 
 -- 68. Alergia a frutos secos
-(68, 37, 1, 'unidad'),     -- plátano
+(68, 37, 120, 'g'),     -- plátano
 (68, 43, 50, 'g'),         -- fresa
 (68, 178, 150, 'ml'),      -- bebida vegetal de arroz
 (68, 130, 30, 'g'),      -- pan integral
@@ -1839,7 +1842,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 -- 69. Alergia al marisco
 (69, 130, 30, 'g'),        -- pan integral
 (69, 261, 30, 'g'),         -- aguacate
-(69, 37, 1, 'unidad'),     -- plátano
+(69, 37, 120, 'g'),     -- plátano
 
 -- 70. Alergia a pescado azul
 (70, 43, 60, 'g'),         -- fresa
@@ -1851,12 +1854,12 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 
 -- 72. Alergia a la soja
 (72, 271, 30, 'g'),        -- tostadas de arroz
-(72, 37, 1, 'unidad'),     -- plátano
+(72, 37, 120, 'g'),     -- plátano
 (72, 290, 15, 'g'),       -- crema de girasol
 
 -- 73. Diabetes tipo 2
 (73, 4, 100, 'g'),        -- calabacín
-(73, 276, 1, 'unidad'),     -- huevo
+ (73, 276, 60, 'g'),     -- huevo
 (73, 278, 30, 'g'),        -- tostadas integrales
 
 -- 74. Hipertensión
@@ -1866,7 +1869,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 
 -- 75. Hipercolesterolemia
 (75, 292, 120, 'g'),       -- verduras al vapor
-(75, 276, 1, 'unidad'),    -- tortilla francesa
+(75, 276, 60, 'g'),    -- tortilla francesa
 (75, 130, 30, 'g'),        -- pan integral
 
 -- 76. Celiaquía
@@ -1876,12 +1879,12 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 
 -- 77. Insuficiencia renal
 (77, 145, 60, 'g'),        -- arroz blanco
-(77, 276, 1, 'unidad'),    -- tortilla francesa
+(77, 276, 60, 'g'),    -- tortilla francesa
 (77, 4, 60, 'g'),         -- calabacín
 
 -- 78. Anemia
 (78, 1, 80, 'g'),          -- espinacas
-(78, 276, 1, 'unidad'),     -- huevo
+ (78, 276, 60, 'g'),     -- huevo
 (78, 130, 30, 'g'),        -- pan integral
 
 -- 79. Obesidad
@@ -1906,7 +1909,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (82, 145, 60, 'g'),        -- arroz blanco
 
 -- 83. Alergia a frutos secos
-(83, 276, 2, 'unidad'),     -- huevo
+ (83, 276, 60, 'g'),     -- huevo
 (83, 282, 100, 'g'),       -- patata
 (83, 284, 50, 'g'),        -- ensalada verde
 
@@ -1917,7 +1920,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (84, 4, 60, 'g'),         -- calabacín
 
 -- 85. Alergia a pescado azul
-(85, 276, 1, 'unidad'),    -- tortilla francesa
+(85, 276, 60, 'g'),    -- tortilla francesa
 (85, 286, 100, 'g'),       -- verduras salteadas
 (85, 130, 30, 'g'),        -- pan integral
 
