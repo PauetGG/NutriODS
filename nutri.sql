@@ -1934,4 +1934,4 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (87, 3, 60, 'g'),         -- zanahoria  
 (87, 287, 80, 'g'),        -- calabaza  
 (87, 130, 30, 'g'),        -- pan integral  
-(87, 37, 120, 'g')      -- plátano
+(87, 37, 1, 'unidad')      -- plátano
