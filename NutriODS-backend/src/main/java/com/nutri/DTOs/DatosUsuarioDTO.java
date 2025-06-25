@@ -2,6 +2,7 @@ package com.nutri.DTOs;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -39,14 +40,9 @@ public class DatosUsuarioDTO {
     @Size(max = 255, message = "El objetivo no puede superar los 255 caracteres")
     private String objetivo;
 
-    @Size(max = 255, message = "Las alergias no pueden superar los 255 caracteres")
-    private String alergias;
-
-    @Size(max = 255, message = "Las enfermedades no pueden superar los 255 caracteres")
-    private String enfermedades;
-
-    @Size(max = 255, message = "Las preferencias no pueden superar los 255 caracteres")
-    private String preferencias;
+    private List<String> alergias;
+    private List<String> enfermedades;
+    private List<String> preferencias;
 
     @Pattern(
         regexp = "sedentario|ligero|moderado|intenso|muy intenso",

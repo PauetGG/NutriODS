@@ -1,22 +1,37 @@
 package com.nutri.controllers;
 
-import com.nutri.entities.Dieta;
-import com.nutri.services.DietaService;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.nutri.DTOs.GenerarDietaRequest;
+import com.nutri.entities.Dieta;
+import com.nutri.entities.Usuario;
+import com.nutri.services.DietaService;
+import com.nutri.services.UsuarioService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/dietas")
 public class DietaController {
 
     private final DietaService dietaService;
-
-    public DietaController(DietaService dietaService) {
+    private final UsuarioService usuarioService;
+    
+    public DietaController(DietaService dietaService, UsuarioService usuarioService) {
         this.dietaService = dietaService;
+        this.usuarioService = usuarioService;
     }
+    
 
     @GetMapping
     public List<Dieta> getAll() {
@@ -54,5 +69,20 @@ public class DietaController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+    @PostMapping("/generar")
+    public ResponseEntity<Dieta> generarDieta(@RequestBody GenerarDietaRequest request) {
+        // Aquí deberías obtener el usuario por su ID, por ejemplo:
+        Usuario usuario = usuarioService.getUsuarioById(request.getUsuarioId());
+        if (usuario == null) {
+            return ResponseEntity.notFound().build();
+        }
+        Dieta dieta = dietaService.generarDietaParaUsuario(
+            usuario,
+            request.getNombreDieta(),
+            request.getDescripcion(),
+            request.getNumeroComidasDia()
+        );
+        return ResponseEntity.ok(dieta);
     }
 }
