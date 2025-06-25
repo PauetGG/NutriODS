@@ -7,7 +7,7 @@ CREATE TABLE usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     correo VARCHAR(100) NOT NULL UNIQUE,
     contraseña VARCHAR(255) NOT NULL,
-    nombre VARCHAR(50) ,
+    nombre VARCHAR(50) NOT NULL,
     apellidos VARCHAR(100),
     altura DECIMAL(5,2),
     peso DECIMAL(5,2),
@@ -535,7 +535,9 @@ INSERT INTO ingrediente (nombre, descripcion, calorias, proteinas, grasas, carbo
 ('Pasta integral', 'Pasta elaborada con trigo integral, rica en fibra.', 350, 12.0, 2.0, 68.0, 6.5, 2.0, 'cereal'),
 ('Crema de girasol', 'Pasta vegetal elaborada con semillas de girasol.', 595, 18.0, 52.0, 20.0, 6.0, 2.0, 'semilla'),
 ('Pescado blanco', 'Pescado bajo en grasa y alto en proteínas como merluza.', 90, 20.0, 1.5, 0.0, 0.0, 0.0, 'pescado'),
-('Verduras al vapor', 'Mezcla cocida al vapor de brócoli, coliflor y zanahoria.', 40, 2.0, 0.5, 6.5, 3.0, 3.5, 'verdura');
+('Verduras al vapor', 'Mezcla cocida al vapor de brócoli, coliflor y zanahoria.', 40, 2.0, 0.5, 6.5, 3.0, 3.5, 'verdura'),
+('Pimiento verde', 'Verdura rica en vitamina C y antioxidantes, de sabor suave.', 20, 0.9, 0.2, 4.7, 1.7, 2.4, 'verdura'),
+('Cebolla morada', 'Variedad de cebolla con sabor más suave y notas dulces.', 40, 1.1, 0.1, 9.3, 1.7, 4.5, 'verdura');
 
 INSERT INTO glosario (termino, definicion, fuente, categoria, imagen_url, visible)
 VALUES
@@ -1934,7 +1936,7 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (87, 3, 60, 'g'),         -- zanahoria  
 (87, 287, 80, 'g'),        -- calabaza  
 (87, 130, 30, 'g'),        -- pan integral  
-(87, 37, 120, 'g')      -- plátano
+(87, 37, 120, 'g');      -- plátano
 
 INSERT INTO comida_modelo (
     nombre, tipo_comida, calorias_totales,
@@ -2223,7 +2225,7 @@ TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE);
 
-INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, g) VALUES
+INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
 -- 88. Ensalada de quinoa y garbanzos
 (88, 149, 60, 'g'),  -- Quinoa
 (88, 97, 100, 'g'),  -- Garbanzos cocidos
@@ -2942,7 +2944,7 @@ TRUE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE);
 
-INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, g) VALUES
+INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
 -- 128. Tostadas de pan de centeno con queso fresco y miel
 (128, 273, 60, 'g'), -- pan de centeno
 (128, 81, 40, 'g'),  -- Queso fresco
@@ -3313,6 +3315,8 @@ INSERT INTO comida_modelo (
     apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
     apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
     sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+) VALUES
     -- 201. Wok de verduras con fideos de arroz
 ('Wok de verduras con fideos de arroz', 'comida', 420,
  TRUE, TRUE, TRUE, TRUE, TRUE,
@@ -3914,7 +3918,7 @@ INSERT INTO comida_modelo (
  FALSE, FALSE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE);
 
-INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, g) VALUES
+INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
 -- 201. Wok de verduras con fideos de arroz
 (201, 292, 150, 'g'), -- verduras al vapor
 (201, 152, 80, 'g'), -- Fideos de arroz
@@ -4823,7 +4827,15 @@ INSERT INTO comida_modelo (
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE);
+ 
+ INSERT INTO comida_modelo (
+    nombre, tipo_comida, calorias_totales,
+    apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
+    apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
+    sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+) VALUES
 -- 384. Smoothie de kiwi, espinaca y bebida de avena
 ('Smoothie de kiwi, espinaca y bebida de avena', 'merienda', 200,
  TRUE, TRUE, TRUE, TRUE, TRUE,
@@ -4925,8 +4937,7 @@ INSERT INTO comida_modelo (
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE),
-;
+ TRUE, TRUE, TRUE, FALSE);
 
 INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
 -- 301. Bowl de quinoa arcoíris con verduras y huevo
@@ -5344,5 +5355,4 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 -- 400. Yogur natural con mango y semillas de chía
 (400, 79, 125, 'g'), -- yogur natural
 (400, 47, 40, 'g'), -- mango
-(400, 227, 10, 'g'), -- semillas de chía
-; 
+(400, 227, 10, 'g') -- semillas de chía; 
