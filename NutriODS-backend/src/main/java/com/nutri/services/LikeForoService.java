@@ -1,11 +1,13 @@
 package com.nutri.services;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import com.nutri.entities.LikeForo;
 import com.nutri.entities.LikeForoId;
 import com.nutri.repositories.LikeForoRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class LikeForoService {
@@ -26,5 +28,20 @@ public class LikeForoService {
 
     public void deleteById(LikeForoId id) {
         likeRepository.deleteById(id);
+    }
+    public long contarLikesPorTema(Integer temaId) {
+        return likeRepository.countByTemaId(temaId);
+    }
+
+    public boolean existeLike(Integer usuarioId, Integer temaId) {
+        return likeRepository.existsByUsuarioIdAndTemaId(usuarioId, temaId);
+    }
+
+    public List<LikeForo> findByUsuario(Integer usuarioId) {
+        return likeRepository.findByUsuarioId(usuarioId);
+    }
+
+    public List<LikeForo> findByTema(Integer temaId) {
+        return likeRepository.findByTemaId(temaId);
     }
 }

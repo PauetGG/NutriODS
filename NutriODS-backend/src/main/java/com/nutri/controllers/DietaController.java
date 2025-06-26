@@ -1,5 +1,6 @@
 package com.nutri.controllers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nutri.DTOs.GenerarDietaRequest;
@@ -84,5 +86,21 @@ public class DietaController {
             request.getNumeroComidasDia()
         );
         return ResponseEntity.ok(dieta);
+    }
+    @GetMapping("/usuario/{usuarioId}")
+    public List<Dieta> findByUsuario(@PathVariable Integer usuarioId) {
+        return dietaService.findByUsuario(usuarioId);
+    }
+
+    @GetMapping("/fecha")
+    public List<Dieta> findByCreatedBetween(
+            @RequestParam("start") String start,
+            @RequestParam("end") String end) {
+        return dietaService.findByCreatedBetween(LocalDateTime.parse(start), LocalDateTime.parse(end));
+    }
+
+    @GetMapping("/count/{usuarioId}")
+    public long countByUsuario(@PathVariable Integer usuarioId) {
+        return dietaService.countByUsuario(usuarioId);
     }
 }

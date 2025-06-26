@@ -29,4 +29,11 @@ public class ComidaIngredienteService {
     public void deleteById(Integer id) {
         repository.deleteById(id);
     }
+    public List<ComidaIngrediente> findByComidaModelo(Integer comidaModeloId) {
+        return repository.findByComidaModeloId(comidaModeloId);
+    }
+
+    public List<ComidaIngrediente> findByIngrediente(Integer ingredienteId) {
+        return repository.findByIngredienteId(ingredienteId);
+    }
 }

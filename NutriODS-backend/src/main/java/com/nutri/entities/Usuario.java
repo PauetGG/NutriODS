@@ -44,7 +44,12 @@ public class Usuario {
     @Size(min = 4, max = 255, message = "La contraseña debe tener entre 4 y 255 caracteres")
     @Column(nullable = false, length = 255)
     private String contraseña;
+    
+    @NotBlank(message = "El username es obligatorio")
+    @Column(nullable = false, length = 255)
+    private String username;
 
+    @NotBlank(message = "El nombre es obligatorio")
     @Size(max = 50, message = "El nombre no debe superar los 50 caracteres")
     @Column(length = 50)
     private String nombre;

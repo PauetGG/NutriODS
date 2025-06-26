@@ -50,4 +50,29 @@ public class GlosarioController {
             return ResponseEntity.ok("Término eliminado correctamente");
         }).orElse(ResponseEntity.notFound().build());
     }
+    @GetMapping("/categoria/{categoria}")
+    public List<Glosario> findByCategoria(@PathVariable Glosario.Categoria categoria) {
+        return service.findByCategoria(categoria);
+    }
+
+    @GetMapping("/visible")
+    public List<Glosario> findAllVisible() {
+        return service.findAllVisible();
+    }
+
+    @GetMapping("/search")
+    public List<Glosario> searchByPalabra(@RequestParam("palabra") String palabra) {
+        return service.searchByPalabra(palabra);
+    }
+
+    @GetMapping("/count")
+    public long countAll() {
+        return service.countAll();
+    }
+
+    @PutMapping("/cambiar-visibilidad/{id}")
+    public ResponseEntity<Glosario> cambiarVisibilidad(@PathVariable Integer id,
+                                                        @RequestParam("visible") boolean visible) {
+        return ResponseEntity.ok(service.cambiarVisibilidad(id, visible));
+    }
 }

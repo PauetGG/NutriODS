@@ -1,12 +1,14 @@
 package com.nutri.services;
 
-import com.nutri.entities.LikeArticulo;
-import com.nutri.entities.LikeArticuloId;
-import com.nutri.repositories.LikeArticuloRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.nutri.entities.LikeArticulo;
+import com.nutri.entities.LikeArticuloId;
+import com.nutri.repositories.LikeArticuloRepository;
 
 @Service
 public class LikeArticuloService {
@@ -24,5 +26,20 @@ public class LikeArticuloService {
 
     public void deleteById(LikeArticuloId id) {
         likeRepository.deleteById(id);
+    }
+    public long contarLikesPorArticulo(Integer articuloId) {
+        return likeRepository.countByArticuloId(articuloId);
+    }
+
+    public boolean existeLike(Integer usuarioId, Integer articuloId) {
+        return likeRepository.existsByUsuarioIdAndArticuloId(usuarioId, articuloId);
+    }
+
+    public List<LikeArticulo> findByUsuario(Integer usuarioId) {
+        return likeRepository.findByUsuarioId(usuarioId);
+    }
+
+    public List<LikeArticulo> findByArticulo(Integer articuloId) {
+        return likeRepository.findByArticuloId(articuloId);
     }
 }

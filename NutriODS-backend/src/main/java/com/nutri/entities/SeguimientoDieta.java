@@ -1,13 +1,27 @@
 package com.nutri.entities;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "seguimiento_dieta")
@@ -22,12 +36,15 @@ public class SeguimientoDieta {
     @NotNull(message = "La dieta es obligatoria")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dieta_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Dieta dieta;
 
-    @NotNull(message = "La receta es obligatoria")
+    @NotNull(message = "La comida modelo es obligatoria")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receta_id", nullable = false)
-    private Receta receta;
+    @JoinColumn(name = "comida_modelo_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private ComidaModelo comidaModelo;
+
 
     @NotNull(message = "El día de la semana es obligatorio")
     @Enumerated(EnumType.STRING)

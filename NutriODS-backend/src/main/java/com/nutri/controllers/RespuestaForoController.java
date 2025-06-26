@@ -50,4 +50,31 @@ public class RespuestaForoController {
             return ResponseEntity.noContent().build();
         }).orElse(ResponseEntity.notFound().build());
     }
+    @GetMapping("/tema/{temaId}")
+    public List<RespuestaForo> findByTema(@PathVariable Integer temaId) {
+        return service.findByTema(temaId);
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public List<RespuestaForo> findByUsuario(@PathVariable Integer usuarioId) {
+        return service.findByUsuario(usuarioId);
+    }
+
+    @PostMapping("/{id}/incrementar-visitas")
+    public void incrementarVisitas(@PathVariable Integer id) {
+        service.incrementarVisitas(id);
+    }
+
+    @GetMapping("/{id}/count-likes")
+    public long contarLikes(@PathVariable Integer id) {
+        return service.contarLikes(id);
+    }
+
+    @PutMapping("/{id}/editar-contenido")
+    public ResponseEntity<RespuestaForo> actualizarContenido(
+            @PathVariable Integer id,
+            @RequestBody String nuevoContenido) {
+        RespuestaForo respuesta = service.actualizarContenido(id, nuevoContenido);
+        return ResponseEntity.ok(respuesta);
+    }
 }

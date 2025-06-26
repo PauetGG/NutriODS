@@ -1,6 +1,7 @@
 package com.nutri.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -202,5 +203,16 @@ public class DietaService {
     
     public List<Dieta> findAllConUsuario() {
         return dietaRepository.findAllConUsuario();
+    }
+    public List<Dieta> findByUsuario(Integer usuarioId) {
+        return dietaRepository.findByUsuarioId(usuarioId);
+    }
+
+    public List<Dieta> findByCreatedBetween(LocalDateTime start, LocalDateTime end) {
+        return dietaRepository.findByCreatedBetween(start, end);
+    }
+
+    public long countByUsuario(Integer usuarioId) {
+        return dietaRepository.countByUsuarioId(usuarioId);
     }
 }

@@ -1,8 +1,10 @@
 package com.nutri.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,8 +56,36 @@ public class UsuarioController {
     public void eliminarUsuario(@PathVariable Integer id) {
         usuarioService.eliminarUsuario(id);
     }
+    
     @PutMapping("/{id}/datos")
     public Usuario actualizarDatosPersonales(@PathVariable Integer id, @Valid @RequestBody DatosUsuarioDTO dto) {
         return usuarioService.actualizarDatosUsuario(id, dto);
+    }
+
+    @GetMapping("/correo/{correo}")
+    public ResponseEntity<Usuario> findByCorreo(@PathVariable String correo) {
+        Optional<Usuario> usuario = usuarioService.findByCorreo(correo);
+        return usuario.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/username/{username}")
+    public ResponseEntity<Usuario> findByUsername(@PathVariable String username) {
+        Optional<Usuario> usuario = usuarioService.findByUsername(username);
+        return usuario.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/count")
+    public long contarUsuarios() {
+        return usuarioService.contarUsuarios();
+    }
+
+    @GetMapping("/genero/{genero}")
+    public List<Usuario> findByGenero(@PathVariable Usuario.Genero genero) {
+        return usuarioService.findByGenero(genero);
+    }
+
+    @GetMapping("/actividad/{actividadFisica}")
+    public List<Usuario> findByActividadFisica(@PathVariable Usuario.ActividadFisica actividadFisica) {
+        return usuarioService.findByActividadFisica(actividadFisica);
     }
 }

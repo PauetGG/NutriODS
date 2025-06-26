@@ -40,4 +40,23 @@ public class ComentarioArticuloController {
             return ResponseEntity.ok().body("Comentario eliminado correctamente");
         }).orElse(ResponseEntity.notFound().build());
     }
+    @GetMapping("/articulo/{articuloId}")
+    public List<ComentarioArticulo> findByArticulo(@PathVariable Integer articuloId) {
+        return service.findByArticulo(articuloId);
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public List<ComentarioArticulo> findByUsuario(@PathVariable Integer usuarioId) {
+        return service.findByUsuario(usuarioId);
+    }
+
+    @GetMapping("/articulo/{articuloId}/count")
+    public long countByArticulo(@PathVariable Integer articuloId) {
+        return service.countByArticulo(articuloId);
+    }
+
+    @DeleteMapping("/articulo/{articuloId}")
+    public void deleteByArticulo(@PathVariable Integer articuloId) {
+        service.deleteByArticulo(articuloId);
+    }
 }

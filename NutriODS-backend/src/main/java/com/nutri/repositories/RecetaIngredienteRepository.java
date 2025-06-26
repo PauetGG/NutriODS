@@ -1,12 +1,16 @@
 package com.nutri.repositories;
 
-import com.nutri.entities.RecetaIngrediente;
-import com.nutri.entities.RecetaIngredienteId;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.nutri.entities.RecetaIngrediente;
+import com.nutri.entities.RecetaIngredienteId;
+
 @Repository
 public interface RecetaIngredienteRepository extends JpaRepository<RecetaIngrediente, RecetaIngredienteId> {
-    // Puedes buscar todos los ingredientes de una receta concreta
-    // List<RecetaIngrediente> findByRecetaId(Integer recetaId);
+	  	List<RecetaIngrediente> findByRecetaId(Integer recetaId);
+
+	    List<RecetaIngrediente> findByIngredienteId(Integer ingredienteId);
 }

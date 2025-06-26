@@ -1,10 +1,16 @@
 package com.nutri.repositories;
 
-import com.nutri.entities.Articulo;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.nutri.entities.Articulo;
+
 @Repository
 public interface ArticuloRepository extends JpaRepository<Articulo, Integer> {
-    // Ejemplo: List<Articulo> findByCategoria(Articulo.Categoria categoria);
+	List<Articulo> findByCategoria(Articulo.Categoria categoria);
+    List<Articulo> findByVisible(boolean visible);
+    List<Articulo> findByTituloContainingIgnoreCase(String keyword);
+    long countByCategoria(Articulo.Categoria categoria);
 }

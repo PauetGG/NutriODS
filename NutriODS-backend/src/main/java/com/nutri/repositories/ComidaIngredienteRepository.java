@@ -1,10 +1,14 @@
 package com.nutri.repositories;
 
-import com.nutri.entities.ComidaIngrediente;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.nutri.entities.ComidaIngrediente;
+
 @Repository
 public interface ComidaIngredienteRepository extends JpaRepository<ComidaIngrediente, Integer> {
-    // También puedes filtrar por comidaModelo o ingrediente si quieres añadir métodos
+	List<ComidaIngrediente> findByComidaModeloId(Integer comidaModeloId);
+    List<ComidaIngrediente> findByIngredienteId(Integer ingredienteId);
 }

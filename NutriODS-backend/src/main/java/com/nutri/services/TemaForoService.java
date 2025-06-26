@@ -31,4 +31,29 @@ public class TemaForoService {
     public void deleteById(Integer id) {
         temaRepository.deleteById(id);
     }
+    public void incrementarVisitas(Integer id) {
+        TemaForo tema = temaRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Tema no encontrado"));
+        tema.setVisitas(tema.getVisitas() + 1);
+        temaRepository.save(tema);
+    }
+
+    public void incrementarRespuestas(Integer id) {
+        TemaForo tema = temaRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Tema no encontrado"));
+        tema.setNumRespuestas(tema.getNumRespuestas() + 1);
+        temaRepository.save(tema);
+    }
+
+    public List<TemaForo> findByUsuario(Integer usuarioId) {
+        return temaRepository.findByUsuarioId(usuarioId);
+    }
+
+    public List<TemaForo> findByCategoria(TemaForo.Categoria categoria) {
+        return temaRepository.findByCategoria(categoria);
+    }
+
+    public List<TemaForo> searchByPalabra(String palabra) {
+        return temaRepository.findByTituloContainingIgnoreCaseOrContenidoContainingIgnoreCase(palabra, palabra);
+    }
 }

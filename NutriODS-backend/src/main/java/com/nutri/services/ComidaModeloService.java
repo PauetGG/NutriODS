@@ -61,4 +61,55 @@ public class ComidaModeloService {
         macros.put("calorias", calorias);
         return macros;
     }
+    
+    public List<ComidaModelo> findByTipoComida(ComidaModelo.TipoComida tipoComida) {
+        return repository.findByTipoComida(tipoComida);
+    }
+
+    public List<ComidaModelo> searchByNombre(String nombre) {
+        return repository.findByNombreContainingIgnoreCase(nombre);
+    }
+
+    public List<ComidaModelo> findByCaloriasRango(int min, int max) {
+        return repository.findByCaloriasTotalesBetween(min, max);
+    }
+
+    public List<ComidaModelo> findAptasPara(String enfermedad) {
+        return repository.findAll()
+                .stream()
+                .filter(comida -> {
+                    switch (enfermedad.toLowerCase()) {
+                        case "diabetes": return comida.getAptaDiabetes();
+                        case "hipertension": return comida.getAptaHipertension();
+                        case "hipercolesterolemia": return comida.getAptaHipercolesterolemia();
+                        case "celiacos": return comida.getAptaCeliacos();
+                        case "renal": return comida.getAptaRenal();
+                        case "anemia": return comida.getAptaAnemia();
+                        case "obesidad": return comida.getAptaObesidad();
+                        case "hipotiroidismo": return comida.getAptaHipotiroidismo();
+                        case "colon irritable": return comida.getAptaColonIrritable();
+                        default: return true;
+                    }
+                })
+                .toList();
+    }
+
+    public List<ComidaModelo> findSinAlergia(String alergia) {
+        return repository.findAll()
+                .stream()
+                .filter(comida -> {
+                    switch (alergia.toLowerCase()) {
+                        case "lactosa": return comida.getSinLactosa();
+                        case "frutos secos": return comida.getSinFrutosSecos();
+                        case "marisco": return comida.getSinMarisco();
+                        case "pescado azul": return comida.getSinPescadoAzul();
+                        case "huevo": return comida.getSinHuevo();
+                        case "soja": return comida.getSinSoja();
+                        case "legumbres": return comida.getSinLegumbres();
+                        case "sésamo": return comida.getSinSesamo();
+                        default: return true;
+                    }
+                })
+                .toList();
+    }
 }

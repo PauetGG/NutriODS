@@ -14,12 +14,6 @@ import lombok.Data;
 @Data
 public class DatosUsuarioDTO {
 
-    @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
-    private String nombre;
-
-    @Size(min = 2, max = 100, message = "Los apellidos deben tener entre 2 y 100 caracteres")
-    private String apellidos;
-
     @DecimalMin(value = "0.5", inclusive = true, message = "La altura debe ser al menos 0.5 metros")
     @DecimalMax(value = "2.5", inclusive = true, message = "La altura no puede superar los 2.5 metros")
     private BigDecimal altura;

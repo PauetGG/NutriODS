@@ -29,4 +29,19 @@ public class ComentarioArticuloService {
     public void deleteById(Integer id) {
         comentarioRepository.deleteById(id);
     }
+    public List<ComentarioArticulo> findByArticulo(Integer articuloId) {
+        return comentarioRepository.findByArticuloId(articuloId);
+    }
+
+    public List<ComentarioArticulo> findByUsuario(Integer usuarioId) {
+        return comentarioRepository.findByUsuarioId(usuarioId);
+    }
+
+    public long countByArticulo(Integer articuloId) {
+        return comentarioRepository.countByArticuloId(articuloId);
+    }
+
+    public void deleteByArticulo(Integer articuloId) {
+        comentarioRepository.deleteByArticuloId(articuloId);
+    }
 }

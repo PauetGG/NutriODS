@@ -86,8 +86,6 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
-        usuario.setNombre(dto.getNombre());
-        usuario.setApellidos(dto.getApellidos());
         usuario.setAltura(dto.getAltura());
         usuario.setPeso(dto.getPeso());
         usuario.setFechaNacimiento(dto.getFechaNacimiento());
@@ -99,5 +97,25 @@ public class UsuarioService {
         usuario.setActividadFisica(Usuario.ActividadFisica.valueOf(dto.getActividad().replace(" ", "_")));
         return usuarioRepository.save(usuario);
     }
+    
+    public Optional<Usuario> findByUsername(String username) {
+        return usuarioRepository.findByUsername(username);
+    }
 
+    public boolean existsByCorreo(String correo) {
+        return usuarioRepository.existsByCorreo(correo);
+    }
+
+
+    public long contarUsuarios() {
+        return usuarioRepository.count();
+    }
+
+    public List<Usuario> findByGenero(Usuario.Genero genero) {
+        return usuarioRepository.findByGenero(genero);
+    }
+
+    public List<Usuario> findByActividadFisica(Usuario.ActividadFisica actividadFisica) {
+        return usuarioRepository.findByActividadFisica(actividadFisica);
+    }
 }

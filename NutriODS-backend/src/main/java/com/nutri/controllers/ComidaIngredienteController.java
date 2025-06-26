@@ -34,4 +34,13 @@ public class ComidaIngredienteController {
     public void delete(@PathVariable Integer id) {
         service.deleteById(id);
     }
+    @GetMapping("/comida-modelo/{comidaModeloId}")
+    public List<ComidaIngrediente> findByComidaModelo(@PathVariable Integer comidaModeloId) {
+        return service.findByComidaModelo(comidaModeloId);
+    }
+
+    @GetMapping("/ingrediente/{ingredienteId}")
+    public List<ComidaIngrediente> findByIngrediente(@PathVariable Integer ingredienteId) {
+        return service.findByIngrediente(ingredienteId);
+    }
 }

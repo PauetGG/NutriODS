@@ -29,4 +29,26 @@ public class GlosarioService {
     public void deleteById(Integer id) {
         repository.deleteById(id);
     }
+    public List<Glosario> findByCategoria(Glosario.Categoria categoria) {
+        return repository.findByCategoria(categoria);
+    }
+
+    public List<Glosario> findAllVisible() {
+        return repository.findByVisibleTrue();
+    }
+
+    public List<Glosario> searchByPalabra(String palabra) {
+        return repository.findByTerminoContainingIgnoreCaseOrDefinicionContainingIgnoreCase(palabra, palabra);
+    }
+
+    public long countAll() {
+        return repository.count();
+    }
+
+    public Glosario cambiarVisibilidad(Integer id, boolean visible) {
+        Glosario glosario = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Glosario no encontrado"));
+        glosario.setVisible(visible);
+        return repository.save(glosario);
+    }
 }

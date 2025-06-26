@@ -121,7 +121,7 @@ CREATE TABLE receta_ingrediente (
 CREATE TABLE seguimiento_dieta (
     id INT AUTO_INCREMENT PRIMARY KEY,
     dieta_id INT NOT NULL,
-    receta_id INT NOT NULL,
+    comida_modelo_id INT NOT NULL,
     dia_semana ENUM('lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo') NOT NULL,
     comida ENUM('desayuno', 'almuerzo', 'comida', 'merienda', 'cena') NOT NULL,
     hora TIME,
@@ -131,8 +131,8 @@ CREATE TABLE seguimiento_dieta (
     fecha DATE,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (dieta_id) REFERENCES dieta(id) ON DELETE CASCADE,
-    FOREIGN KEY (receta_id) REFERENCES receta(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (comida_modelo_id) REFERENCES comida_modelo(id) ON DELETE CASCADE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE tema_foro (
     id INT AUTO_INCREMENT PRIMARY KEY,

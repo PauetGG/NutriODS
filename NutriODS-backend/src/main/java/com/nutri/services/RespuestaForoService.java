@@ -31,4 +31,31 @@ public class RespuestaForoService {
     public void deleteById(Integer id) {
         respuestaRepository.deleteById(id);
     }
+    public List<RespuestaForo> findByTema(Integer temaId) {
+        return respuestaRepository.findByTemaId(temaId);
+    }
+
+    public List<RespuestaForo> findByUsuario(Integer usuarioId) {
+        return respuestaRepository.findByUsuarioId(usuarioId);
+    }
+
+    public void incrementarVisitas(Integer id) {
+        RespuestaForo respuesta = respuestaRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Respuesta no encontrada"));
+        respuesta.setVisitas(respuesta.getVisitas() + 1);
+        respuestaRepository.save(respuesta);
+    }
+
+    public long contarLikes(Integer id) {
+        RespuestaForo respuesta = respuestaRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Respuesta no encontrada"));
+        return respuesta.getLikes().size();
+    }
+
+    public RespuestaForo actualizarContenido(Integer id, String nuevoContenido) {
+        RespuestaForo respuesta = respuestaRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Respuesta no encontrada"));
+        respuesta.setContenido(nuevoContenido);
+        return respuestaRepository.save(respuesta);
+    }
 }

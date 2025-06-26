@@ -1,5 +1,6 @@
 package com.nutri.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,5 +32,20 @@ public class IngredienteService {
 
     public void deleteById(Integer id) {
         ingredienteRepository.deleteById(id);
+    }
+    public List<Ingrediente> findByTipo(Ingrediente.TipoIngrediente tipo) {
+        return ingredienteRepository.findByTipo(tipo);
+    }
+
+    public List<Ingrediente> searchByNombre(String nombre) {
+        return ingredienteRepository.findByNombreContainingIgnoreCase(nombre);
+    }
+
+    public List<Ingrediente> findByCaloriasMenorIgual(Integer maxCalorias) {
+        return ingredienteRepository.findByCaloriasLessThanEqual(maxCalorias);
+    }
+
+    public List<Ingrediente> findByProteinasBetween(BigDecimal min, BigDecimal max) {
+        return ingredienteRepository.findByProteinasBetween(min, max);
     }
 }

@@ -1,10 +1,15 @@
 package com.nutri.repositories;
 
-import com.nutri.entities.ComidaModelo;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.nutri.entities.ComidaModelo;
+
 @Repository
 public interface ComidaModeloRepository extends JpaRepository<ComidaModelo, Integer> {
-    // Aquí puedes añadir métodos personalizados si los necesitas
+	List<ComidaModelo> findByTipoComida(ComidaModelo.TipoComida tipoComida);
+    List<ComidaModelo> findByNombreContainingIgnoreCase(String nombre);
+    List<ComidaModelo> findByCaloriasTotalesBetween(int min, int max);
 }

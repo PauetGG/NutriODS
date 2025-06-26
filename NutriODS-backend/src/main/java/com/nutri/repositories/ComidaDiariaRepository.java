@@ -1,10 +1,18 @@
 package com.nutri.repositories;
 
-import com.nutri.entities.ComidaDiaria;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.nutri.entities.ComidaDiaria;
+import com.nutri.entities.ComidaModelo;
+
 @Repository
 public interface ComidaDiariaRepository extends JpaRepository<ComidaDiaria, Integer> {
-    // Puedes buscar por dieta o día si lo necesitas más adelante
-}
+	 	List<ComidaDiaria> findByDietaId(Integer dietaId);
+	    List<ComidaDiaria> findByDiaSemana(ComidaDiaria.DiaSemana diaSemana);
+	    List<ComidaDiaria> findByTipoComida(ComidaModelo.TipoComida tipoComida);
+	    List<ComidaDiaria> findByDietaIdAndDiaSemana(Integer dietaId, ComidaDiaria.DiaSemana diaSemana);
+	}
+

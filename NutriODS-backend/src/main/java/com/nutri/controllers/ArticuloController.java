@@ -50,4 +50,43 @@ public class ArticuloController {
             return ResponseEntity.ok().body("Artículo eliminado correctamente");
         }).orElse(ResponseEntity.notFound().build());
     }
+    @GetMapping("/categoria/{categoria}")
+    public List<Articulo> findByCategoria(@PathVariable Articulo.Categoria categoria) {
+        return service.findByCategoria(categoria);
+    }
+
+    @GetMapping("/visible/{visible}")
+    public List<Articulo> findByVisible(@PathVariable boolean visible) {
+        return service.findByVisible(visible);
+    }
+
+    @GetMapping("/search")
+    public List<Articulo> searchByTitulo(@RequestParam String keyword) {
+        return service.searchByTitulo(keyword);
+    }
+
+    @GetMapping("/count")
+    public long countAll() {
+        return service.countAll();
+    }
+
+    @GetMapping("/count/categoria/{categoria}")
+    public long countByCategoria(@PathVariable Articulo.Categoria categoria) {
+        return service.countByCategoria(categoria);
+    }
+
+    @GetMapping("/recent/{limit}")
+    public List<Articulo> findMostRecent(@PathVariable int limit) {
+        return service.findMostRecent(limit);
+    }
+
+    @PutMapping("/hide/{id}")
+    public ResponseEntity<Articulo> hideArticle(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.hideArticle(id));
+    }
+
+    @PutMapping("/show/{id}")
+    public ResponseEntity<Articulo> showArticle(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.showArticle(id));
+    }
 }

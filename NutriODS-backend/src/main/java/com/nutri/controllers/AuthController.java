@@ -19,23 +19,40 @@ public class AuthController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // Registro simple: solo correo y contraseña
     @PostMapping("/register")
     public Usuario register(@Valid @RequestBody LoginRegisterRequest request) {
+        // Validaciones
         if (usuarioService.findByCorreo(request.getCorreo()).isPresent()) {
             throw new RuntimeException("El correo ya está en uso");
         }
+        if (usuarioService.findByUsername(request.getUsername()).isPresent()) {
+            throw new RuntimeException("El nombre de usuario ya existe");
+        }
 
         Usuario nuevo = new Usuario();
+        nuevo.setUsername(request.getUsername());
         nuevo.setCorreo(request.getCorreo());
-        nuevo.setContraseña(request.getContraseña()); // sin cifrar aún
+        nuevo.setContraseña(request.getContraseña()); // Aquí sería ideal cifrarla
+        nuevo.setNombre(request.getNombre());
+        nuevo.setApellidos(request.getApellidos());
 
         return usuarioService.crearUsuario(nuevo);
     }
 
-    // Login simple
+    // ===================================================
+    // ✅ LOGIN
+    // ===================================================
+    // Ahora usaremos el campo `username` tanto para usuario como para correo electrónico
     @PostMapping("/login")
     public Usuario login(@Valid @RequestBody LoginRegisterRequest request) {
-        return usuarioService.login(request.getCorreo(), request.getContraseña());
+        String loginInput = request.getUsername();
+        String contraseña = request.getContraseña();
+
+        // Intenta primero por CORREO
+        return usuarioService.findByCorreo(loginInput)
+                .filter(usuario -> usuario.getContraseña().equals(contraseña))
+                .or(() -> usuarioService.findByUsername(loginInput)
+                        .filter(usuario -> usuario.getContraseña().equals(contraseña)))
+                .orElseThrow(() -> new RuntimeException("Usuario o contraseña incorrectos"));
     }
 }

@@ -55,4 +55,38 @@ public class RecetaController {
         }
         return ResponseEntity.notFound().build();
     }
+    @GetMapping("/visible")
+    public List<Receta> findRecetasVisibles() {
+        return recetaService.findRecetasVisibles();
+    }
+
+    @GetMapping("/dificultad/{dificultad}")
+    public List<Receta> findByDificultad(@PathVariable Receta.Dificultad dificultad) {
+        return recetaService.findByDificultad(dificultad);
+    }
+
+    @GetMapping("/search")
+    public List<Receta> searchByNombre(@RequestParam String palabra) {
+        return recetaService.searchByNombre(palabra);
+    }
+
+    @GetMapping("/max-tiempo/{minutos}")
+    public List<Receta> findByTiempoPreparacionMenorIgual(@PathVariable Integer minutos) {
+        return recetaService.findByTiempoPreparacionMenorIgual(minutos);
+    }
+
+    @GetMapping("/recientes/{dias}")
+    public List<Receta> findRecetasRecientes(@PathVariable Integer dias) {
+        return recetaService.findRecetasRecientes(dias);
+    }
+
+    @GetMapping("/count-dificultad/{dificultad}")
+    public long contarRecetasPorDificultad(@PathVariable Receta.Dificultad dificultad) {
+        return recetaService.contarRecetasPorDificultad(dificultad);
+    }
+
+    @PostMapping("/{id}/cambiar-visibilidad")
+    public ResponseEntity<Receta> cambiarVisibilidad(@PathVariable Integer id) {
+        return ResponseEntity.ok(recetaService.cambiarVisibilidad(id));
+    }
 }
