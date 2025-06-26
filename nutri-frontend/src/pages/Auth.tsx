@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import RegistroUsuario from "./RegistroUsuario";
 import Login from "./Login";
 import CompletarPerfil from "./CompletarPerfil";
