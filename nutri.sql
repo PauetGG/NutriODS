@@ -7,6 +7,7 @@ CREATE TABLE usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     correo VARCHAR(100) NOT NULL UNIQUE,
     contraseña VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
     nombre VARCHAR(50) NOT NULL,
     apellidos VARCHAR(100),
     altura DECIMAL(5,2),
@@ -5355,4 +5356,4 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 -- 400. Yogur natural con mango y semillas de chía
 (400, 79, 125, 'g'), -- yogur natural
 (400, 47, 40, 'g'), -- mango
-(400, 227, 10, 'g') -- semillas de chía; 
+(400, 227, 10, 'g'); -- semillas de chía; 
