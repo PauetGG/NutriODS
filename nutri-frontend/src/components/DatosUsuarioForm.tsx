@@ -19,7 +19,7 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
     preferencias: datosIniciales?.preferencias || [],
     actividad: datosIniciales?.actividad || "",
   });
-
+  const [numeroComidasDia, setNumeroComidasDia] = useState<number>(4); 
   const { id } = useAuth(); // ✅ Usamos el ID directamente del contexto
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -56,6 +56,7 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
           alergias: formData.alergias.length > 0 ? formData.alergias : null,
           enfermedades: formData.enfermedades.length > 0 ? formData.enfermedades : null,
           preferencias: formData.preferencias.length > 0 ? formData.preferencias : null,
+          numeroComidasDia,
         }),
       });
 
@@ -227,6 +228,22 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
             <option value="intenso">Intenso</option>
             <option value="muy intenso">Muy intenso</option>
           </select>
+
+          <div>
+            <label className="block font-medium text-gray-700 mb-1">
+              ¿Cuántas comidas quieres al día?
+            </label>
+            <select
+              value={numeroComidasDia}
+              onChange={(e) => setNumeroComidasDia(parseInt(e.target.value))}
+              className="w-full p-2 border rounded"
+              required
+            >
+              <option value={3}>3 comidas</option>
+              <option value={4}>4 comidas</option>
+              <option value={5}>5 comidas</option>
+            </select>
+          </div>
 
           <button
             type="submit"

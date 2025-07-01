@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 
 function Header() {
-  const { nombreUsuario, logout } = useAuth();
+  const { nombre, logout } = useAuth();
   const [mostrarLoginModal, setMostrarLoginModal] = useState(false);
   const [mostrarRegisterModal, setMostrarRegisterModal] = useState(false);
 
@@ -38,15 +38,15 @@ function Header() {
         <div className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold cursor-pointer">
           <button
             onClick={() => {
-              if (!nombreUsuario) setMostrarLoginModal(true);
+              if (!nombre) setMostrarLoginModal(true);
             }}
             className="w-full h-full"
           >
-            {nombreUsuario ? `Hola, ${nombreUsuario}` : "Iniciar sesión"}
+            {nombre ? `Hola, ${nombre}` : "Iniciar sesión"}
           </button>
         </div>
 
-        {nombreUsuario && (
+        {nombre && (
           <div className="absolute top-full right-0 bg-white border rounded shadow-md z-50 
                           w-36 opacity-0 group-hover:opacity-100 
                           pointer-events-none group-hover:pointer-events-auto 

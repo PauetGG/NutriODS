@@ -1,12 +1,38 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/useAuth";
 import DatosUsuarioForm from "../components/DatosUsuarioForm";
 import type { DatosUsuarioDTO } from "../types/DatosUsuarioDTO";
 
+type DietaResumen = {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  numeroComidasDia: number;
+  created: string;
+};
+
 function DietaPage() {
-  const { nombre, username } = useAuth(); // ⬅️ añadimos username
+  const { nombre, username, id } = useAuth();
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [datosUsuario, setDatosUsuario] = useState<DatosUsuarioDTO | null>(null);
+  const [dietas, setDietas] = useState<DietaResumen[]>([]);
+
+  // ✅ Cargar dietas del usuario al entrar en la página
+  const fetchDietas = useCallback(async () => {
+    if (!id) return;
+    try {
+      const res = await fetch(`http://localhost:8080/api/dietas/usuario/${id}`);
+      if (!res.ok) throw new Error("Error al obtener dietas");
+      const data: DietaResumen[] = await res.json();
+      setDietas(data);
+    } catch (error) {
+      console.error("Error al cargar dietas:", error);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchDietas();
+  }, [fetchDietas]);
 
   const obtenerDatosUsuario = async () => {
     if (!username) return;
@@ -45,7 +71,7 @@ function DietaPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-6 sm:px-10 md:px-20">
-      {/* Marketing de alto impacto */}
+      {/* Cabecera de marketing */}
       <div className="max-w-3xl mx-auto text-center mb-10">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-green-700 mb-4">
           ¡Descubre tu Dieta Ideal!
@@ -59,10 +85,9 @@ function DietaPage() {
         </p>
       </div>
 
-      {/* Separador visual */}
       <div className="w-full h-px bg-green-200 mb-10" />
 
-      {/* Área de generación de dieta */}
+      {/* Botón para abrir el formulario */}
       <div className="text-center">
         {nombre ? (
           <button
@@ -79,11 +104,33 @@ function DietaPage() {
         )}
       </div>
 
+      {/* Listado de dietas existentes */}
+      {dietas.length > 0 && (
+        <div className="max-w-3xl mx-auto mt-10">
+          <h2 className="text-2xl font-bold text-green-700 mb-4 text-center">Tus dietas generadas</h2>
+          <ul className="space-y-4">
+            {dietas.map((dieta, index) => (
+              <li key={dieta.id} className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
+                <p className="text-lg font-semibold">Dieta {index + 1}: {dieta.nombre}</p>
+                <p className="text-sm text-gray-600">{dieta.descripcion}</p>
+                <p className="text-sm text-gray-500">🍽️ Comidas al día: {dieta.numeroComidasDia}</p>
+                <p className="text-sm text-gray-400">
+                  📅 Creada el: {new Date(dieta.created).toLocaleDateString()}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Modal del formulario */}
       {mostrarFormulario && (
         <DatosUsuarioForm
           datosIniciales={datosUsuario}
-          onClose={() => setMostrarFormulario(false)}
+          onClose={() => {
+            setMostrarFormulario(false);
+            fetchDietas(); // ⬅️ Recarga dietas al cerrar el formulario
+          }}
         />
       )}
     </div>

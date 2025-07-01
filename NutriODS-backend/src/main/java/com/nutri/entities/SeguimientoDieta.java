@@ -78,6 +78,6 @@ public class SeguimientoDieta {
     }
 
     public enum TipoComida {
-        desayuno, almuerzo, cena, snack
+        desayuno, almuerzo, comida, merienda, cena, 
     }
 }

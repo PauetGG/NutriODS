@@ -125,7 +125,6 @@ CREATE TABLE seguimiento_dieta (
     comida_modelo_id INT NOT NULL,
     dia_semana ENUM('lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo') NOT NULL,
     comida ENUM('desayuno', 'almuerzo', 'comida', 'merienda', 'cena') NOT NULL,
-    hora TIME,
     porciones DECIMAL(4,2) DEFAULT 1.0,
     consumido BOOLEAN DEFAULT FALSE,
     notas TEXT,
