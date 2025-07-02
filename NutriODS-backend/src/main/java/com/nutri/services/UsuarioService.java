@@ -118,4 +118,19 @@ public class UsuarioService {
     public List<Usuario> findByActividadFisica(Usuario.ActividadFisica actividadFisica) {
         return usuarioRepository.findByActividadFisica(actividadFisica);
     }
+    public boolean cambiarPassword(Integer id, String actual, String nueva) {
+        Optional<Usuario> optional = usuarioRepository.findById(id);
+        if (optional.isEmpty()) return false;
+
+        Usuario usuario = optional.get();
+
+        // Comprobación directa de la contraseña (texto plano)
+        if (!usuario.getContraseña().equals(actual)) {
+            return false;
+        }
+
+        usuario.setContraseña(nueva);
+        usuarioRepository.save(usuario);
+        return true;
+    }
 }

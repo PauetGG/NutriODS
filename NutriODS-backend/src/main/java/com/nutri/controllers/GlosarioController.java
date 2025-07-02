@@ -75,4 +75,12 @@ public class GlosarioController {
                                                         @RequestParam("visible") boolean visible) {
         return ResponseEntity.ok(service.cambiarVisibilidad(id, visible));
     }
+    
+    @GetMapping("/filtrado")
+    public List<Glosario> buscarFiltrado(
+        @RequestParam(required = false) String termino,
+        @RequestParam(required = false) Glosario.Categoria categoria
+    ) {
+        return service.buscarFiltrado(termino, categoria);
+    }
 }

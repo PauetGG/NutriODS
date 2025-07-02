@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/useAuth";
 import DatosUsuarioForm from "../components/DatosUsuarioForm";
 import type { DatosUsuarioDTO } from "../types/DatosUsuarioDTO";
+import { useNavigate } from "react-router-dom"; // 👈 CORREGIDO aquí
 
 type DietaResumen = {
   id: number;
@@ -16,8 +17,8 @@ function DietaPage() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [datosUsuario, setDatosUsuario] = useState<DatosUsuarioDTO | null>(null);
   const [dietas, setDietas] = useState<DietaResumen[]>([]);
+  const navigate = useNavigate(); // 👈 CORREGIDO aquí
 
-  // ✅ Cargar dietas del usuario al entrar en la página
   const fetchDietas = useCallback(async () => {
     if (!id) return;
     try {
@@ -70,8 +71,7 @@ function DietaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-6 sm:px-10 md:px-20">
-      {/* Cabecera de marketing */}
+    <div className="min-h-screen bg-gray-50 py-12 pt-15 px-6 sm:px-10 md:px-20">
       <div className="max-w-3xl mx-auto text-center mb-10">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-green-700 mb-4">
           ¡Descubre tu Dieta Ideal!
@@ -87,7 +87,6 @@ function DietaPage() {
 
       <div className="w-full h-px bg-green-200 mb-10" />
 
-      {/* Botón para abrir el formulario */}
       <div className="text-center">
         {nombre ? (
           <button
@@ -104,13 +103,16 @@ function DietaPage() {
         )}
       </div>
 
-      {/* Listado de dietas existentes */}
       {dietas.length > 0 && (
         <div className="max-w-3xl mx-auto mt-10">
           <h2 className="text-2xl font-bold text-green-700 mb-4 text-center">Tus dietas generadas</h2>
           <ul className="space-y-4">
             {dietas.map((dieta, index) => (
-              <li key={dieta.id} className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
+              <li
+                key={dieta.id}
+                className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm cursor-pointer hover:bg-gray-100 transition"
+                onClick={() => navigate(`/seguimiento/${dieta.id}`)} // ✅ CORREGIDO
+              >
                 <p className="text-lg font-semibold">Dieta {index + 1}: {dieta.nombre}</p>
                 <p className="text-sm text-gray-600">{dieta.descripcion}</p>
                 <p className="text-sm text-gray-500">🍽️ Comidas al día: {dieta.numeroComidasDia}</p>
@@ -123,13 +125,12 @@ function DietaPage() {
         </div>
       )}
 
-      {/* Modal del formulario */}
       {mostrarFormulario && (
         <DatosUsuarioForm
           datosIniciales={datosUsuario}
           onClose={() => {
             setMostrarFormulario(false);
-            fetchDietas(); // ⬅️ Recarga dietas al cerrar el formulario
+            fetchDietas();
           }}
         />
       )}

@@ -38,8 +38,9 @@ public class GlosarioService {
     }
 
     public List<Glosario> searchByPalabra(String palabra) {
-        return repository.findByTerminoContainingIgnoreCaseOrDefinicionContainingIgnoreCase(palabra, palabra);
+        return repository.findByTerminoContainingIgnoreCaseAndVisibleTrue(palabra);
     }
+
 
     public long countAll() {
         return repository.count();
@@ -50,5 +51,11 @@ public class GlosarioService {
                 .orElseThrow(() -> new IllegalArgumentException("Glosario no encontrado"));
         glosario.setVisible(visible);
         return repository.save(glosario);
+    }
+    public List<Glosario> buscarFiltrado(String termino, Glosario.Categoria categoria) {
+        return repository.buscarFiltrado(
+            (termino == null || termino.isBlank()) ? null : termino,
+            categoria
+        );
     }
 }

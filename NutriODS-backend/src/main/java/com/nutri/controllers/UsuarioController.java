@@ -1,9 +1,11 @@
 package com.nutri.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -88,4 +90,17 @@ public class UsuarioController {
     public List<Usuario> findByActividadFisica(@PathVariable Usuario.ActividadFisica actividadFisica) {
         return usuarioService.findByActividadFisica(actividadFisica);
     }
+    @PutMapping("/{id}/cambiar-password")
+    public ResponseEntity<?> cambiarPassword(@PathVariable Integer id, @RequestBody Map<String, String> pass) {
+        String actual = pass.get("actual");
+        String nueva = pass.get("nueva");
+
+        boolean cambiada = usuarioService.cambiarPassword(id, actual, nueva);
+        if (cambiada) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Contraseña incorrecta");
+        }
+    }
+
 }

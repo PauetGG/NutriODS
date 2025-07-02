@@ -5,7 +5,7 @@ import {
   validarUsername,
   validarNombre,
 } from "../utils/validation";
-import { useAuth } from "../context/useAuth"; // 👈 importar contexto
+import { useAuth } from "../context/useAuth";
 
 type RegisterModalProps = {
   onClose: () => void;
@@ -22,7 +22,7 @@ function RegisterModal({ onClose, onOpenLogin }: RegisterModalProps) {
   });
 
   const [error, setError] = useState<string | null>(null);
-  const { login } = useAuth(); // 👈 usar contexto
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -57,11 +57,12 @@ function RegisterModal({ onClose, onOpenLogin }: RegisterModalProps) {
       }
 
       const data = await response.json();
-      console.log("Registro exitoso:", data);
 
-      // 👇 iniciamos sesión tras registrarse con el nombre recibido
-      const nombre = data.nombre || data[0]?.nombre || formData.nombre;
-      login(nombre);
+      const id = data.id;
+      const username = data.username || formData.username;
+      const nombre = data.nombre || formData.nombre;
+
+      login(id, username, nombre); // 👈 login con orden correcto
 
       onClose();
     } catch (err: unknown) {

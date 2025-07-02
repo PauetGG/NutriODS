@@ -42,7 +42,7 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
     e.preventDefault();
 
     if (!id) {
-      alert("No se ha encontrado el ID del usuario. Por favor, vuelve a iniciar sesión.");
+      alert("No se ha encontrado el ID del usuario.");
       return;
     }
 
@@ -56,13 +56,10 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
           alergias: formData.alergias.length > 0 ? formData.alergias : null,
           enfermedades: formData.enfermedades.length > 0 ? formData.enfermedades : null,
           preferencias: formData.preferencias.length > 0 ? formData.preferencias : null,
-          numeroComidasDia,
         }),
       });
 
-      if (!updateRes.ok) {
-        throw new Error("Error al guardar los datos");
-      }
+      if (!updateRes.ok) throw new Error("Error al guardar los datos");
 
       // 2. Generar dieta
       const dietaRes = await fetch("http://localhost:8080/api/dietas/generar", {
@@ -72,19 +69,30 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
           usuarioId: id,
           nombreDieta: "Dieta personalizada",
           descripcion: "Generada automáticamente según tus datos",
-          numeroComidasDia: 4,
+          numeroComidasDia,
         }),
       });
 
       if (!dietaRes.ok) throw new Error("Error al generar la dieta");
 
-      alert("¡Dieta generada correctamente!");
+      const dieta = await dietaRes.json();
+
+      // 3. Crear seguimiento para esa dieta
+      const seguimientoRes = await fetch(
+        `http://localhost:8080/api/seguimiento-dieta/crear-seguimiento/${dieta.id}`,
+        { method: "POST" }
+      );
+
+      if (!seguimientoRes.ok) throw new Error("Error al crear el seguimiento de la dieta");
+
+      alert("¡Dieta y seguimiento generados correctamente!");
       if (onClose) onClose();
     } catch (error) {
       console.error("Error:", error);
-      alert("Ocurrió un error al generar la dieta.");
+      alert("Ocurrió un error durante el proceso.");
     }
   };
+
 
   return (
     <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-50 flex justify-center items-center">
