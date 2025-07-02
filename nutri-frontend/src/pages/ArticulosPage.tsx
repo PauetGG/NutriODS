@@ -1,17 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-type Articulo = {
-  id: number;
-  titulo: string;
-  resumen: string;
-  contenido: string;
-  imagenUrl: string;
-  categoria: string;
-  autor: string;
-  fechaPublicacion: string;
-  visible: boolean;
-};
+import type { Articulo } from "../types/Articulo";
 
 export default function ArticulosPage() {
   const [articulos, setArticulos] = useState<Articulo[]>([]);

@@ -19,7 +19,7 @@ import com.nutri.entities.FavoritoArticuloId;
 import com.nutri.services.FavoritoArticuloService;
 
 @RestController
-@RequestMapping("/api/articulos/favoritos")
+@RequestMapping("/api/artis/favoritos")
 public class FavoritoArticuloController {
 
     @Autowired
@@ -40,14 +40,6 @@ public class FavoritoArticuloController {
         return ResponseEntity.ok(service.save(favorito));
     }
 
-    @DeleteMapping("/{usuarioId}/{articuloId}")
-    public ResponseEntity<String> removeFavorito(@PathVariable Integer usuarioId, @PathVariable Integer articuloId) {
-        FavoritoArticuloId id = new FavoritoArticuloId(usuarioId, articuloId);
-        return service.findById(id).map(f -> {
-            service.deleteById(id);
-            return ResponseEntity.ok().body("Favorito eliminado correctamente");
-        }).orElse(ResponseEntity.notFound().build());
-    }
     @GetMapping("/usuario/{usuarioId}")
     public List<FavoritoArticulo> findByUsuario(@PathVariable Integer usuarioId) {
         return service.findByUsuario(usuarioId);
@@ -69,4 +61,10 @@ public class FavoritoArticuloController {
     public long contarFavoritosPorArticulo(@PathVariable Integer articuloId) {
         return service.contarFavoritosPorArticulo(articuloId);
     }
+    @DeleteMapping("/{usuarioId}/{articuloId}")
+    public ResponseEntity<Void> eliminarFavorito(@PathVariable Integer usuarioId, @PathVariable Integer articuloId) {
+        service.eliminarFavorito(usuarioId, articuloId);
+        return ResponseEntity.ok().build();
+    }
+
 }

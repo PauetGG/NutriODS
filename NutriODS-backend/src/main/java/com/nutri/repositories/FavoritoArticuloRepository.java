@@ -14,4 +14,5 @@ public interface FavoritoArticuloRepository extends JpaRepository<FavoritoArticu
     List<FavoritoArticulo> findByArticuloId(Integer articuloId);
     boolean existsByUsuarioIdAndArticuloId(Integer usuarioId, Integer articuloId);
     long countByArticuloId(Integer articuloId);
+    void deleteByUsuarioIdAndArticuloId(Integer usuarioId, Integer articuloId);
 }

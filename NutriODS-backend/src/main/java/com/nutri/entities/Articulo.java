@@ -2,8 +2,11 @@ package com.nutri.entities;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -68,13 +71,16 @@ public class Articulo {
     private LocalDateTime modified;
 
     @OneToMany(mappedBy = "articulo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ComentarioArticulo> comentarios = new HashSet<>();
+    @JsonManagedReference
+    private List<ComentarioArticulo> comentarios = new ArrayList<>();
 
     @OneToMany(mappedBy = "articulo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<LikeArticulo> likes = new HashSet<>();
+    @JsonManagedReference
+    private List<LikeArticulo> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "articulo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<FavoritoArticulo> favoritos = new HashSet<>();
+    @JsonManagedReference
+    private List<FavoritoArticulo> favoritos = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

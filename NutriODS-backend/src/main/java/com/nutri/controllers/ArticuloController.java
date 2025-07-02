@@ -1,13 +1,23 @@
 package com.nutri.controllers;
 
-import com.nutri.entities.Articulo;
-import com.nutri.services.ArticuloService;
-import jakarta.validation.Valid;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.nutri.entities.Articulo;
+import com.nutri.services.ArticuloService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/articulos")
@@ -89,4 +99,10 @@ public class ArticuloController {
     public ResponseEntity<Articulo> showArticle(@PathVariable Integer id) {
         return ResponseEntity.ok(service.showArticle(id));
     }
+    @PutMapping("/{id}/visita/{usuarioId}")
+    public ResponseEntity<Void> registrarVisita(@PathVariable Integer id, @PathVariable Integer usuarioId) {
+        service.registrarVisita(id, usuarioId); // Puedes guardar en BBDD o simplemente incrementar contador
+        return ResponseEntity.ok().build();
+    }
+
 }

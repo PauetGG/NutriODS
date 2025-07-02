@@ -1,5 +1,9 @@
 package com.nutri.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,10 +28,12 @@ public class LikeArticulo {
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("usuarioId")
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonManagedReference
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("articuloId")
     @JoinColumn(name = "articulo_id", nullable = false)
+    @JsonBackReference
     private Articulo articulo;
 }

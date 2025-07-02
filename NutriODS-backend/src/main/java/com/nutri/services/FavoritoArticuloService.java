@@ -42,4 +42,9 @@ public class FavoritoArticuloService {
     public long contarFavoritosPorArticulo(Integer articuloId) {
         return favoritoRepository.countByArticuloId(articuloId);
     }
+    public void eliminarFavorito(Integer usuarioId, Integer articuloId) {
+        favoritoRepository.deleteByUsuarioIdAndArticuloId(usuarioId, articuloId);
+    }
+
+
 }

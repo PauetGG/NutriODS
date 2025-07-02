@@ -70,4 +70,11 @@ public class ArticuloService {
         articulo.setVisible(true);
         return articuloRepository.save(articulo);
     }
+    public void registrarVisita(Integer articuloId, Integer usuarioId) {
+        Articulo articulo = articuloRepository.findById(articuloId)
+            .orElseThrow(() -> new RuntimeException("Artículo no encontrado"));
+
+        articulo.setVisitas(articulo.getVisitas() + 1);
+        articuloRepository.save(articulo);
+    }
 }
