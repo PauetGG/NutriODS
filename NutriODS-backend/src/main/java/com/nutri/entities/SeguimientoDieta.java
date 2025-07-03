@@ -55,6 +55,10 @@ public class SeguimientoDieta {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private TipoComida comida;
+    
+    @NotNull(message = "El número de semana es obligatorio")
+    @Column(name = "semana_numero", nullable = false)
+    private Integer semanaNumero;
 
     private LocalDate fecha;
 
