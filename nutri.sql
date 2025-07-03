@@ -104,7 +104,7 @@ CREATE TABLE receta (
     tiempo_preparacion INT NOT NULL,
     dificultad ENUM('fácil', 'media', 'difícil') DEFAULT 'media',
     raciones INT NOT NULL DEFAULT 1,
-    imagen_url VARCHAR(255),
+    imagen_url VARCHAR(855),
     visible BOOLEAN DEFAULT TRUE,
     creado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modificado TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -5369,8 +5369,6 @@ INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unid
 (400, 47, 40, 'g'), -- mango
 (400, 227, 10, 'g'); --
 
-
- semillas de chía; -- 1. Insertar la receta
 INSERT INTO receta (
     nombre,
     descripcion,
