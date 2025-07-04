@@ -12,4 +12,6 @@ import com.nutri.entities.SeguimientoDieta;
 public interface SeguimientoDietaRepository extends JpaRepository<SeguimientoDieta, Integer> {
 	List<SeguimientoDieta> findByDietaId(Integer dietaId);
     List<SeguimientoDieta> findByFecha(LocalDate fecha);
+    boolean existsByDietaIdAndComidaModeloIdAndFecha(Integer dietaId, Integer comidaModeloId, LocalDate fecha);
+
 }
