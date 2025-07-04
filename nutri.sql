@@ -6158,3 +6158,1213 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 156, 20.00),
 (@receta_id, 242, 10.00);
 
+-- 1. Ensalada de garbanzos mediterránea
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Ensalada de garbanzos mediterránea',
+  'Refrescante y rica en proteínas vegetales.',
+  '1. Mezcla 200 g de garbanzos cocidos, 100 g de tomate cherry en mitades, 50 g de pepino en cubos, 30 g de cebolla morada picada y 30 g de aceitunas negras.\n2. Añade 20 g de queso feta desmenuzado y aliña con aceite de oliva, limón y orégano.',
+  10, 'fácil', 2,
+  'https://www.paellapal.com/wp-content/uploads/2025/01/Ensalada-de-Garbanzos-Mediterranea-1024x574.webp',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 61, 200.00),   -- garbanzos cocidos
+(@receta_id, 39, 100.00),   -- tomate cherry
+(@receta_id, 44, 50.00),    -- pepino
+(@receta_id, 49, 30.00),    -- cebolla morada
+(@receta_id, 156, 30.00),   -- aceitunas negras
+(@receta_id, 83, 20.00),    -- queso feta
+(@receta_id, 242, 10.00);   -- aceite de oliva
+
+-- 2. Salmón al horno con verduras
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Salmón al horno con verduras',
+  'Plato principal equilibrado y rico en omega-3.',
+  '1. Coloca 2 lomos de salmón (150 g cada uno) en una bandeja.\n2. Añade 100 g de brócoli, 100 g de zanahoria en rodajas y 50 g de calabacín.\n3. Rocía con aceite de oliva, sal y pimienta.\n4. Hornea a 180 °C durante 20 minutos.',
+  25, 'fácil', 2,
+  'https://www.demoslavueltaaldia.com/sites/default/files/salmon-horno-verduritas.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 201, 300.00),  -- salmón fresco
+(@receta_id, 13, 100.00),   -- brócoli
+(@receta_id, 3, 100.00),    -- zanahoria
+(@receta_id, 15, 50.00),    -- calabacín
+(@receta_id, 242, 10.00);   -- aceite de oliva
+
+-- 3. Porridge de avena y frutos rojos
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Porridge de avena y frutos rojos',
+  'Desayuno energético y antioxidante.',
+  '1. Calienta 250 ml de leche vegetal en un cazo.\n2. Añade 50 g de copos de avena y cocina 5 minutos removiendo.\n3. Sirve con 60 g de frutos rojos y 10 g de semillas de chía.',
+  10, 'fácil', 1,
+  'https://comeryrascar.com/wp-content/uploads/2022/02/gachas-avena-frutos-rojos-frambuesas-arandanos_120872-11343.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 127, 50.00),   -- copos de avena
+(@receta_id, 296, 250.00),  -- leche vegetal
+(@receta_id, 58, 60.00),    -- frutos rojos
+(@receta_id, 227, 10.00);   -- semillas de chía
+
+-- 4. Sopa de brócoli y puerro
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Sopa de brócoli y puerro',
+  'Sopa cremosa y ligera, rica en fibra y vitaminas.',
+  '1. Lava y trocea 200 g de brócoli y 100 g de puerro.\n2. Sofríe el puerro en 10 g de aceite de oliva.\n3. Añade el brócoli y 500 ml de agua mineral, cocina 15 minutos.\n4. Tritura, añade sal y pimienta al gusto.',
+  25, 'fácil', 2,
+  'https://recetasparathermomix.com/wp-content/uploads/Sopa-de-brocoli-y-puerro-con-thermomix.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 8, 200.00),    -- brócoli
+(@receta_id, 14, 100.00),   -- puerro
+(@receta_id, 165, 500.00),  -- agua mineral
+(@receta_id, 242, 10.00),   -- aceite de oliva
+(@receta_id, 245, 2.00),    -- sal
+(@receta_id, 246, 1.00);    -- pimienta negra
+
+-- 5. Snack: Tostada de pan integral con aguacate y tomate
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Tostada de pan integral con aguacate y tomate',
+  'Snack saludable y saciante, ideal para media mañana o merienda.',
+  '1. Tuesta 2 rebanadas de pan integral.\n2. Machaca 100 g de aguacate y reparte sobre el pan.\n3. Añade 50 g de tomate en rodajas y una pizca de sal y pimienta.',
+  5, 'fácil', 2,
+  'https://www.calidadpascual.com/wp-content/uploads/2022/10/e6ee1910080c635c4f888bf8f02dbfc1-1296x600.jpeg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 130, 60.00),   -- pan integral
+(@receta_id, 261, 100.00),  -- aguacate
+(@receta_id, 7, 50.00),     -- tomate
+(@receta_id, 245, 1.00),    -- sal
+(@receta_id, 246, 0.50);    -- pimienta negra
+
+-- 6. Ensalada de espinaca, manzana y nuez
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Ensalada de espinaca, manzana y nuez',
+  'Ensalada fresca, crujiente y antioxidante.',
+  '1. Lava 80 g de espinaca y 1 manzana.\n2. Corta la manzana en cubos.\n3. Mezcla con 20 g de nuez y aliña con 10 g de aceite de oliva y unas gotas de limón.',
+  7, 'fácil', 2,
+  'https://blog.pizcadesabor.com/wp-content/uploads/2023/11/Ensalada-de-espinaca-con-manzana-2.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 1, 80.00),     -- espinaca
+(@receta_id, 36, 120.00),   -- manzana
+(@receta_id, 156, 20.00),   -- nuez
+(@receta_id, 242, 10.00);   -- aceite de oliva
+
+-- 7. Muffins integrales de zanahoria y nuez
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Muffins integrales de zanahoria y nuez',
+  'Muffins saludables, ricos en fibra y sin azúcares refinados.',
+  '1. Ralla 100 g de zanahoria.\n2. Mezcla con 100 g de harina de trigo, 1 huevo, 40 g de nuez picada, 50 ml de leche vegetal y 10 g de miel.\n3. Añade 5 g de levadura química.\n4. Reparte en moldes y hornea 20 min a 180 °C.',
+  30, 'fácil', 6,
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYHVRikDWK1dfjpxy1-lSEhD7iqvZrdwWGJW9WfqUwvdetDbWa_u1ETbSQHjx_',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 3, 100.00),    -- zanahoria
+(@receta_id, 139, 100.00),  -- harina de trigo
+(@receta_id, 276, 1.00),    -- huevo
+(@receta_id, 156, 40.00),   -- nuez
+(@receta_id, 296, 50.00),   -- leche vegetal
+(@receta_id, 239, 10.00),   -- miel
+(@receta_id, 295, 5.00);    -- levadura química
+
+-- 8. Bizcocho de manzana y avena
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Bizcocho de manzana y avena',
+  'Bizcocho esponjoso y saludable, ideal para desayunos.',
+  '1. Pela y ralla 2 manzanas (200 g).\n2. Mezcla con 120 g de avena en copos, 2 huevos, 50 ml de leche vegetal y 10 g de miel.\n3. Añade 5 g de levadura química.\n4. Hornea en molde 35 min a 180 °C.',
+  45, 'fácil', 8,
+  'https://www.gastronomiaycia.com/wp-content/photos/bizcocho_manza_avena4.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 36, 200.00),   -- manzana
+(@receta_id, 127, 120.00),  -- avena en copos
+(@receta_id, 276, 2.00),    -- huevo
+(@receta_id, 296, 50.00),   -- leche vegetal
+(@receta_id, 239, 10.00),   -- miel
+(@receta_id, 295, 5.00);    -- levadura química
+
+-- 9. Galletas de plátano y almendra
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Galletas de plátano y almendra',
+  'Galletas blanditas, sin azúcar añadido, perfectas para niños.',
+  '1. Machaca 2 plátanos maduros (200 g).\n2. Mezcla con 100 g de almendra cruda molida y 1 huevo.\n3. Forma bolitas y aplasta en bandeja.\n4. Hornea 15 min a 180 °C.',
+  25, 'fácil', 10,
+  'https://i0.wp.com/www.conharinaenmiszapatos.com/wp-content/uploads/2017/06/GalletasPl%C3%A1tano_8.jpg?fit=750%2C1128',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 37, 200.00),   -- plátano
+(@receta_id, 155, 100.00),  -- almendra cruda
+(@receta_id, 276, 1.00);    -- huevo
+
+-- 10. Galletas de avena, plátano y nuez
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Galletas de avena, plátano y nuez',
+  'Galletas blanditas, sin azúcar añadido, perfectas para desayunos o snacks.',
+  '1. Machaca 2 plátanos maduros (200 g).\n2. Mezcla con 100 g de avena en copos y 30 g de nuez picada.\n3. Forma bolitas y aplasta en bandeja.\n4. Hornea 15 min a 180 °C.',
+  25, 'fácil', 10,
+  'https://cdn3.myrealfood.app/recipes%2Fo2IULQyGyIGqJCVHK66w%2Fmain.jpg?alt=media&token=b72fd4dd-9904-4b14-aab9-c600b2f33033',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 37, 200.00),   -- plátano
+(@receta_id, 127, 100.00),  -- avena en copos
+(@receta_id, 156, 30.00);   -- nuez
+
+-- 11. Galletas de manzana y almendra
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Galletas de manzana y almendra',
+  'Galletas suaves y jugosas, sin azúcar añadido.',
+  '1. Pela y ralla 1 manzana (100 g).\n2. Mezcla con 80 g de almendra cruda molida y 1 huevo.\n3. Forma bolitas y aplasta en bandeja.\n4. Hornea 15 min a 180 °C.',
+  25, 'fácil', 8,
+  'https://www.recetasparamibebe.com/wp-content/uploads/2021/03/receta-galletas-almendras-manzana-bebes.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 36, 100.00),   -- manzana
+(@receta_id, 155, 80.00),   -- almendra cruda
+(@receta_id, 276, 1.00);    -- huevo
+
+-- 12. Pastel de pera y almendra
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Pastel de pera y almendra',
+  'Pastel jugoso, sin gluten y con fruta natural.',
+  '1. Pela y corta 2 peras (200 g).\n2. Mezcla con 100 g de almendra cruda molida, 2 huevos y 10 g de miel.\n3. Añade 5 g de levadura química.\n4. Hornea en molde 30 min a 180 °C.',
+  40, 'fácil', 8,
+  'https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480_1_5x/img/recipe/ras/Assets/9650EB40-74A8-41C1-A892-C08F7DEFCCF4/Derivates/129E0502-A75A-4118-A088-0CE4884C0109.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 39, 200.00),   -- pera
+(@receta_id, 155, 100.00),  -- almendra cruda
+(@receta_id, 276, 2.00),    -- huevo
+(@receta_id, 239, 10.00),   -- miel
+(@receta_id, 295, 5.00);    -- levadura química
+
+-- 13. Pastel de yogur y frambuesa
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Pastel de yogur y frambuesa',
+  'Pastel suave y fresco, ideal para el verano.',
+  '1. Mezcla 2 huevos, 100 g de yogur natural, 100 g de harina de trigo y 10 g de miel.\n2. Añade 60 g de frambuesa y 5 g de levadura química.\n3. Hornea en molde 30 min a 180 °C.',
+  40, 'fácil', 8,
+  'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQMItKmYyCcJeq5Zi4KmO_k3wDzwmcFqiT_ztzO134e8rEmhLhjXr18TVLxCiDT',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 276, 2.00),    -- huevo
+(@receta_id, 79, 100.00),   -- yogur natural
+(@receta_id, 139, 100.00),  -- harina de trigo
+(@receta_id, 239, 10.00),   -- miel
+(@receta_id, 56, 60.00),    -- frambuesa
+(@receta_id, 295, 5.00);    -- levadura química
+
+-- 14. Pastel de plátano y manzana
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Pastel de plátano y manzana',
+  'Pastel húmedo y dulce solo con fruta.',
+  '1. Machaca 2 plátanos (200 g) y ralla 1 manzana (100 g).\n2. Mezcla con 100 g de harina de trigo, 2 huevos y 5 g de levadura química.\n3. Hornea en molde 30 min a 180 °C.',
+  40, 'fácil', 8,
+  'https://www.eladerezo.com/wp-content/uploads/2021/12/bizcocho-de-platano-y-manzana-1.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 37, 200.00),   -- plátano
+(@receta_id, 36, 100.00),   -- manzana
+(@receta_id, 139, 100.00),  -- harina de trigo
+(@receta_id, 276, 2.00),    -- huevo
+(@receta_id, 295, 5.00);    -- levadura química
+
+-- 15. Pastel de zanahoria y yogur
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Pastel de zanahoria y yogur',
+  'Pastel esponjoso y saludable, sin azúcar añadido.',
+  '1. Ralla 150 g de zanahoria.\n2. Mezcla con 100 g de yogur natural, 2 huevos, 100 g de harina de trigo y 5 g de levadura química.\n3. Hornea en molde 30 min a 180 °C.',
+  40, 'fácil', 8,
+  'https://www.danone.es/wp-content/uploads/2022/03/COMI20-2048x1365.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 3, 150.00),    -- zanahoria
+(@receta_id, 79, 100.00),   -- yogur natural
+(@receta_id, 276, 2.00),    -- huevo
+(@receta_id, 139, 100.00),  -- harina de trigo
+(@receta_id, 295, 5.00);    -- levadura química
+
+-- 16. Pastel de pera y nuez
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Pastel de pera y nuez',
+  'Pastel jugoso y crujiente, sin azúcar añadido.',
+  '1. Pela y corta 2 peras (200 g).\n2. Mezcla con 40 g de nuez picada, 2 huevos, 100 g de harina de trigo y 5 g de levadura química.\n3. Hornea en molde 30 min a 180 °C.',
+  40, 'fácil', 8,
+  'https://cocinarconmilagros.com/wp-content/uploads/2021/10/4-10-2021-11.10.35-1.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 39, 200.00),   -- pera
+(@receta_id, 156, 40.00),   -- nuez
+(@receta_id, 276, 2.00),    -- huevo
+(@receta_id, 139, 100.00),  -- harina de trigo
+(@receta_id, 295, 5.00);    -- levadura química
+
+-- 20. Chips de zanahoria al horno
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Chips de zanahoria al horno',
+  'Snack crujiente y saludable, perfecto para picar entre horas.',
+  '1. Pela y corta 200 g de zanahoria en rodajas finas.\n2. Mezcla con 10 g de aceite de oliva y una pizca de sal.\n3. Extiende en bandeja y hornea 20 minutos a 180 °C, dándoles la vuelta a mitad de tiempo.',
+  25, 'fácil', 2,
+  'https://www.paulinacocina.net/wp-content/uploads/2014/09/P1110749-001.jpg.webp',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 3, 200.00),    -- zanahoria
+(@receta_id, 242, 10.00),   -- aceite de oliva
+(@receta_id, 245, 1.00);    -- sal
+
+-- 21. Palitos de pepino y zanahoria con hummus
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Palitos de pepino y zanahoria con hummus',
+  'Snack fresco y saciante, ideal para picar de forma saludable.',
+  '1. Pela y corta 100 g de zanahoria y 100 g de pepino en bastones.\n2. Sirve con 60 g de hummus para mojar.',
+  7, 'fácil', 2,
+  'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQR3aP-Nr93NOI8cWVPc48MbGGhG2bH5vgoGW2mC4CxHW7vQx_J2NevI9S_27pg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 3, 100.00),    -- zanahoria
+(@receta_id, 25, 100.00),   -- pepino
+(@receta_id, 257, 60.00);   -- hummus
+
+-- 22. Ensalada de col lombarda, manzana y nuez
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Ensalada de col lombarda, manzana y nuez',
+  'Ensalada colorida, crujiente y antioxidante.',
+  '1. Corta 100 g de col lombarda en tiras finas y 1 manzana en cubos.\n2. Mezcla con 20 g de nuez y aliña con 10 g de aceite de oliva y unas gotas de limón.',
+  8, 'fácil', 2,
+  'https://comeviveviaja.com/wp-content/uploads/2018/12/ensalada-de-col-lombarda-manzana-y-frutos-secos-con-alin%CC%83o-ma%CC%81gico.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 18, 100.00),   -- col lombarda
+(@receta_id, 36, 120.00),   -- manzana
+(@receta_id, 156, 20.00),   -- nuez
+(@receta_id, 242, 10.00);   -- aceite de oliva
+
+-- 23. Bowl de quinoa, brócoli y zanahoria
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Bowl de quinoa, brócoli y zanahoria',
+  'Plato completo, rico en fibra y proteínas vegetales.',
+  '1. Cocina 100 g de quinoa cocida.\n2. Cuece 100 g de brócoli y 100 g de zanahoria en trozos.\n3. Mezcla todo y aliña con 10 g de aceite de oliva y una pizca de sal.',
+  20, 'fácil', 2,
+  'https://d36fw6y2wq3bat.cloudfront.net/recipes/bowl-de-quinua-con-garbanzos-coliflor-y-zanahoria/900/bowl-de-quinua-con-garbanzos-coliflor-y-zanahoria_version_1652875035.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 128, 100.00),  -- quinoa cocida
+(@receta_id, 8, 100.00),    -- brócoli
+(@receta_id, 3, 100.00),    -- zanahoria
+(@receta_id, 242, 10.00),   -- aceite de oliva
+(@receta_id, 245, 1.00);    -- sal
+
+-- 24. Crema fría de pepino y yogur
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Crema fría de pepino y yogur',
+  'Entrante refrescante y ligero, ideal para el verano.',
+  '1. Pela y trocea 200 g de pepino.\n2. Tritura con 100 g de yogur natural, 10 g de aceite de oliva, sal y pimienta.\n3. Sirve frío.',
+  7, 'fácil', 2,
+  'https://www.divinacocina.es/wp-content/uploads/sopa-fria-de-yogur-y-pepino.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 25, 200.00),   -- pepino
+(@receta_id, 79, 100.00),   -- yogur natural
+(@receta_id, 242, 10.00),   -- aceite de oliva
+(@receta_id, 245, 1.00),    -- sal
+(@receta_id, 246, 0.50);    -- pimienta negra
+
+-- 25. Salteado de judía verde, champiñón y zanahoria
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Salteado de judía verde, champiñón y zanahoria',
+  'Plato vegetal bajo en calorías y rico en fibra.',
+  '1. Trocea 100 g de judía verde, 100 g de zanahoria y 100 g de champiñón.\n2. Saltea en 10 g de aceite de oliva 5 minutos.\n3. Añade sal y pimienta al gusto.',
+  12, 'fácil', 2,
+  'https://i.pinimg.com/originals/c3/81/2b/c3812b48d417742f359e9a8e0b089493.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 24, 100.00),   -- judía verde
+(@receta_id, 3, 100.00),    -- zanahoria
+(@receta_id, 32, 100.00),   -- champiñón
+(@receta_id, 242, 10.00),   -- aceite de oliva
+(@receta_id, 245, 1.00),    -- sal
+(@receta_id, 246, 0.50);    -- pimienta negra
+
+-- 26. Macedonia de frutas frescas
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Macedonia de frutas frescas',
+  'Postre refrescante y natural, ideal para cualquier momento.',
+  '1. Corta en cubos 50 g de manzana, 50 g de plátano, 50 g de pera, 50 g de fresa y 50 g de kiwi.\n2. Mezcla y sirve frío.',
+  5, 'fácil', 2,
+  'https://danzadefogones.com/wp-content/uploads/2024/05/macedonia-de-frutas.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 36, 50.00),    -- manzana
+(@receta_id, 37, 50.00),    -- plátano
+(@receta_id, 39, 50.00),    -- pera
+(@receta_id, 43, 50.00),    -- fresa
+(@receta_id, 44, 50.00);    -- kiwi
+
+-- 27. Tortilla de espinaca y cebolla
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Tortilla de espinaca y cebolla',
+  'Clásica tortilla jugosa y saludable.',
+  '1. Bate 2 huevos. Sofríe 80 g de espinaca y 50 g de cebolla en 10 g de aceite de oliva. Añade los huevos y cuaja la tortilla.',
+  15, 'fácil', 2,
+  'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTivdNFUyGpdJJDAYW932LtbW09ctgSNFGYBp84VvCvkxy8D5dAO6tOjSzPylHO',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 1, 80.00),     -- espinaca
+(@receta_id, 10, 50.00),    -- cebolla
+(@receta_id, 276, 2.00),    -- huevo
+(@receta_id, 242, 10.00);   -- aceite de oliva
+
+-- 28. Crema de calabacín y puerro
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Crema de calabacín y puerro',
+  'Sopa suave y reconfortante, ideal para cenas ligeras.',
+  '1. Trocea 200 g de calabacín y 50 g de puerro. Sofríe el puerro en 10 g de aceite de oliva, añade el calabacín y 400 ml de agua. Cocina 15 minutos y tritura.',
+  20, 'fácil', 2,
+  'https://www.pequerecetas.com/wp-content/uploads/2022/01/crema-de-calabacin-y-puerros-receta.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 4, 200.00),    -- calabacín
+(@receta_id, 14, 50.00),    -- puerro
+(@receta_id, 242, 10.00),   -- aceite de oliva
+(@receta_id, 165, 400.00);  -- agua mineral
+
+-- 29. Ensalada de tomate, pepino y queso fresco
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Ensalada de tomate, pepino y queso fresco',
+  'Ensalada fresca y ligera, ideal para el verano.',
+  '1. Corta 100 g de tomate, 80 g de pepino y 40 g de queso fresco en cubos. Mezcla y aliña con 10 g de aceite de oliva y sal.',
+  7, 'fácil', 2,
+  'https://d36fw6y2wq3bat.cloudfront.net/recipes/ensalada-ligera-de-pepino-con-tomate-y-mozzarella/900/ensalada-ligera-de-pepino-con-tomate-y-mozzarella.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 7, 100.00),    -- tomate
+(@receta_id, 25, 80.00),    -- pepino
+(@receta_id, 81, 40.00),    -- queso fresco
+(@receta_id, 242, 10.00),   -- aceite de oliva
+(@receta_id, 245, 1.00);    -- sal
+
+-- 30. Salteado de berenjena, pimiento y cebolla
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Salteado de berenjena, pimiento y cebolla',
+  'Plato vegetal colorido y sabroso.',
+  '1. Trocea 100 g de berenjena, 50 g de pimiento rojo y 50 g de cebolla. Saltea en 10 g de aceite de oliva 8 minutos. Añade sal y pimienta.',
+  12, 'fácil', 2,
+  'https://www.divinacocina.es/wp-content/uploads/berenjenas-salteadas.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 5, 100.00),    -- berenjena
+(@receta_id, 6, 50.00),     -- pimiento rojo
+(@receta_id, 10, 50.00),    -- cebolla
+(@receta_id, 242, 10.00),   -- aceite de oliva
+(@receta_id, 245, 1.00),    -- sal
+(@receta_id, 246, 0.50);    -- pimienta negra
+
+-- 31. Bowl de arroz integral, pollo y brócoli
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Bowl de arroz integral, pollo y brócoli',
+  'Plato completo y equilibrado, ideal para comida principal.',
+  '1. Cocina 100 g de arroz integral. Saltea 100 g de pollo en 10 g de aceite de oliva. Añade 80 g de brócoli cocido. Mezcla todo y sirve.',
+  25, 'fácil', 2,
+  'https://d36fw6y2wq3bat.cloudfront.net/recipes/bowl-de-arroz-con-pollo-y-brocoli/900/bowl-de-arroz-con-pollo-y-brocoli_version_1652879220.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 126, 100.00),  -- arroz integral cocido
+(@receta_id, 281, 100.00),  -- pollo
+(@receta_id, 8, 80.00),     -- brócoli
+(@receta_id, 242, 10.00);   -- aceite de oliva
+
+-- 32. Crema de calabaza y zanahoria
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Crema de calabaza y zanahoria',
+  'Sopa cremosa y dulce, perfecta para el otoño.',
+  '1. Trocea 200 g de calabaza y 100 g de zanahoria. Cocina con 400 ml de agua y 10 g de aceite de oliva 20 minutos. Tritura y sirve.',
+  25, 'fácil', 2,
+  'https://d36fw6y2wq3bat.cloudfront.net/recipes/crema-de-zanahoria-y-calabaza/900/crema-de-zanahoria-y-calabaza_version_1646280366.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 287, 200.00),  -- calabaza
+(@receta_id, 3, 100.00),    -- zanahoria
+(@receta_id, 165, 400.00),  -- agua mineral
+(@receta_id, 242, 10.00);   -- aceite de oliva
+
+-- 33. Ensalada de lechuga, manzana y queso de cabra
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Ensalada de lechuga, manzana y queso de cabra',
+  'Ensalada fresca y con contraste dulce-salado.',
+  '1. Trocea 80 g de lechuga romana y 1 manzana. Añade 30 g de queso de cabra y 10 g de nuez. Aliña con aceite de oliva.',
+  7, 'fácil', 2,
+  'https://borges1896.com/app/uploads/2013/10/ensalada-de-queso-de-cabra.jpg.webp',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 11, 80.00),    -- lechuga romana
+(@receta_id, 36, 120.00),   -- manzana
+(@receta_id, 83, 30.00),    -- queso de cabra
+(@receta_id, 156, 10.00),   -- nuez
+(@receta_id, 242, 10.00);   -- aceite de oliva
+
+-- 34. Pasta integral con brócoli y tomate
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Pasta integral con brócoli y tomate',
+  'Plato vegetariano equilibrado y saciante.',
+  '1. Cocina 100 g de pasta integral. Añade 80 g de brócoli y 80 g de tomate en cubos. Aliña con aceite de oliva y pimienta.',
+  20, 'fácil', 2,
+  'https://d36fw6y2wq3bat.cloudfront.net/recipes/macarrones-con-brocoli-y-tomates-cherry/900/macarrones-con-brocoli-y-tomates-cherry_version_1670645324.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 289, 100.00),  -- pasta integral
+(@receta_id, 8, 80.00),     -- brócoli
+(@receta_id, 7, 80.00),     -- tomate
+(@receta_id, 242, 10.00),   -- aceite de oliva
+(@receta_id, 246, 0.50);    -- pimienta negra
+
+-- 35. Salteado de setas y espinaca
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Salteado de setas y espinaca',
+  'Plato ligero y sabroso, ideal como acompañamiento.',
+  '1. Saltea 100 g de seta ostra y 80 g de espinaca en 10 g de aceite de oliva. Añade sal y pimienta.',
+  10, 'fácil', 2,
+  'https://1080recetas.com/wp-content/uploads/2013/02/2013Fotos_02-Primeros_04-Verduras-Legumbres_01-Noticia_not-salteado-espinacas.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 33, 100.00),   -- seta ostra
+(@receta_id, 1, 80.00),     -- espinaca
+(@receta_id, 242, 10.00),   -- aceite de oliva
+(@receta_id, 245, 1.00),    -- sal
+(@receta_id, 246, 0.50);    -- pimienta negra
+
+-- 36. Macedonia de frutas con yogur
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Macedonia de frutas con yogur',
+  'Postre fresco y saludable.',
+  '1. Corta en cubos 50 g de manzana, 50 g de plátano, 50 g de pera y 50 g de fresa. Mezcla con 80 g de yogur natural.',
+  5, 'fácil', 2,
+  'https://www.chefcaprabo.com/export/shared/.galleries/recetas/3500023_682x433.png_908605617.png',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 36, 50.00),    -- manzana
+(@receta_id, 37, 50.00),    -- plátano
+(@receta_id, 39, 50.00),    -- pera
+(@receta_id, 43, 50.00),    -- fresa
+(@receta_id, 79, 80.00);    -- yogur natural
+
+-- 37. Guiso de lentejas con zanahoria y puerro
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Guiso de lentejas con zanahoria y puerro',
+  'Plato de cuchara tradicional, rico en fibra y proteínas vegetales.',
+  '1. Sofríe 50 g de puerro y 100 g de zanahoria en 10 g de aceite de oliva. Añade 150 g de lenteja cocida y 400 ml de agua. Cocina 20 minutos.',
+  30, 'fácil', 2,
+  'https://www.verdurastabuenca.com/images/recetas/shutterstock_119080897_web.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 14, 50.00),    -- puerro
+(@receta_id, 3, 100.00),    -- zanahoria
+(@receta_id, 96, 150.00),   -- lenteja cocida
+(@receta_id, 165, 400.00),  -- agua mineral
+(@receta_id, 242, 10.00);   -- aceite de oliva
+
+-- 38. Tostada integral con aguacate y huevo
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Tostada integral con aguacate y huevo',
+  'Desayuno saciante y saludable.',
+  '1. Tuesta 2 rebanadas de pan integral. Machaca 100 g de aguacate y reparte sobre el pan. Añade 1 huevo cocido en rodajas.',
+  7, 'fácil', 2,
+  'https://cuisinart.com.co/cdn/shop/articles/Tostadas_integrales_con_aguacate_y_huevo_pochado.jpg?v=1738268176&width=1000',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 130, 60.00),   -- pan integral
+(@receta_id, 261, 100.00),  -- aguacate
+(@receta_id, 276, 1.00);    -- huevo
+
+-- 39. Ensalada de escarola, pera y nuez
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Ensalada de escarola, pera y nuez',
+  'Ensalada fresca y crujiente, ideal para acompañar.',
+  '1. Trocea 80 g de escarola y 1 pera. Añade 20 g de nuez y aliña con aceite de oliva.',
+  7, 'fácil', 2,
+  'https://elfogonilustrado.com/wp-content/uploads/2016/11/Ensalada-de-escarola-peras-y-nueces-con-salsa-de-caramelo-2.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 26, 80.00),    -- escarola
+(@receta_id, 39, 120.00),   -- pera
+(@receta_id, 156, 20.00),   -- nuez
+(@receta_id, 242, 10.00);   -- aceite de oliva
+
+-- 40. Rollitos de berenjena rellenos de queso y nuez
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Rollitos de berenjena rellenos de queso y nuez',
+  'Entrante vistoso y sabroso, ideal para picar en ocasiones especiales.',
+  '1. Corta 2 berenjenas en láminas finas y ásalas. Mezcla 80 g de queso de cabra con 30 g de nuez picada y 20 g de manzana rallada. Rellena las láminas, enrolla y hornea 10 minutos.',
+  40, 'difícil', 4,
+  'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQJnISdTCClEoMNinrQ-ura125Ji2Zu-dYeSOFmZy_6RYjKdnB_nh4CrdxE3MHR',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 5, 400.00),    -- berenjena
+(@receta_id, 83, 80.00),    -- queso de cabra
+(@receta_id, 156, 30.00),   -- nuez
+(@receta_id, 36, 20.00);    -- manzana
+
+-- 41. Tarta salada de espinaca, puerro y queso
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Tarta salada de espinaca, puerro y queso',
+  'Plato principal elaborado, perfecto para compartir.',
+  '1. Prepara una base con 150 g de harina, 50 g de aceite y 50 ml de agua. Sofríe 100 g de espinaca y 50 g de puerro. Mezcla con 2 huevos y 60 g de queso fresco. Vierte sobre la base y hornea 35 minutos.',
+  60, 'difícil', 6,
+  'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTu7bnhh3Ckw2ujNqLrWZOvLnnaWjWCrMJuTzTLfdILGsqRigzZarmRnodT1i4K',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 139, 150.00),  -- harina de trigo
+(@receta_id, 242, 50.00),   -- aceite de oliva
+(@receta_id, 165, 50.00),   -- agua mineral
+(@receta_id, 1, 100.00),    -- espinaca
+(@receta_id, 14, 50.00),    -- puerro
+(@receta_id, 276, 2.00),    -- huevo
+(@receta_id, 81, 60.00);    -- queso fresco
+
+-- 42. Ensalada templada de quinoa, brócoli y pollo
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Ensalada templada de quinoa, brócoli y pollo',
+  'Ensalada completa y saciante, ideal como plato único.',
+  '1. Cocina 100 g de quinoa y 100 g de brócoli al vapor. Saltea 100 g de pollo en 10 g de aceite. Mezcla todo con 30 g de nuez y aliña con aceite y limón.',
+  35, 'difícil', 2,
+  'https://www.disfrutandosingluten.es/wp-content/uploads/2014/11/brocoli-con-quinoa.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 128, 100.00),  -- quinoa cocida
+(@receta_id, 8, 100.00),    -- brócoli
+(@receta_id, 281, 100.00),  -- pollo
+(@receta_id, 156, 30.00),   -- nuez
+(@receta_id, 242, 10.00);   -- aceite de oliva
+
+-- 43. Pastel de verduras y queso de cabra
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Pastel de verduras y queso de cabra',
+  'Plato vistoso y sabroso, ideal para ocasiones especiales.',
+  '1. Ralla 100 g de zanahoria, 100 g de calabacín y 100 g de berenjena. Mezcla con 2 huevos, 80 g de queso de cabra y 50 g de harina. Hornea en molde 35 minutos.',
+  50, 'difícil', 4,
+  'https://www.lekue.com/cdn-cgi/image/format=auto,onerror=redirect/media/recipe/foto153_1.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 3, 100.00),    -- zanahoria
+(@receta_id, 4, 100.00),    -- calabacín
+(@receta_id, 5, 100.00),    -- berenjena
+(@receta_id, 276, 2.00),    -- huevo
+(@receta_id, 83, 80.00),    -- queso de cabra
+(@receta_id, 139, 50.00);   -- harina de trigo
+
+-- 44. Croquetas de brócoli y queso
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Croquetas de brócoli y queso',
+  'Aperitivo elaborado y saludable, perfecto para picar.',
+  '1. Cuece 200 g de brócoli y tritúralo. Mezcla con 80 g de queso rallado, 1 huevo y 40 g de pan integral rallado. Forma croquetas y hornea 20 minutos.',
+  40, 'difícil', 4,
+  'https://www.divinacocina.es/wp-content/uploads/2017/07/croquetas-de-brocoli-v.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 8, 200.00),    -- brócoli
+(@receta_id, 92, 80.00),    -- queso rallado
+(@receta_id, 276, 1.00),    -- huevo
+(@receta_id, 130, 40.00);   -- pan integral
+
+-- 45. Empanadillas de espinaca y queso fresco
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Empanadillas de espinaca y queso fresco',
+  'Aperitivo casero, ideal para compartir.',
+  '1. Prepara una masa con 150 g de harina, 50 ml de agua y 30 g de aceite. Rellena con 100 g de espinaca salteada y 60 g de queso fresco. Forma empanadillas y hornea 20 minutos.',
+  50, 'difícil', 6,
+  'https://img.juanideanasevilla.com/archivos/recetas/fee27f61754de8954e5ab1e60ca32553ee98f369.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 139, 150.00),  -- harina de trigo
+(@receta_id, 165, 50.00),   -- agua mineral
+(@receta_id, 242, 30.00),   -- aceite de oliva
+(@receta_id, 1, 100.00),    -- espinaca
+(@receta_id, 81, 60.00);    -- queso fresco
+
+-- 46. Lasaña de berenjena, tomate y queso
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Lasaña de berenjena, tomate y queso',
+  'Plato principal elaborado, sin pasta y bajo en carbohidratos.',
+  '1. Corta 2 berenjenas en láminas y ásalas. Alterna capas de berenjena, 200 g de tomate triturado y 80 g de queso rallado. Hornea 25 minutos.',
+  60, 'difícil', 4,
+  'https://www.demoslavueltaaldia.com/sites/default/files/lasana-berenjena-tomate-queso.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 5, 400.00),    -- berenjena
+(@receta_id, 265, 200.00),  -- tomate triturado
+(@receta_id, 92, 80.00);    -- queso rallado
+
+-- 47. Hamburguesas vegetales de lenteja y zanahoria
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Hamburguesas vegetales de lenteja y zanahoria',
+  'Plato principal saludable y elaborado, ideal para vegetarianos.',
+  '1. Tritura 200 g de lenteja cocida con 100 g de zanahoria rallada y 40 g de pan integral rallado. Forma hamburguesas y hornea 20 minutos.',
+  40, 'difícil', 4,
+  'https://www.annaferrer.cat/FitxersWeb/12243/hamburgueses-llenties-pastanaga-fitxa.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 96, 200.00),   -- lenteja cocida
+(@receta_id, 3, 100.00),    -- zanahoria
+(@receta_id, 130, 40.00);   -- pan integral
+
+-- 48. Tarta de manzana y nuez
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Tarta de manzana y nuez',
+  'Postre elaborado y vistoso, perfecto para ocasiones especiales.',
+  '1. Prepara una base con 150 g de harina, 50 g de aceite y 50 ml de agua. Mezcla 2 manzanas en láminas con 40 g de nuez y 10 g de miel. Monta la tarta y hornea 35 minutos.',
+  60, 'difícil', 6,
+  'https://www.divinacocina.es/wp-content/uploads/tarta-de-manzana-y-nueces.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 139, 150.00),  -- harina de trigo
+(@receta_id, 242, 50.00),   -- aceite de oliva
+(@receta_id, 165, 50.00),   -- agua mineral
+(@receta_id, 36, 240.00),   -- manzana
+(@receta_id, 156, 40.00),   -- nuez
+(@receta_id, 239, 10.00);   -- miel
+
+-- 49. Quiche de brócoli, puerro y queso
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Quiche de brócoli, puerro y queso',
+  'Plato principal elaborado, ideal para compartir.',
+  '1. Prepara una base con 150 g de harina, 50 g de aceite y 50 ml de agua. Mezcla 100 g de brócoli cocido, 50 g de puerro, 2 huevos y 60 g de queso rallado. Vierte sobre la base y hornea 35 minutos.',
+  60, 'difícil', 6,
+  'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiBPqD5J88GfuJaSr38ecel0jPs3ss-tB6UkgEGgyT6-gJiCvYIT4ZRU4UwKGaAjLKGJ56TC3UolW53ong0kCO8OcVgjkL6c0_VC6gaWq-KyUU2mkmdfJcKNPEu0XKUUgupwxOU3rY21jbm/s1600/tarta+integral+1.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 139, 150.00),  -- harina de trigo
+(@receta_id, 242, 50.00),   -- aceite de oliva
+(@receta_id, 165, 50.00),   -- agua mineral
+(@receta_id, 8, 100.00),    -- brócoli
+(@receta_id, 14, 50.00),    -- puerro
+(@receta_id, 276, 2.00),    -- huevo
+(@receta_id, 92, 60.00);    -- queso rallado
+
+-- 50. Pastel de pera, manzana y almendra
+INSERT INTO receta (
+    nombre,
+    descripcion,
+    instrucciones,
+    tiempo_preparacion,
+    dificultad,
+    raciones,
+    imagen_url,
+    visible
+) VALUES (
+  'Pastel de pera, manzana y almendra',
+  'Postre elaborado, jugoso y con contraste de texturas.',
+  '1. Mezcla 100 g de pera, 100 g de manzana y 80 g de almendra molida con 2 huevos y 10 g de miel. Hornea en molde 30 minutos.',
+  45, 'difícil', 6,
+  'https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480_1_5x/img/recipe/ras/Assets/9650EB40-74A8-41C1-A892-C08F7DEFCCF4/Derivates/129E0502-A75A-4118-A088-0CE4884C0109.jpg',
+  TRUE
+);
+SET @receta_id = LAST_INSERT_ID();
+INSERT INTO receta_ingrediente VALUES
+(@receta_id, 39, 100.00),   -- pera
+(@receta_id, 36, 100.00),   -- manzana
+(@receta_id, 155, 80.00),   -- almendra cruda
+(@receta_id, 276, 2.00),    -- huevo
+(@receta_id, 239, 10.00);   -- miel
