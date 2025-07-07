@@ -5,7 +5,7 @@ function Footer() {
   return (
     <footer className="relative w-full bg-white pb-6 pt-6 mt-10">
       {/* Logo centrado */}
-      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <Link
           to="/"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

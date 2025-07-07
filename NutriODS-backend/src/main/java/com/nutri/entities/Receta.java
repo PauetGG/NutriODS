@@ -57,7 +57,7 @@ public class Receta {
     @Min(value = 1, message = "Debe haber al menos una ración")
     private Integer raciones = 1;
 
-    @Size(max = 255, message = "La URL de la imagen no puede superar los 255 caracteres")
+    @Size(max = 855, message = "La URL de la imagen no puede superar los 255 caracteres")
     private String imagenUrl;
 
     private Boolean visible = true;

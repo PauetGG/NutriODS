@@ -2,7 +2,6 @@ package com.nutri.entities;
 import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,9 +34,8 @@ public class ComidaIngrediente {
     @JsonBackReference
     private ComidaModelo comidaModelo;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) // Cambiar de LAZY a EAGER
     @JoinColumn(name = "ingrediente_id", nullable = false)
-    @JsonIgnore
     private Ingrediente ingrediente;
 
     @Column(nullable = false, precision = 6, scale = 2)

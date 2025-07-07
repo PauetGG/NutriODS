@@ -89,15 +89,27 @@ public class UsuarioService {
         usuario.setAltura(dto.getAltura());
         usuario.setPeso(dto.getPeso());
         usuario.setFechaNacimiento(dto.getFechaNacimiento());
-        usuario.setGenero(Usuario.Genero.valueOf(dto.getGenero()));
+
+        if (dto.getGenero() != null) {
+            usuario.setGenero(Usuario.Genero.valueOf(dto.getGenero()));
+        }
+
         usuario.setObjetivo(dto.getObjetivo());
-        usuario.setAlergias(dto.getAlergias());
-        usuario.setEnfermedades(dto.getEnfermedades()); 
-        usuario.setPreferenciasComida(dto.getPreferencias());
-        usuario.setActividadFisica(Usuario.ActividadFisica.valueOf(dto.getActividad().replace(" ", "_")));
+
+        // Convertimos las listas a cadenas separadas por comas
+        usuario.setAlergias(dto.getAlergias() != null ? String.join(",", dto.getAlergias()) : null);
+        usuario.setEnfermedades(dto.getEnfermedades() != null ? String.join(",", dto.getEnfermedades()) : null);
+        usuario.setPreferenciasComida(dto.getPreferencias() != null ? String.join(",", dto.getPreferencias()) : null);
+
+        if (dto.getActividad() != null) {
+            usuario.setActividadFisica(
+                Usuario.ActividadFisica.valueOf(dto.getActividad().replace(" ", "_"))
+            );
+        }
+
         return usuarioRepository.save(usuario);
     }
-    
+
     public Optional<Usuario> findByUsername(String username) {
         return usuarioRepository.findByUsername(username);
     }

@@ -79,10 +79,10 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
 
       // 3. Crear seguimiento para esa dieta
       const seguimientoRes = await fetch(
-        `http://localhost:8080/api/seguimiento-dieta/crear-seguimiento/${dieta.id}`,
+        `http://localhost:8080/api/seguimiento-dieta/generar-mes/${dieta.id}`,
         { method: "POST" }
       );
-
+      
       if (!seguimientoRes.ok) throw new Error("Error al crear el seguimiento de la dieta");
 
       alert("¡Dieta y seguimiento generados correctamente!");

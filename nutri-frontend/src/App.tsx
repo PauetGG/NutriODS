@@ -12,6 +12,7 @@ import PerfilPage from "./pages/PerfilPage";
 import ArticuloPage from "./pages/ArticuloPage";
 import RecetasPage from "./pages/RecetasPage"; 
 
+
 function App() {
   return (
     <>
@@ -19,7 +20,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/dieta" element={<DietaPage />} />
-        <Route path="/seguimiento/:dietaId" element={<SeguimientoPage />} />
+       <Route path="/seguimiento/:dietaId" element={<SeguimientoPage />} />
         <Route path="/glosario" element={<GlosarioPage />} />
         <Route path="/multimedia" element={<MultimediaPage />} />
         <Route path="/articulos" element={<ArticulosPage />} />
