@@ -10,7 +10,7 @@ import MultimediaPage from "./pages/MultimediaPage";
 import ArticulosPage from "./pages/ArticulosPage";
 import PerfilPage from "./pages/PerfilPage";
 import ArticuloPage from "./pages/ArticuloPage";
-import RecetasPage from "./pages/RecetasPage"; 
+import RecetaPage from "./pages/RecetaPage";
 
 
 function App() {
@@ -26,7 +26,7 @@ function App() {
         <Route path="/articulos" element={<ArticulosPage />} />
         <Route path="/perfil" element={<PerfilPage />} />
         <Route path="/articulo/:id" element={<ArticuloPage />} />
-        <Route path="/recetas" element={<RecetasPage />} /> 
+        <Route path="/recetas" element={<RecetaPage />} /> 
       </Routes>
       <Footer />
     </>
