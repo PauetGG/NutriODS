@@ -2,7 +2,6 @@ package com.nutri.services;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,8 +59,8 @@ public class SeguimientoDietaService {
     public void crearSeguimientoDesdeFecha(Integer dietaId, LocalDate fechaInicio) {
         List<ComidaDiaria> comidas = comidaDiariaRepository.findByDietaId(dietaId);
 
-        // Calcular último día del mes de la fechaInicio
-        LocalDate finDeMes = fechaInicio.withDayOfMonth(fechaInicio.lengthOfMonth());
+        // Calcular último día: 3 meses después de la fecha de inicio
+        LocalDate finDeMes = fechaInicio.plusMonths(3);
 
         // Empezar desde el lunes anterior o igual a fechaInicio
         LocalDate inicioSemana = fechaInicio.with(java.time.DayOfWeek.MONDAY);
@@ -97,14 +96,6 @@ public class SeguimientoDietaService {
             inicioSemana = inicioSemana.plusWeeks(1);
         }
     }
-    
-    public void crearSeguimientoMesCompleto(Integer dietaId, YearMonth mes) {
-        for (int day = 1; day <= mes.lengthOfMonth(); day++) {
-            LocalDate fecha = mes.atDay(day);
-            crearSeguimientoDesdeFecha(dietaId, fecha);
-        }
-    }
-
 
     /**
      * Actualiza un registro de seguimiento existente.

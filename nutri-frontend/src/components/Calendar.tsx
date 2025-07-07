@@ -1,8 +1,9 @@
 import { useParams } from "react-router-dom";
 import { useSeguimientoDieta, type Seguimiento } from "../hooks/useSeguimientoDieta";
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { ModalComida } from "../components/ModalComida";
+import { generarPDFMensualSimple } from "../utils/pdfGenerator";
 
 export const Calendar = () => {
   const [modoVista, setModoVista] = useState<"monthly" | "weekly" | "daily">("monthly");
@@ -61,6 +62,17 @@ export const Calendar = () => {
     }
   };
 
+  const obtenerClaseFondo = (comida: Seguimiento): [string, string] => {
+    const fechaComida = new Date(comida.fecha.split("T")[0]);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    fechaComida.setHours(0, 0, 0, 0);
+
+    if (comida.consumido) return ["bg-green-100", "hover:bg-green-200"];
+    if (fechaComida < hoy) return ["bg-red-100", "hover:bg-red-200"];
+    return ["", "hover:bg-gray-100"];
+  };
+
   const comidasPorFecha: Record<string, Seguimiento[]> = {};
   seguimiento.forEach((s) => {
     const fecha = s.fecha.split("T")[0];
@@ -69,26 +81,47 @@ export const Calendar = () => {
   });
 
   const abrirModal = (comida: Seguimiento) => {
-    setComidaSeleccionada(comida);
-    setModalOpen(true);
+    if (modoVista === "daily") {
+      setComidaSeleccionada(comida);
+      setModalOpen(true);
+    }
   };
 
+    const manejarClickDia = (fecha: Date) => {
+      if (modoVista === "monthly") {
+        setFechaActual(fecha);
+        setModoVista("weekly");
+      } else if (modoVista === "weekly") {
+        setFechaActual(fecha);
+        setModoVista("daily");
+      }
+    };
+
+
   const generarContenido = (fecha: Date) => {
-    const key = fecha.toISOString().split("T")[0];
+    const key = fecha.toLocaleDateString("sv-SE");
     const comidas = comidasPorFecha[key] || [];
 
     if (modoVista === "monthly") {
-      return comidas.map((c, i) => (
-        <div
-          key={i}
-          className="text-xs text-gray-700 cursor-pointer hover:bg-green-100 p-1 rounded transition"
-          onClick={() => abrirModal(c)}
-        >
-          {c.comida}
-        </div>
-      ));
+      const orden = ["desayuno", "almuerzo", "comida", "merienda", "cena"];
+      const comidasOrdenadas = [...comidas].sort(
+        (a, b) => orden.indexOf(a.comida) - orden.indexOf(b.comida)
+      );
+
+      return comidasOrdenadas.map((c, i) => {
+        const [bg, hover] = obtenerClaseFondo(c);
+        return (
+          <div
+            key={i}
+            className={`text-xs text-gray-700 cursor-pointer p-1 rounded transition ${bg} ${hover}`}
+            onClick={() => abrirModal(c)}
+          >
+            {c.comida}
+          </div>
+        );
+      });
     } else if (modoVista === "weekly") {
-      const tiposOrden = ["desayuno", "comida", "merienda", "cena"];
+      const tiposOrden = ["desayuno", "almuerzo", "comida", "merienda", "cena"];
       const comidasOrdenadas = [...comidas].sort(
         (a, b) => tiposOrden.indexOf(a.comida) - tiposOrden.indexOf(b.comida)
       );
@@ -103,17 +136,22 @@ export const Calendar = () => {
           {grupos.map((grupo, i) => (
             <div key={i}>
               {grupo.comidas.length > 0 && (
-                <div className="text-xs font-semibold text-gray-500 capitalize mb-1">{grupo.tipo}</div>
-              )}
-              {grupo.comidas.map((c, j) => (
-                <div
-                  key={j}
-                  onClick={() => abrirModal(c)}
-                  className="text-sm text-gray-700 cursor-pointer hover:bg-green-100 px-1 py-1 rounded transition"
-                >
-                  {c.comidaModelo.nombre}
+                <div className="text-xs font-semibold text-gray-500 capitalize mb-1">
+                  {grupo.tipo}
                 </div>
-              ))}
+              )}
+              {grupo.comidas.map((c, j) => {
+                const [bg, hover] = obtenerClaseFondo(c);
+                return (
+                  <div
+                    key={j}
+                    onClick={() => abrirModal(c)}
+                    className={`text-sm text-gray-700 cursor-pointer px-1 py-0.5 rounded transition ${bg} ${hover}`}
+                  >
+                    {c.comidaModelo.nombre}
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
@@ -188,18 +226,27 @@ export const Calendar = () => {
   const dias = generarDias();
 
   return (
-    <div className="bg-white rounded-lg shadow">
+    <div className="bg-white rounded-lg shadow pt-5">
       {/* Cabecera */}
-      <div className="p-4 flex items-center justify-between border-b border-gray-200">
-        <div className="flex items-center">
-          <button onClick={irAtras} className="p-1 hover:bg-gray-100 rounded-md">
-            <ChevronLeftIcon size={20} />
-          </button>
-          <h2 className="mx-4 font-medium capitalize text-lg">{formatearCabecera(fechaActual)}</h2>
-          <button onClick={irAdelante} className="p-1 hover:bg-gray-100 rounded-md">
-            <ChevronRightIcon size={20} />
-          </button>
-        </div>
+     <div className="p-4 flex items-center justify-between border-b border-gray-200">
+      <div className="flex items-center">
+        <button onClick={irAtras} className="p-1 hover:bg-gray-100 rounded-md">
+          <ChevronLeftIcon size={20} />
+        </button>
+        <h2 className="mx-4 font-medium capitalize text-lg">{formatearCabecera(fechaActual)}</h2>
+        <button onClick={irAdelante} className="p-1 hover:bg-gray-100 rounded-md">
+          <ChevronRightIcon size={20} />
+        </button>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => generarPDFMensualSimple(seguimiento, fechaActual)}
+          className="bg-blue-500 text-white text-sm px-3 py-1 rounded hover:bg-blue-600 transition"
+        >
+          Descargar PDF
+        </button>
+
         <div className="relative">
           <select
             className="appearance-none bg-white border border-gray-200 rounded-md px-3 py-1 pr-8 text-sm"
@@ -210,11 +257,16 @@ export const Calendar = () => {
             <option value="weekly">Semanal</option>
             <option value="daily">Diaria</option>
           </select>
-          <ChevronDownIcon size={16} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <ChevronDownIcon
+            size={16}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+          />
         </div>
       </div>
+    </div>
 
-      {(modoVista === "weekly" || modoVista === "monthly") && (
+
+      {modoVista === "monthly" && (
         <div className="grid grid-cols-7 border-b border-gray-200">
           {["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"].map((dia) => (
             <div
@@ -227,21 +279,94 @@ export const Calendar = () => {
         </div>
       )}
 
-      <div className={`grid ${modoVista === "monthly" ? "grid-cols-7 grid-rows-5" : modoVista === "weekly" ? "grid-cols-7" : "grid-cols-1"}`}>
-        {dias.map((fecha, index) => (
-          <div
-            key={index}
-            className={`min-h-[100px] p-2 border-r border-b border-gray-200 last:border-r-0 ${
-              fecha.getDay() === 0 || fecha.getDay() === 6 ? "bg-gray-50" : ""
-            }`}
-          >
-            {modoVista !== "daily" && (
-              <div className="text-sm font-medium text-gray-600 mb-1">{fecha.getDate()}</div>
-            )}
-            {generarContenido(fecha)}
+      {modoVista === "weekly" ? (
+        <div className="overflow-auto">
+          <div className="grid grid-cols-8">
+            {/* Cabecera de los días */}
+           <div className="p-3 text-center text-sm font-medium text-gray-600 border-r border-gray-200"></div>
+            {dias.map((fecha, idx) => {
+            const diaSemana = (fecha.getDay() + 6) % 7; // Ajuste para empezar en Lunes
+            const nombreDia = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"][diaSemana];
+
+            return (
+              <div
+                key={`header-${idx}`}
+                className="p-3 text-center text-sm font-medium text-gray-600 border-r border-gray-200 border-b"
+              >
+                {nombreDia} {fecha.getDate()}
+              </div>
+            );
+          })}
+
+            {/* Tipos de comida */}
+            {["desayuno", "comida", "merienda", "almuerzo", "cena"].map((tipo) => {
+              const tipoPresente = dias.some((fecha) => {
+                const key = fecha.toISOString().split("T")[0];
+                return (comidasPorFecha[key] || []).some((c) => c.comida === tipo);
+              });
+              if (!tipoPresente) return null;
+
+              return (
+              <React.Fragment key={tipo}>
+                {/* Celda de tipo (columna izquierda) */}
+                <div
+                  className={`min-h-[100px] p-2 border-t border-r border-b border-gray-200 text-sm font-medium text-gray-600 text-center flex items-center justify-center`}
+                >
+                  {tipo.charAt(0).toUpperCase() + tipo.slice(1)}
+                </div>
+
+                {/* Celdas de los días */}
+                {dias.map((fecha, idx) => {
+                  const key = fecha.toISOString().split("T")[0];
+                  const comidas = (comidasPorFecha[key] || []).filter((c) => c.comida === tipo);
+
+                  return (
+                    <div
+                      key={`${tipo}-${idx}`}
+                      onClick={() => manejarClickDia(fecha)} 
+                      className={`min-h-[100px] p-2 border-r border-b border-gray-200 last:border-r-0 ${
+                        fecha.getDay() === 0 || fecha.getDay() === 6 ? "bg-gray-50" : ""
+                      }`}
+                    >
+                      {comidas.map((c, i) => {
+                      const [bg, hover] = obtenerClaseFondo(c);
+                      return (
+                        <div
+                          key={i}
+                          onClick={() => abrirModal(c)}
+                          className={`text-sm text-gray-700 cursor-pointer px-1 py-0.5 rounded transition ${bg} ${hover}`}
+                        >
+                          {c.comidaModelo.nombre}
+                        </div>
+                      );
+                    })}
+                    </div>
+                  );
+                })}
+              </React.Fragment>
+            );
+
+            })}
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div className={`grid ${modoVista === "monthly" ? "grid-cols-7 grid-rows-5" : "grid-cols-1"}`}>
+          {dias.map((fecha, index) => (
+            <div
+              key={index}
+              className={`min-h-[100px] p-2 border-r border-b border-gray-200 last:border-r-0 ${
+                fecha.getDay() === 0 || fecha.getDay() === 6 ? "bg-gray-50" : ""
+              }`}
+              onClick={() => manejarClickDia(fecha)}
+            >
+              {modoVista !== "daily" && (
+                <div className="text-sm font-medium text-gray-600 mb-1">{fecha.getDate()}</div>
+              )}
+              {generarContenido(fecha)}
+            </div>
+          ))}
+        </div>
+      )}
 
       {comidaSeleccionada && (
         <ModalComida

@@ -1,5 +1,7 @@
 package com.nutri.services;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,10 +98,10 @@ public class UsuarioService {
 
         usuario.setObjetivo(dto.getObjetivo());
 
-        // Convertimos las listas a cadenas separadas por comas
-        usuario.setAlergias(dto.getAlergias() != null ? String.join(",", dto.getAlergias()) : null);
-        usuario.setEnfermedades(dto.getEnfermedades() != null ? String.join(",", dto.getEnfermedades()) : null);
-        usuario.setPreferenciasComida(dto.getPreferencias() != null ? String.join(",", dto.getPreferencias()) : null);
+        // Asegurar que no se guarde null para evitar errores al llamar a .contains()
+        usuario.setAlergias(dto.getAlergias() != null ? String.join(",", dto.getAlergias()) : "");
+        usuario.setEnfermedades(dto.getEnfermedades() != null ? String.join(",", dto.getEnfermedades()) : "");
+        usuario.setPreferenciasComida(dto.getPreferencias() != null ? String.join(",", dto.getPreferencias()) : "");
 
         if (dto.getActividad() != null) {
             usuario.setActividadFisica(
@@ -109,6 +111,7 @@ public class UsuarioService {
 
         return usuarioRepository.save(usuario);
     }
+
 
     public Optional<Usuario> findByUsername(String username) {
         return usuarioRepository.findByUsername(username);
@@ -145,4 +148,35 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
         return true;
     }
+    public DatosUsuarioDTO getDatosUsuarioDTOByUsername(String username) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+            .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con username: " + username));
+
+        DatosUsuarioDTO dto = new DatosUsuarioDTO();
+
+        dto.setAltura(usuario.getAltura());
+        dto.setPeso(usuario.getPeso());
+        dto.setFechaNacimiento(usuario.getFechaNacimiento());
+        dto.setGenero(usuario.getGenero() != null ? usuario.getGenero().name().toLowerCase() : null);
+        dto.setObjetivo(usuario.getObjetivo());
+
+        dto.setAlergias(usuario.getAlergias() != null && !usuario.getAlergias().isBlank()
+                ? Arrays.stream(usuario.getAlergias().split(",")).map(String::trim).toList()
+                : new ArrayList<>());
+
+        dto.setEnfermedades(usuario.getEnfermedades() != null && !usuario.getEnfermedades().isBlank()
+                ? Arrays.stream(usuario.getEnfermedades().split(",")).map(String::trim).toList()
+                : new ArrayList<>());
+
+        dto.setPreferencias(usuario.getPreferenciasComida() != null && !usuario.getPreferenciasComida().isBlank()
+                ? Arrays.stream(usuario.getPreferenciasComida().split(",")).map(String::trim).toList()
+                : new ArrayList<>());
+
+        dto.setActividad(usuario.getActividadFisica() != null
+                ? usuario.getActividadFisica().name().replace("_", " ").toLowerCase()
+                : null);
+
+        return dto;
+    }
+
 }

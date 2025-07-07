@@ -1,7 +1,6 @@
 package com.nutri.controllers;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -75,17 +74,6 @@ public class SeguimientoDietaController {
         return ResponseEntity.ok().build();
     }
     
-    @PostMapping("/generar-mes-completo/{dietaId}")
-    public ResponseEntity<Void> generarMesCompleto(
-            @PathVariable Integer dietaId,
-            @RequestParam int anio,
-            @RequestParam int mes) {
-        
-        YearMonth yearMonth = YearMonth.of(anio, mes);
-        seguimientoDietaService.crearSeguimientoMesCompleto(dietaId, yearMonth);
-        return ResponseEntity.ok().build();
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<SeguimientoDieta> actualizarSeguimiento(
             @PathVariable Integer id,

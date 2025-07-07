@@ -69,11 +69,9 @@ public class UsuarioController {
         Optional<Usuario> usuario = usuarioService.findByCorreo(correo);
         return usuario.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
-
     @GetMapping("/username/{username}")
-    public ResponseEntity<Usuario> findByUsername(@PathVariable String username) {
-        Optional<Usuario> usuario = usuarioService.findByUsername(username);
-        return usuario.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public DatosUsuarioDTO getDatosUsuarioPorUsername(@PathVariable String username) {
+        return usuarioService.getDatosUsuarioDTOByUsername(username);
     }
 
     @GetMapping("/count")
