@@ -29,7 +29,7 @@ function Header() {
       <div className="flex justify-between items-center px-6 h-full">
         <nav className="flex space-x-6 text-gray-700 font-medium">
           <Link to="/dieta" className="hover:text-green-600">Generar Dieta</Link>
-          <a href="#" className="hover:text-green-600">Recetas</a>
+          <Link to="/recetas" className="hover:text-green-600">Recetas</Link>
           <a href="#" className="hover:text-green-600">Foro</a>
 
           {/* Menú Educación unificado sin espacio */}
