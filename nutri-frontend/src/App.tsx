@@ -31,7 +31,6 @@ function App() {
         <Route path="/articulos" element={<ArticulosPage />} />
         <Route path="/perfil" element={<PerfilPage />} />
         <Route path="/articulo/:id" element={<ArticuloPage />} />
-<<<<<<< HEAD
 
         {/* 🔥 Rutas anidadas para el seguimiento */}
        <Route path="/seguimiento/:dietaId" element={<SeguimientoLayout />}>
@@ -42,9 +41,7 @@ function App() {
           <Route path="estadisticas" element={<EstadisticasPage />} />
         </Route>
 
-=======
         <Route path="/recetas" element={<RecetaPage />} /> 
->>>>>>> 0a838cc402e2740037b96019416ee6a0575543ee
       </Routes>
       <Footer />
     </>
