@@ -111,7 +111,7 @@ function DietaPage() {
               <li
                 key={dieta.id}
                 className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm cursor-pointer hover:bg-gray-100 transition"
-                onClick={() => navigate(`/seguimiento/${dieta.id}`)} // ✅ CORREGIDO
+                onClick={() => navigate(`/seguimiento/${dieta.id}/dashboard`)} // ✅ CORREGIDO
               >
                 <p className="text-lg font-semibold">Dieta {index + 1}: {dieta.nombre}</p>
                 <p className="text-sm text-gray-600">{dieta.descripcion}</p>

@@ -21,9 +21,15 @@ export const generarPDFMensualSimple = (
     const diaSemana = (fecha.getDay() + 6) % 7;
 
     const fechaISO = fecha.toISOString().split("T")[0];
+    const ordenComidas = ["DESAYUNO", "ALMUERZO", "COMIDA", "MERIENDA", "CENA"];
+
     const comidasDelDia = seguimiento
       .filter((c) => c.fecha.startsWith(fechaISO))
-      .map((c) => c.comidaModelo.nombre);
+      .sort((a, b) =>
+        ordenComidas.indexOf(a.comida.toUpperCase()) -
+        ordenComidas.indexOf(b.comida.toUpperCase())
+      )
+      .map((c) => `${c.comida.toUpperCase()}: ${c.comidaModelo.nombre}`);
 
     const textoComidas = comidasDelDia.length > 0
       ? `${dia}:\n${comidasDelDia.join("\n")}`

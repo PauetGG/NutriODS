@@ -88,19 +88,40 @@ export const Calendar = () => {
   };
 
     const manejarClickDia = (fecha: Date) => {
-      if (modoVista === "monthly") {
-        setFechaActual(fecha);
-        setModoVista("weekly");
-      } else if (modoVista === "weekly") {
-        setFechaActual(fecha);
-        setModoVista("daily");
-      }
-    };
+    console.log("🖱️ Día clicado:", fecha.toDateString());
+    const fechaNormalizada = new Date(fecha);
+    fechaNormalizada.setHours(0, 0, 0, 0); // 🔧 fuerza hora a 00:00
+
+    if (modoVista === "monthly") {
+      const diaSemana = (fechaNormalizada.getDay() + 6) % 7;
+      const lunes = new Date(fechaNormalizada);
+      lunes.setDate(fechaNormalizada.getDate() - diaSemana);
+      lunes.setHours(0, 0, 0, 0); // asegúrate que también lunes tenga hora 00:00
+
+      setFechaActual(lunes);
+      setModoVista("weekly");
+    } else if (modoVista === "weekly") {
+      setFechaActual(fechaNormalizada);
+      setModoVista("daily");
+    }
+  };
 
 
   const generarContenido = (fecha: Date) => {
+    const emojiPorTipo: Record<string, string> = {
+      desayuno: "🥐",
+      almuerzo: "🥗",
+      comida: "🍽️",
+      merienda: "🍎",
+      cena: "🌙",
+    };
     const key = fecha.toLocaleDateString("sv-SE");
-    const comidas = comidasPorFecha[key] || [];
+    let comidas = comidasPorFecha[key] || [];
+
+    if (modoVista === "monthly") {
+      const esMismoMes = fecha.getMonth() === fechaActual.getMonth();
+      if (!esMismoMes) comidas = []; 
+    }
 
     if (modoVista === "monthly") {
       const orden = ["desayuno", "almuerzo", "comida", "merienda", "cena"];
@@ -113,10 +134,12 @@ export const Calendar = () => {
         return (
           <div
             key={i}
-            className={`text-xs text-gray-700 cursor-pointer p-1 rounded transition ${bg} ${hover}`}
+            className={`text-xs text-gray-700 cursor-pointer p-1 rounded transition shadow-sm border ${bg} ${hover}`}
             onClick={() => abrirModal(c)}
           >
+            <span className="mr-1">{emojiPorTipo[c.comida] || "🍴"}</span>
             {c.comida}
+            {c.notas && <span className="ml-1">📝</span>}
           </div>
         );
       });
@@ -146,9 +169,11 @@ export const Calendar = () => {
                   <div
                     key={j}
                     onClick={() => abrirModal(c)}
-                    className={`text-sm text-gray-700 cursor-pointer px-1 py-0.5 rounded transition ${bg} ${hover}`}
+                    className={`text-sm text-gray-700 cursor-pointer px-1 py-0.5 rounded transition shadow-sm border ${bg} ${hover}`}
                   >
+                    <span className="mr-1">{emojiPorTipo[c.comida] || "🍴"}</span>
                     {c.comidaModelo.nombre}
+                    {c.notas && <span className="ml-1">📝</span>}
                   </div>
                 );
               })}
@@ -165,8 +190,13 @@ export const Calendar = () => {
               className="p-4 bg-gray-50 rounded-lg shadow border text-sm cursor-pointer hover:bg-gray-100 transition"
               onClick={() => abrirModal(c)}
             >
-              <div className="text-base font-semibold text-gray-700 uppercase">{c.comida}</div>
-              <div className="text-sm text-gray-800">{c.comidaModelo.nombre}</div>
+              <div className="text-base font-semibold text-gray-700 uppercase">
+                {emojiPorTipo[c.comida] || "🍴"} {c.comida}
+              </div>
+              <div className="text-sm text-gray-800 flex items-center">
+                {c.comidaModelo.nombre}
+                {c.notas && <span className="ml-2">📝</span>}
+              </div>
               <div className="text-xs text-gray-500 mt-1">Calorías: {c.comidaModelo.caloriasTotales}</div>
               {c.notas && <div className="text-xs italic text-gray-400 mt-1">Notas: {c.notas}</div>}
               <div className="mt-1 text-xs text-gray-400">
@@ -193,7 +223,7 @@ export const Calendar = () => {
         dias.push(fecha);
       }
     } else if (modoVista === "weekly") {
-      const inicio = new Date(fechaActual);
+     const inicio = new Date(fechaActual); 
       inicio.setDate(inicio.getDate() - ((inicio.getDay() + 6) % 7));
       for (let i = 0; i < 7; i++) {
         const fecha = new Date(inicio);
@@ -301,7 +331,7 @@ export const Calendar = () => {
             {/* Tipos de comida */}
             {["desayuno", "comida", "merienda", "almuerzo", "cena"].map((tipo) => {
               const tipoPresente = dias.some((fecha) => {
-                const key = fecha.toISOString().split("T")[0];
+                const key = fecha.toLocaleDateString("sv-SE");
                 return (comidasPorFecha[key] || []).some((c) => c.comida === tipo);
               });
               if (!tipoPresente) return null;
@@ -317,7 +347,7 @@ export const Calendar = () => {
 
                 {/* Celdas de los días */}
                 {dias.map((fecha, idx) => {
-                  const key = fecha.toISOString().split("T")[0];
+                  const key = fecha.toLocaleDateString("sv-SE");
                   const comidas = (comidasPorFecha[key] || []).filter((c) => c.comida === tipo);
 
                   return (
