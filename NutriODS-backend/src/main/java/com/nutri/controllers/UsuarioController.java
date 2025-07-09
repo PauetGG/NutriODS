@@ -100,5 +100,13 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Contraseña incorrecta");
         }
     }
-
+    
+    @GetMapping("/{id}/imc")
+    public ResponseEntity<?> calcularIMC(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok(Map.of("imc", usuarioService.calcularIMCUsuario(id)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al calcular el IMC");
+        }
+    }
 }

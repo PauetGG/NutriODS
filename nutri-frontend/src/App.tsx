@@ -40,7 +40,6 @@ function App() {
           <Route path="habitos" element={<HabitosPage />} />
           <Route path="estadisticas" element={<EstadisticasPage />} />
         </Route>
-
         <Route path="/recetas" element={<RecetaPage />} /> 
       </Routes>
       <Footer />

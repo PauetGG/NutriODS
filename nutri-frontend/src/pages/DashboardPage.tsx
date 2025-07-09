@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useSeguimientoDieta } from "../hooks/useSeguimientoDieta";
 import { ResumenSemanalCard } from "../components/ResumenSemanalCard";
 import { CaloriasConsumidasCard } from "../components/CaloriasConsumidasCard";
@@ -15,10 +16,9 @@ function DashboardPage() {
 
   // Calcular lunes de esta semana
   const lunes = new Date(hoy);
-  const diaSemana = (hoy.getDay() + 6) % 7; // lunes = 0
+  const diaSemana = (hoy.getDay() + 6) % 7;
   lunes.setDate(hoy.getDate() - diaSemana);
 
-  // Comidas desde lunes hasta ayer
   const comidasSemana = seguimiento.filter((s) => {
     const fecha = new Date(s.fecha.split("T")[0]);
     fecha.setHours(0, 0, 0, 0);
@@ -28,37 +28,19 @@ function DashboardPage() {
   const total = comidasSemana.length;
   const completadas = comidasSemana.filter((s) => s.consumido).length;
 
-  // Calorías por día desde lunes hasta ayer
-  const obtenerCaloriasSemanales = () => {
-    const dias: { dia: string; total: number }[] = [];
+  // 🔁 Calorías por día desde el backend
+  const [caloriasSemanales, setCaloriasSemanales] = useState<
+    { dia: string; objetivo: number; consumido: number }[]
+  >([]);
 
-    for (let i = 0; i < diaSemana; i++) {
-      const fecha = new Date(lunes);
-      fecha.setDate(lunes.getDate() + i);
-      const key = fecha.toLocaleDateString("sv-SE");
-
-      const comidasDia = seguimiento.filter((s) => s.fecha.startsWith(key));
-      const total = comidasDia.reduce(
-        (sum, s) => sum + (s.comidaModelo?.caloriasTotales || 0),
-        0
-      );
-
-      dias.push({
-        dia: fecha.toLocaleDateString("es-ES", { weekday: "short" }),
-        total,
-      });
+  useEffect(() => {
+    if (!isNaN(dietaIdNumber)) {
+      fetch(`http://localhost:8080/api/seguimiento-dieta/calorias-semanales/dieta/${dietaIdNumber}`)
+        .then((res) => res.json())
+        .then(setCaloriasSemanales)
+        .catch(console.error);
     }
-
-    return dias;
-  };
-
-  const caloriasSemanales = obtenerCaloriasSemanales();
-
-  // Calorías objetivo = suma total de comidas planificadas desde lunes hasta ayer
-  const objetivoSemanal = comidasSemana.reduce(
-    (sum, s) => sum + (s.comidaModelo?.caloriasTotales || 0),
-    0
-  );
+  }, [dietaIdNumber]);
 
   // Simulación temporal de estado general
   const energia = 4.2;
@@ -80,7 +62,7 @@ function DashboardPage() {
         <ResumenHabitosCard agua={agua} sueno={sueno} ejercicio={ejercicio} />
       </div>
 
-      <CaloriasConsumidasCard datos={caloriasSemanales} objetivo={objetivoSemanal} />
+      <CaloriasConsumidasCard datos={caloriasSemanales} />
     </div>
   );
 }

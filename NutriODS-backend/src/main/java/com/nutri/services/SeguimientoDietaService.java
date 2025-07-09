@@ -2,11 +2,16 @@ package com.nutri.services;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.nutri.DTOs.CaloriasDiaDTO;
 import com.nutri.entities.ComidaDiaria;
 import com.nutri.entities.SeguimientoDieta;
 import com.nutri.repositories.ComidaDiariaRepository;
@@ -96,6 +101,58 @@ public class SeguimientoDietaService {
             inicioSemana = inicioSemana.plusWeeks(1);
         }
     }
+        
+    public List<CaloriasDiaDTO> calcularCaloriasPorDiaPorDieta(Integer dietaId) {
+        LocalDate hoy = LocalDate.now();
+
+        List<SeguimientoDieta> registros = seguimientoRepository.findByDietaId(dietaId)
+            .stream()
+            .filter(s -> s.getFecha() != null && s.getFecha().isBefore(hoy)) // solo hasta ayer
+            .toList();
+
+        Map<String, CaloriasDiaDTO> resumenPorDia = new HashMap<>();
+
+        for (SeguimientoDieta s : registros) {
+            String dia = capitalizar(s.getDiaSemana().name()); // ejemplo: "Lunes"
+            
+            int caloriasPorComida = s.getComidaModelo().getCaloriasTotales();
+            boolean fueConsumido = Boolean.TRUE.equals(s.getConsumido());
+
+            CaloriasDiaDTO dto = resumenPorDia.getOrDefault(dia, new CaloriasDiaDTO(dia, 0, 0));
+
+            // ✅ Aquí solo sumamos 1 vez las calorías totales por comida
+            dto.setObjetivo(dto.getObjetivo() + caloriasPorComida);
+
+            if (fueConsumido) {
+                dto.setConsumido(dto.getConsumido() + caloriasPorComida);
+            }
+
+            resumenPorDia.put(dia, dto);
+        }
+
+        return resumenPorDia.values().stream()
+            .sorted(Comparator.comparingInt(d -> ordenarDiaSemana(d.getDia())))
+            .collect(Collectors.toList());
+    }
+
+
+    private int ordenarDiaSemana(String dia) {
+        return switch (dia.toLowerCase()) {
+            case "lunes" -> 1;
+            case "martes" -> 2;
+            case "miércoles" -> 3;
+            case "jueves" -> 4;
+            case "viernes" -> 5;
+            case "sábado" -> 6;
+            case "domingo" -> 7;
+            default -> 99;
+        };
+    }
+
+    private String capitalizar(String dia) {
+        return dia.substring(0, 1).toUpperCase() + dia.substring(1).toLowerCase();
+    }
+
 
     /**
      * Actualiza un registro de seguimiento existente.

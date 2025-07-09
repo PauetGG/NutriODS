@@ -1,5 +1,7 @@
 package com.nutri.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -178,5 +180,19 @@ public class UsuarioService {
 
         return dto;
     }
+    
+    public BigDecimal calcularIMCUsuario(Integer id) {
+        Usuario usuario = getUsuarioById(id);
+
+        BigDecimal altura = usuario.getAltura();
+        BigDecimal peso = usuario.getPeso();
+
+        if (altura == null || peso == null || altura.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+
+        return peso.divide(altura.multiply(altura), 2, RoundingMode.HALF_UP);
+    }
+
 
 }

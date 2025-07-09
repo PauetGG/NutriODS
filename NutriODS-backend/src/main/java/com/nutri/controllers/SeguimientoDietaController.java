@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nutri.DTOs.CaloriasDiaDTO;
 import com.nutri.entities.SeguimientoDieta;
 import com.nutri.services.SeguimientoDietaService;
 
@@ -80,4 +81,10 @@ public class SeguimientoDietaController {
             @RequestBody SeguimientoDieta datos) {
         return ResponseEntity.ok(seguimientoDietaService.actualizarSeguimiento(id, datos));
     }
+    
+    @GetMapping("/calorias-semanales/dieta/{dietaId}")
+    public List<CaloriasDiaDTO> obtenerCaloriasSemanalesPorDieta(@PathVariable Integer dietaId) {
+        return seguimientoDietaService.calcularCaloriasPorDiaPorDieta(dietaId);
+    }
+
 }
