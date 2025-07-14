@@ -1,5 +1,6 @@
 package com.nutri.entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -34,9 +37,11 @@ public class SeguimientoFisico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "El ID de usuario es obligatorio")
-    @Column(name = "usuario_id", nullable = false)
-    private Integer usuarioId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dieta_id", nullable = false)
+    @NotNull(message = "La dieta es obligatoria")
+    private Dieta dieta;
+
 
     @NotNull(message = "El día de la semana es obligatorio")
     @Enumerated(EnumType.STRING)
@@ -51,7 +56,7 @@ public class SeguimientoFisico {
     @DecimalMin(value = "30.0", message = "El peso mínimo permitido es 30 kg")
     @DecimalMax(value = "200.0", message = "El peso máximo permitido es 200 kg")
     @Column(nullable = false, precision = 5, scale = 2)
-    private Double peso;
+    private BigDecimal peso;
 
     @NotNull(message = "Debe indicarse si entrenó hoy")
     @Column(name = "entreno_hoy", nullable = false)

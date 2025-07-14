@@ -5,7 +5,7 @@ import type { Articulo } from "../types/Articulo";
 
 type Comentario = {
   id: number;
-  usuario?: { id: number; nombre: string }; // Puede venir undefined
+  usuario?: { id: number; nombre: string };
   articulo: { id: number };
   contenido: string;
   fecha: string;
@@ -29,8 +29,9 @@ export default function ArticuloPage() {
       .then((res) => res.json())
       .then(setArticulo);
 
-    // ✅ Corrige el endpoint si es necesario
-    fetch(`http://localhost:8080/api/articulos/${id}/visita/${usuarioId}`, { method: "PUT" });
+    fetch(`http://localhost:8080/api/articulos/${id}/visita/${usuarioId}`, {
+      method: "PUT",
+    });
 
     fetch(`http://localhost:8080/api/articulos/likes/count/${id}`)
       .then((res) => res.json())
@@ -109,65 +110,73 @@ export default function ArticuloPage() {
     }
   };
 
-  if (!articulo) return <div className="p-6 text-center">Cargando artículo...</div>;
+  if (!articulo)
+    return <div className="p-6 text-center text-gray-600 text-lg">Cargando artículo...</div>;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white rounded-xl shadow mt-10">
+    <div className="p-6 max-w-4xl mx-auto bg-white rounded-2xl shadow-xl mt-12 transition-all">
       <img
         src={articulo.imagenUrl}
         alt={articulo.titulo}
-        className="w-full h-64 object-cover rounded mb-6"
+        className="w-full h-72 object-cover rounded-xl mb-6 shadow-sm"
       />
-      <h1 className="text-3xl font-bold mb-4 text-green-700">{articulo.titulo}</h1>
-      <p className="text-sm text-gray-500 mb-2">
-        {new Date(articulo.fechaPublicacion).toLocaleDateString()} · {articulo.autor}
+
+      <h1 className="text-4xl font-extrabold mb-2 text-emerald-700">{articulo.titulo}</h1>
+      <p className="text-sm text-gray-500 mb-3">
+        {new Date(articulo.fechaPublicacion).toLocaleDateString()} ·{" "}
+        <span className="font-medium text-gray-600">{articulo.autor}</span>
       </p>
-      <span className="inline-block bg-green-100 text-green-700 text-xs px-2 py-1 rounded mb-4">
+
+      <span className="inline-block bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full mb-6 uppercase tracking-wide">
         {articulo.categoria}
       </span>
 
-      <p className="text-lg text-gray-800 leading-relaxed mt-4 whitespace-pre-wrap">
+      <p className="text-base leading-7 text-gray-800 whitespace-pre-wrap">
         {articulo.contenido}
       </p>
 
-      {/* Likes y favoritos */}
-      <div className="mt-6 flex gap-4 items-center">
-        <button onClick={toggleLike} className="text-red-600 font-semibold hover:underline">
+      <div className="mt-8 flex flex-wrap gap-4 items-center">
+        <button
+          onClick={toggleLike}
+          className="flex items-center gap-2 text-rose-600 font-medium hover:underline transition"
+        >
           {likeado ? "❤️ Me gusta" : "🤍 Me gusta"} ({likes})
         </button>
-        <button onClick={toggleFavorito} className="text-yellow-600 font-semibold hover:underline">
+        <button
+          onClick={toggleFavorito}
+          className="flex items-center gap-2 text-yellow-500 font-medium hover:underline transition"
+        >
           {favorito ? "⭐ Favorito" : "☆ Marcar favorito"}
         </button>
       </div>
 
-      {/* Comentarios */}
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold mb-3 text-gray-700">Comentarios</h3>
-        {comentarios.length === 0 && (
-          <p className="text-sm text-gray-500">Aún no hay comentarios.</p>
+      <div className="mt-10">
+        <h3 className="text-2xl font-semibold text-gray-800 mb-4">Comentarios</h3>
+
+        {comentarios.length === 0 ? (
+          <p className="text-sm text-gray-500 italic">Aún no hay comentarios. Sé el primero en participar.</p>
+        ) : (
+          comentarios.map((com) => (
+            <div key={com.id} className="mb-5 bg-gray-50 rounded-md p-3 border border-gray-200">
+              <div className="flex justify-between items-center mb-1">
+                <p className="text-sm font-medium text-gray-700">{com.usuario?.nombre ?? "Usuario eliminado"}</p>
+                <p className="text-xs text-gray-400">{new Date(com.fecha).toLocaleString()}</p>
+              </div>
+              <p className="text-sm text-gray-800">{com.contenido}</p>
+            </div>
+          ))
         )}
-        {comentarios.map((com) => (
-          <div key={com.id} className="mb-4 border-b pb-2">
-            <p className="text-sm font-semibold">
-              {com.usuario?.nombre ?? "Usuario eliminado"}
-            </p>
-            <p className="text-sm text-gray-700">{com.contenido}</p>
-            <p className="text-xs text-gray-400">
-              {new Date(com.fecha).toLocaleString()}
-            </p>
-          </div>
-        ))}
 
         <textarea
-          className="w-full border rounded p-2 mt-4"
-          rows={3}
+          className="w-full border border-gray-300 rounded-lg p-3 mt-6 focus:ring-2 focus:ring-emerald-500 focus:outline-none resize-none"
+          rows={4}
           placeholder="Escribe tu comentario..."
           value={nuevoComentario}
           onChange={(e) => setNuevoComentario(e.target.value)}
         />
         <button
           onClick={enviarComentario}
-          className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          className="mt-3 px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-all"
         >
           Comentar
         </button>

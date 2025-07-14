@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AvatarViewer } from "../components/AvatarViewer";
 import { useAuth } from "../context/useAuth";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
 const modelosChico = [
@@ -20,6 +21,7 @@ const modelosChica = [
 
 export const ProgresoPage = () => {
   const { id } = useAuth();
+  const { dietaId } = useParams<{ dietaId: string }>();
   const [avatarActual, setAvatarActual] = useState("");
   const [avatarDeseado, setAvatarDeseado] = useState("");
   const [imc, setImc] = useState<number | null>(null);
@@ -49,6 +51,8 @@ export const ProgresoPage = () => {
   const [repsSeleccionadas, setRepsSeleccionadas] = useState<number | null>(null);
   const [tipoEntreno, setTipoEntreno] = useState<string>("");
   const [mostrarAvatarDeseado, setMostrarAvatarDeseado] = useState(false);
+  const [idSeguimientoExistente, setIdSeguimientoExistente] = useState<number | null>(null);
+
 
   const obtenerModelo = (imc: number, genero: string) => {
     const index = imc < 18.5 ? 0 : imc < 25 ? 1 : imc < 30 ? 2 : 3;
@@ -58,6 +62,7 @@ export const ProgresoPage = () => {
   useEffect(() => {
     const fetchDatos = async () => {
       try {
+        // 1. Obtener datos del usuario
         const userRes = await axios.get(`http://localhost:8080/api/usuarios/${id}`);
         const generoUsuario = userRes.data.genero?.toLowerCase() || "masculino";
         const alturaUsuario = parseFloat(userRes.data.altura);
@@ -68,6 +73,7 @@ export const ProgresoPage = () => {
         setPesoActual(pesoUsuario);
         setPesoRegistro(pesoUsuario);
 
+        // 2. Calcular IMC y asignar avatar actual y deseado
         const imcRes = await axios.get(`http://localhost:8080/api/usuarios/${id}/imc`);
         const imcActual = imcRes.data.imc;
         setImc(imcActual);
@@ -76,8 +82,27 @@ export const ProgresoPage = () => {
         setAvatarActual(modeloActual);
         setAvatarDeseado(modeloActual);
         setPesoDeseado(pesoUsuario);
+
+        // 3. Verificar si ya existe seguimiento físico para hoy
+        const hoy = new Date().toISOString().split("T")[0];
+        const seguimientoRes = await axios.get(`http://localhost:8080/api/seguimiento-fisico/buscar`, {
+          params: { usuarioId: id, fecha: hoy },
+        });
+
+        const data = seguimientoRes.data;
+        setIdSeguimientoExistente(data.id);
+
+        // Precargar datos en el formulario si ya existe
+        setPesoRegistro(data.peso);
+        setEntrenoHoy(data.entrenoHoy ? "si" : "no");
+        setTipoEntreno(data.tipoEntreno || "");
+        setTipoFuerza(data.tipoFuerza || "");
+        setVelocidad(data.velocidad || null);
+        setTiempo(data.tiempo || null);
+        setEjerciciosGimnasio(data.gimnasioEjercicios || []);
+        setEjerciciosCalistenia(data.calisteniaEjercicios || []);
       } catch (error) {
-        console.error("Error al cargar datos:", error);
+        console.log("No hay seguimiento físico registrado hoy o error al cargar:", error);
       }
     };
 
@@ -98,22 +123,60 @@ export const ProgresoPage = () => {
   const handleGuardarProgreso = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/api/progreso-fisico", {
-        usuarioId: id,
+      const url = idSeguimientoExistente
+      ? `http://localhost:8080/api/seguimiento-fisico/${idSeguimientoExistente}`
+      : `http://localhost:8080/api/seguimiento-fisico`;
+
+    const method = idSeguimientoExistente ? "put" : "post";
+
+    await axios({
+      method,
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        dieta: { id: dietaId }, // 👈 Aquí está el cambio clave
         fecha: new Date().toISOString().split("T")[0],
+        diaSemana: new Date().toLocaleDateString("es-ES", { weekday: "long" }).toLowerCase(),
+        semana: obtenerNumeroSemana(new Date()),
         peso: pesoRegistro,
-        entreno: entrenoHoy === "si",
-        tipoEntreno: entrenoHoy === "si" ? tipoEntreno : null,
+        entrenoHoy: entrenoHoy === "si",
+        tipoEntreno: tipoEntreno || null,
+        tipoFuerza: tipoFuerza || null,
         velocidad: tipoEntreno !== "fuerza" ? velocidad : null,
         tiempo: tipoEntreno !== "fuerza" ? tiempo : null,
-        tipoFuerza: tipoEntreno !== "resistencia" ? tipoFuerza : null,
-      });
+        gimnasioEjercicios:
+          tipoFuerza === "gimnasio"
+            ? ejerciciosGimnasio.map((e) => ({
+                ejercicio: e.ejercicio,
+                zona: e.zona,
+                reps: e.reps,
+                peso: e.peso,
+              }))
+            : [],
+        calisteniaEjercicios:
+          tipoFuerza === "calistenia"
+            ? ejerciciosCalistenia.map((e) => ({
+                ejercicio: e.ejercicio,
+                repeticiones: e.repeticiones,
+              }))
+            : [],
+      },
+    });
       alert("Progreso guardado correctamente");
     } catch (error) {
       console.error("Error al guardar el progreso:", error);
       alert("Hubo un error al guardar el progreso");
     }
   };
+   
+  const obtenerNumeroSemana = (fecha: Date) => {
+  const inicio = new Date(fecha.getFullYear(), 0, 1);
+  const diff = (fecha.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24);
+  return Math.ceil((diff + inicio.getDay() + 1) / 7);
+};
+
 
   const renderFuerza = () => (
   <div className="mt-4">
@@ -402,12 +465,11 @@ export const ProgresoPage = () => {
                 {(tipoEntreno === "fuerza" || tipoEntreno === "ambas") && renderFuerza()}
               </>
             )}
-
             <button
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow"
             >
-              Guardar progreso
+              {idSeguimientoExistente ? "Actualizar progreso" : "Guardar progreso"}
             </button>
           </form>
         </div>

@@ -31,12 +31,9 @@ export default function MultimediaPage() {
   ];
 
   const multimediaFiltrada = multimedia.filter((item) => {
-    const coincideBusqueda = item.titulo
-      .toLowerCase()
-      .includes(busqueda.toLowerCase());
+    const coincideBusqueda = item.titulo.toLowerCase().includes(busqueda.toLowerCase());
     const coincideTipo = tipoFiltro === "" || item.tipo === tipoFiltro;
-    const coincideCategoria =
-      categoriaFiltro === "" || item.categoria === categoriaFiltro;
+    const coincideCategoria = categoriaFiltro === "" || item.categoria === categoriaFiltro;
     return item.visible && coincideBusqueda && coincideTipo && coincideCategoria;
   });
 
@@ -50,103 +47,102 @@ export default function MultimediaPage() {
   };
 
   return (
-    <div className="p-6 pt-15 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center text-green-700">
-        Recursos Educativos
-      </h1>
+    <div className="p-6 pt-24 min-h-screen bg-gray-100">
+      <h1 className="text-4xl font-bold text-center text-emerald-700 mb-8">Recursos Educativos</h1>
 
-      {/* Buscador y filtros */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6 justify-center items-center flex-wrap">
+      {/* Filtros */}
+      <div className="flex flex-wrap gap-4 justify-center items-center mb-10">
         <input
-            type="text"
-            placeholder="Buscar por título..."
-            value={busqueda}
-            onChange={(e) => {
+          type="text"
+          placeholder="Buscar por título..."
+          value={busqueda}
+          onChange={(e) => {
             setBusqueda(e.target.value);
             setPaginaActual(1);
-            }}
-            className="p-2 border rounded w-full md:w-1/3"
+          }}
+          className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-emerald-400"
         />
+
         <select
-            value={tipoFiltro}
-            onChange={(e) => {
+          value={tipoFiltro}
+          onChange={(e) => {
             setTipoFiltro(e.target.value);
             setPaginaActual(1);
-            }}
-            className="p-2 border rounded w-full md:w-1/4"
+          }}
+          className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm w-full md:w-1/4 focus:outline-none focus:ring-2 focus:ring-emerald-400"
         >
-            <option value="">Todos los tipos</option>
-            <option value="video">🎥 Video</option>
-            <option value="web">🌐 Web</option>
+          <option value="">Todos los tipos</option>
+          <option value="video">🎥 Video</option>
+          <option value="web">🌐 Web</option>
         </select>
+
         <select
-            value={categoriaFiltro}
-            onChange={(e) => {
+          value={categoriaFiltro}
+          onChange={(e) => {
             setCategoriaFiltro(e.target.value);
             setPaginaActual(1);
-            }}
-            className="p-2 border rounded w-full md:w-1/4"
+          }}
+          className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm w-full md:w-1/4 focus:outline-none focus:ring-2 focus:ring-emerald-400"
         >
-            <option value="">Todas las categorías</option>
-            {categoriasUnicas.map((cat) => (
+          <option value="">Todas las categorías</option>
+          {categoriasUnicas.map((cat) => (
             <option key={cat} value={cat}>
-                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              {cat.charAt(0).toUpperCase() + cat.slice(1)}
             </option>
-            ))}
+          ))}
         </select>
+
         <button
-            onClick={() => {
+          onClick={() => {
             setBusqueda("");
             setTipoFiltro("");
             setCategoriaFiltro("");
             setPaginaActual(1);
-            }}
-            className="p-2 bg-red-100 text-red-700 rounded hover:bg-red-200 transition cursor-pointer"
+          }}
+          className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition"
         >
-            X
+          Limpiar filtros
         </button>
-        </div>
+      </div>
 
-      {/* Lista de recursos */}
-     <div className="flex justify-center">
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Recursos */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {recursosPagina.map((item) => (
-        <a
+          <a
             key={item.id}
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-white p-4 rounded-xl shadow hover:shadow-lg transition duration-300 block"
-        >
-            <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-green-700 font-semibold">
+            className="bg-white p-5 rounded-xl shadow-md hover:shadow-lg transition block"
+          >
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm text-emerald-700 font-semibold">
                 {item.tipo === "video" ? "🎥 Video" : "🌐 Web"}
-            </span>
-            <span className="text-xs text-gray-500">
+              </span>
+              <span className="text-xs text-gray-500">
                 {new Date(item.fechaPublicacion).toLocaleDateString()}
-            </span>
+              </span>
             </div>
             <h2 className="text-lg font-bold text-gray-800 mb-1">{item.titulo}</h2>
             <p className="text-sm text-gray-600 mb-2">{item.descripcion}</p>
             <span className="inline-block bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
-            {item.categoria}
+              {item.categoria}
             </span>
-        </a>
+          </a>
         ))}
-    </div>
-    </div>
+      </div>
 
       {/* Paginación */}
       {totalPaginas > 1 && (
-        <div className="flex justify-center flex-wrap mt-8 gap-2">
+        <div className="flex justify-center flex-wrap mt-10 gap-2">
           {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((num) => (
             <button
               key={num}
               onClick={() => cambiarPagina(num)}
-              className={`px-3 py-1 border rounded ${
+              className={`px-3 py-1 rounded-lg border ${
                 num === paginaActual
-                  ? "bg-green-700 text-white font-bold"
-                  : "hover:bg-gray-200"
+                  ? "bg-emerald-600 text-white font-bold"
+                  : "bg-white text-gray-700 hover:bg-gray-200"
               }`}
             >
               {num}

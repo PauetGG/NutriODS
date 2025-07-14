@@ -18,6 +18,7 @@ import HabitosPage from "./pages/HabitosPage";
 import ProgresoPage from "./pages/ProgresoPage";
 import EstadisticasPage from "./pages/EstadisticasPage";
 import DashboardPage from "./pages/DashboardPage";
+import ForoPage from "./pages/ForoPage";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
           <Route path="estadisticas" element={<EstadisticasPage />} />
         </Route>
         <Route path="/recetas" element={<RecetaPage />} /> 
+        <Route path="/foro" element={<ForoPage />} />
       </Routes>
       <Footer />
     </>

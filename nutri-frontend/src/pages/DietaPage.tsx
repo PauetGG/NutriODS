@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/useAuth";
 import DatosUsuarioForm from "../components/DatosUsuarioForm";
 import type { DatosUsuarioDTO } from "../types/DatosUsuarioDTO";
-import { useNavigate } from "react-router-dom"; // 👈 CORREGIDO aquí
+import { useNavigate } from "react-router-dom";
 
 type DietaResumen = {
   id: number;
@@ -17,7 +17,7 @@ function DietaPage() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [datosUsuario, setDatosUsuario] = useState<DatosUsuarioDTO | null>(null);
   const [dietas, setDietas] = useState<DietaResumen[]>([]);
-  const navigate = useNavigate(); // 👈 CORREGIDO aquí
+  const navigate = useNavigate();
 
   const fetchDietas = useCallback(async () => {
     if (!id) return;
@@ -37,12 +37,10 @@ function DietaPage() {
 
   const obtenerDatosUsuario = async () => {
     if (!username) return;
-
     try {
       const response = await fetch(`http://localhost:8080/api/usuarios/username/${username}`);
       if (response.ok) {
         const data = await response.json();
-
         const datos: DatosUsuarioDTO = {
           altura: data.altura || "",
           peso: data.peso || "",
@@ -54,7 +52,6 @@ function DietaPage() {
           preferencias: data.preferenciasComida || [],
           actividad: data.actividadFisica || "",
         };
-
         setDatosUsuario(datos);
       } else {
         setDatosUsuario(null);
@@ -71,54 +68,59 @@ function DietaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 pt-15 px-6 sm:px-10 md:px-20">
-      <div className="max-w-3xl mx-auto text-center mb-10">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-green-700 mb-4">
-          ¡Descubre tu Dieta Ideal!
+    <div className="min-h-screen bg-gray-50 py-16 px-6 sm:px-10 md:px-24">
+      <div className="max-w-3xl mx-auto text-center mb-14">
+        <h1 className="text-5xl font-extrabold text-emerald-700 mb-5 leading-tight">
+          ¡Tu Dieta Personalizada Empieza Hoy!
         </h1>
-        <p className="text-lg sm:text-xl text-gray-700">
-          Alimentarte bien nunca había sido tan fácil. En <span className="font-semibold text-green-600">BioNut</span>,
-          creamos una dieta personalizada para ti en segundos: adaptada a tus alergias, objetivos, preferencias y estilo de vida.
+        <p className="text-lg sm:text-xl text-gray-700 mb-3">
+          En <span className="font-semibold text-emerald-600">BioNut</span> te creamos una dieta completamente personalizada
+          según tus alergias, objetivos, preferencias alimentarias y estilo de vida.
         </p>
-        <p className="mt-4 text-md sm:text-lg text-gray-600">
-          Porque tu salud merece una guía profesional, deliciosa y hecha a medida.
+        <p className="text-md sm:text-lg text-gray-600">
+          🕒 Y lo mejor de todo: <span className="font-semibold text-gray-800">tu dieta tiene una duración de 3 meses</span> con
+          seguimiento diario para que no te desvíes del camino. No es una dieta cualquiera... ¡es TU plan nutricional!
         </p>
       </div>
 
-      <div className="w-full h-px bg-green-200 mb-10" />
+      <div className="w-full h-px bg-emerald-200 mb-10" />
 
       <div className="text-center">
         {nombre ? (
           <button
             onClick={handleClickGenerar}
-            className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg shadow-md transition"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-8 rounded-xl text-lg shadow-lg transition"
           >
             Generar mi Dieta Personalizada
           </button>
         ) : (
           <p className="text-lg text-gray-700">
-            🔒 Para poder generar tu dieta, necesitas{" "}
-            <span className="text-green-600 font-semibold">iniciar sesión</span>.
+            🔒 Para generar tu dieta necesitas{" "}
+            <span className="text-emerald-600 font-semibold underline">iniciar sesión</span>.
           </p>
         )}
       </div>
 
       {dietas.length > 0 && (
-        <div className="max-w-3xl mx-auto mt-10">
-          <h2 className="text-2xl font-bold text-green-700 mb-4 text-center">Tus dietas generadas</h2>
-          <ul className="space-y-4">
+        <div className="max-w-3xl mx-auto mt-14">
+          <h2 className="text-2xl font-bold text-emerald-700 mb-6 text-center">Tus dietas generadas</h2>
+          <ul className="space-y-5">
             {dietas.map((dieta, index) => (
               <li
                 key={dieta.id}
-                className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm cursor-pointer hover:bg-gray-100 transition"
-                onClick={() => navigate(`/seguimiento/${dieta.id}/dashboard`)} // ✅ CORREGIDO
+                onClick={() => navigate(`/seguimiento/${dieta.id}/dashboard`)}
+                className="p-5 bg-white border border-gray-200 rounded-xl shadow hover:shadow-md transition cursor-pointer"
               >
-                <p className="text-lg font-semibold">Dieta {index + 1}: {dieta.nombre}</p>
-                <p className="text-sm text-gray-600">{dieta.descripcion}</p>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-1">
+                  <p className="text-lg font-semibold text-gray-800">
+                    Dieta {index + 1}: {dieta.nombre}
+                  </p>
+                  <span className="text-sm text-gray-400">
+                    📅 Creada el: {new Date(dieta.created).toLocaleDateString()}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 mb-1">{dieta.descripcion}</p>
                 <p className="text-sm text-gray-500">🍽️ Comidas al día: {dieta.numeroComidasDia}</p>
-                <p className="text-sm text-gray-400">
-                  📅 Creada el: {new Date(dieta.created).toLocaleDateString()}
-                </p>
               </li>
             ))}
           </ul>

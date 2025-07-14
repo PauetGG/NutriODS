@@ -102,127 +102,138 @@ export default function PerfilPage() {
   if (!usuario) return <p className="p-4">Cargando datos del perfil...</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 pt-15">
-      <h1 className="text-3xl font-bold mb-6 text-center">Mi perfil</h1>
+    <div className="max-w-4xl mx-auto py-12 px-6 sm:px-10 bg-gray-50 min-h-screen">
+      <h1 className="text-4xl font-bold text-green-700 mb-10 text-center">👤 Mi Perfil</h1>
 
       {/* Datos personales */}
-      <details open className="mb-4 border rounded-lg">
-        <summary className="cursor-pointer bg-gray-100 px-4 py-2 font-semibold text-lg">Datos personales</summary>
-        <div className="p-4 space-y-4">
+      <details open className="mb-6 border rounded-lg shadow-sm bg-white overflow-hidden">
+        <summary className="bg-gray-100 px-5 py-3 cursor-pointer text-lg font-semibold">
+          🧍 Datos personales
+        </summary>
+        <div className="p-5 space-y-4">
           <FormInput label="Nombre" name="nombre" value={usuario.nombre} onChange={handleChange} />
           <FormInput label="Apellidos" name="apellidos" value={usuario.apellidos || ""} onChange={handleChange} />
           <FormInput label="Usuario" name="username" value={usuario.username} disabled />
           <FormInput label="Correo electrónico" name="correo" value={usuario.correo} disabled />
           <FormInput label="Fecha de nacimiento" name="fechaNacimiento" type="date" value={usuario.fechaNacimiento || ""} onChange={handleChange} />
-         <SelectInput
+          <SelectInput
             label="Género"
             name="genero"
             value={usuario.genero}
             onChange={handleChange}
             options={[
-                { value: "masculino", label: "Masculino" },
-                { value: "femenino", label: "Femenino" },
-                { value: "otro", label: "Otro" },
+              { value: "masculino", label: "Masculino" },
+              { value: "femenino", label: "Femenino" },
+              { value: "otro", label: "Otro" },
             ]}
-            />
+          />
         </div>
       </details>
 
       {/* Medidas y actividad */}
-      <details className="mb-4 border rounded-lg">
-        <summary className="cursor-pointer bg-gray-100 px-4 py-2 font-semibold text-lg">Actividad y cuerpo</summary>
-        <div className="p-4 space-y-4">
+      <details className="mb-6 border rounded-lg shadow-sm bg-white overflow-hidden">
+        <summary className="bg-gray-100 px-5 py-3 cursor-pointer text-lg font-semibold">
+          🏃 Actividad y cuerpo
+        </summary>
+        <div className="p-5 space-y-4">
           <FormInput label="Altura (cm)" name="altura" value={usuario.altura || ""} onChange={handleChange} />
           <FormInput label="Peso (kg)" name="peso" value={usuario.peso || ""} onChange={handleChange} />
-         <SelectInput
+          <SelectInput
             label="Actividad física"
             name="actividadFisica"
             value={usuario.actividadFisica}
             onChange={handleChange}
             options={[
-                { value: "sedentario", label: "Sedentario" },
-                { value: "ligero", label: "Ligero" },
-                { value: "moderado", label: "Moderado" },
-                { value: "intenso", label: "Intenso" },
-                { value: "muy_intenso", label: "Muy intenso" },
+              { value: "sedentario", label: "Sedentario" },
+              { value: "ligero", label: "Ligero" },
+              { value: "moderado", label: "Moderado" },
+              { value: "intenso", label: "Intenso" },
+              { value: "muy_intenso", label: "Muy intenso" },
             ]}
-            />
+          />
         </div>
       </details>
 
       {/* Salud y preferencias */}
-      <details className="mb-4 border rounded-lg">
-        <summary className="cursor-pointer bg-gray-100 px-4 py-2 font-semibold text-lg">Salud y preferencias</summary>
-        <div className="p-4 space-y-4">
-         <CheckboxGroup
+      <details className="mb-6 border rounded-lg shadow-sm bg-white overflow-hidden">
+        <summary className="bg-gray-100 px-5 py-3 cursor-pointer text-lg font-semibold">
+          🧠 Salud y preferencias
+        </summary>
+        <div className="p-5 space-y-4">
+          <CheckboxGroup
             label="Alergias"
             name="alergias"
             options={ALERGIAS}
             selected={usuario.alergias}
             onChange={(updated) => setUsuario({ ...usuario, alergias: updated })}
-            />
-
-            <CheckboxGroup
+          />
+          <CheckboxGroup
             label="Enfermedades"
             name="enfermedades"
             options={ENFERMEDADES}
             selected={usuario.enfermedades}
             onChange={(updated) => setUsuario({ ...usuario, enfermedades: updated })}
-            />
-
-            <CheckboxGroup
+          />
+          <CheckboxGroup
             label="Preferencias alimentarias"
             name="preferenciasComida"
             options={PREFERENCIAS}
             selected={usuario.preferenciasComida}
             onChange={(updated) => setUsuario({ ...usuario, preferenciasComida: updated })}
-            />
-
-           <SelectInput
+          />
+          <SelectInput
             label="Objetivo"
             name="objetivo"
             value={usuario.objetivo || ""}
             onChange={handleChange}
             options={OBJETIVOS}
-            />
+          />
         </div>
       </details>
 
-      <details className="mb-4 border rounded-lg">
-        <summary className="cursor-pointer bg-gray-100 px-4 py-2 font-semibold text-lg">Cambiar contraseña</summary>
-        <div className="p-4 space-y-4">
-            <FormInput
+      {/* Contraseña */}
+      <details className="mb-6 border rounded-lg shadow-sm bg-white overflow-hidden">
+        <summary className="bg-gray-100 px-5 py-3 cursor-pointer text-lg font-semibold">
+          🔐 Cambiar contraseña
+        </summary>
+        <div className="p-5 space-y-4">
+          <FormInput
             label="Contraseña actual"
             name="actual"
             type="password"
             value={password.actual}
             onChange={e => setPassword({ ...password, actual: e.target.value })}
-            />
-            <FormInput
+          />
+          <FormInput
             label="Nueva contraseña"
             name="nueva"
             type="password"
             value={password.nueva}
             onChange={e => setPassword({ ...password, nueva: e.target.value })}
-            />
-            <button
+          />
+          <button
             onClick={handleChangePassword}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-            >
+            className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 font-medium transition"
+          >
             Cambiar contraseña
-            </button>
-            {mensajePassword && <p className="text-sm text-blue-600">{mensajePassword}</p>}
+          </button>
+          {mensajePassword && <p className="text-sm text-blue-600">{mensajePassword}</p>}
         </div>
-        </details>
+      </details>
 
-      <div className="text-center">
-        <button onClick={handleSubmit} className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">
-          Guardar cambios
+      {/* Guardar cambios */}
+      <div className="text-center mt-10">
+        <button
+          onClick={handleSubmit}
+          className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold shadow-md transition"
+        >
+          💾 Guardar cambios
         </button>
-        {mensaje && <p className="mt-4 text-sm text-blue-600">{mensaje}</p>}
+        {mensaje && <p className="mt-4 text-sm text-green-700">{mensaje}</p>}
       </div>
     </div>
   );
+
 }
 
 // ✅ Subcomponentes corregidos

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { DatosUsuarioDTO } from "../types/DatosUsuarioDTO";
 import { useAuth } from "../context/useAuth";
+import Swal from "sweetalert2";
 
 type Props = {
   datosIniciales: DatosUsuarioDTO | null;
@@ -19,8 +20,9 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
     preferencias: datosIniciales?.preferencias || [],
     actividad: datosIniciales?.actividad || "",
   });
-  const [numeroComidasDia, setNumeroComidasDia] = useState<number>(4); 
-  const { id } = useAuth(); // ✅ Usamos el ID directamente del contexto
+
+  const [numeroComidasDia, setNumeroComidasDia] = useState<number>(4);
+  const { id } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -39,74 +41,97 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!id) {
-      alert("No se ha encontrado el ID del usuario.");
-      return;
-    }
+  if (!id) {
+    await Swal.fire("Error", "No se ha encontrado el ID del usuario.", "error");
+    return;
+  }
 
-    try {
-      // 1. Actualizar datos del usuario
-      const updateRes = await fetch(`http://localhost:8080/api/usuarios/${id}/datos`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          alergias: formData.alergias.length > 0 ? formData.alergias : null,
-          enfermedades: formData.enfermedades.length > 0 ? formData.enfermedades : null,
-          preferencias: formData.preferencias.length > 0 ? formData.preferencias : null,
-        }),
-      });
+  try {
+    // Mostrar mensaje de cargando
+    await Swal.fire({
+      title: "Guardando...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
-      if (!updateRes.ok) throw new Error("Error al guardar los datos");
+    // Guardar datos personales
+    const updateRes = await fetch(`http://localhost:8080/api/usuarios/${id}/datos`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...formData,
+        alergias: formData.alergias.length ? formData.alergias : null,
+        enfermedades: formData.enfermedades.length ? formData.enfermedades : null,
+        preferencias: formData.preferencias.length ? formData.preferencias : null,
+      }),
+    });
 
-      // 2. Generar dieta
-      const dietaRes = await fetch("http://localhost:8080/api/dietas/generar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          usuarioId: id,
-          nombreDieta: "Dieta personalizada",
-          descripcion: "Generada automáticamente según tus datos",
-          numeroComidasDia,
-        }),
-      });
+    if (!updateRes.ok) throw new Error("Error al guardar los datos");
 
-      if (!dietaRes.ok) throw new Error("Error al generar la dieta");
+    // Generar dieta personalizada
+    const dietaRes = await fetch("http://localhost:8080/api/dietas/generar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        usuarioId: id,
+        nombreDieta: "Dieta personalizada",
+        descripcion: "Generada automáticamente según tus datos",
+        numeroComidasDia,
+      }),
+    });
 
-      const dieta = await dietaRes.json();
+    if (!dietaRes.ok) throw new Error("Error al generar la dieta");
 
-      // 3. Crear seguimiento para esa dieta
-      const seguimientoRes = await fetch(
-        `http://localhost:8080/api/seguimiento-dieta/generar-mes/${dieta.id}`,
-        { method: "POST" }
-      );
-      
-      if (!seguimientoRes.ok) throw new Error("Error al crear el seguimiento de la dieta");
+    const dieta = await dietaRes.json();
 
-      alert("¡Dieta y seguimiento generados correctamente!");
-      if (onClose) onClose();
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Ocurrió un error durante el proceso.");
-    }
-  };
+    // Generar seguimiento del mes
+    const seguimientoRes = await fetch(
+      `http://localhost:8080/api/seguimiento-dieta/generar-mes/${dieta.id}`,
+      { method: "POST" }
+    );
 
+    if (!seguimientoRes.ok) throw new Error("Error al crear el seguimiento");
+
+    Swal.close(); // Cierra el loader
+
+    // Mostrar mensaje de éxito
+    await Swal.fire({
+      icon: "success",
+      title: "¡Dieta generada!",
+      text: "Tu dieta y seguimiento se han creado correctamente.",
+      confirmButtonColor: "#10b981",
+    });
+
+    if (onClose) onClose();
+  } catch (error) {
+    console.error("Error:", error);
+    Swal.close(); // Asegura que se cierra también si hay error
+    await Swal.fire("Oops...", "Ocurrió un error durante el proceso.", "error");
+  }
+};
 
   return (
-    <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg w-[500px] relative border border-black">
+    <div className="fixed inset-0 backdrop-blur-sm bg-opacity-40 z-50 flex justify-center items-center px-4">
+      <div className="bg-white p-6 md:p-8 rounded-xl w-full max-w-2xl relative shadow-lg border border-gray-200 overflow-hidden">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl"
         >
           ✕
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-green-700">Tus datos personales</h2>
+        <h2 className="text-2xl font-bold text-emerald-700 mb-6 text-center">
+          Tus datos personales
+        </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4 max-h-[80vh] overflow-y-auto pr-1">
+        <form onSubmit={handleSubmit} className="space-y-5 max-h-[70vh] overflow-y-auto pr-2">
+          {/* Altura y Peso */}
           <div className="flex gap-4">
             <input
               type="number"
@@ -115,7 +140,7 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
               value={formData.altura}
               onChange={handleChange}
               placeholder="Altura (m)"
-              className="w-1/2 p-2 border rounded"
+              className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
               required
             />
             <input
@@ -125,86 +150,99 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
               value={formData.peso}
               onChange={handleChange}
               placeholder="Peso (kg)"
-              className="w-1/2 p-2 border rounded"
+              className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
               required
             />
           </div>
 
+          {/* Fecha nacimiento */}
           <input
             type="date"
             name="fechaNacimiento"
             value={formData.fechaNacimiento}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
             required
           />
 
-          <select
-            name="genero"
-            value={formData.genero}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
-          >
-            <option value="">Selecciona tu género</option>
-            <option value="masculino">Masculino</option>
-            <option value="femenino">Femenino</option>
-            <option value="otro">Otro</option>
-          </select>
+          {/* Selects */}
+          {[
+            { name: "genero", label: "Selecciona tu género", options: ["masculino", "femenino", "otro"] },
+            {
+              name: "objetivo",
+              label: "Selecciona tu objetivo",
+              options: ["perder_peso", "mantener", "ganar_peso"],
+            },
+            {
+              name: "actividad",
+              label: "Nivel de actividad",
+              options: ["sedentario", "ligero", "moderado", "intenso", "muy intenso"],
+            },
+          ].map((field) => (
+            <select
+              key={field.name}
+              name={field.name}
+              value={formData[field.name as keyof DatosUsuarioDTO] as string}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
+              required
+            >
+              <option value="">{field.label}</option>
+              {field.options.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt.charAt(0).toUpperCase() + opt.slice(1).replace("_", " ")}
+                </option>
+              ))}
+            </select>
+          ))}
 
-          <select
-            name="objetivo"
-            value={formData.objetivo}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
-          >
-            <option value="">Selecciona tu objetivo</option>
-            <option value="perder_peso">Perder peso</option>
-            <option value="mantener">Mantener peso</option>
-            <option value="ganar_peso">Ganar masa muscular</option>
-          </select>
-
-          <fieldset className="border rounded p-2">
-            <legend className="text-sm font-medium text-gray-700">Alergias</legend>
-            {["gluten", "lactosa", "frutos secos", "marisco", "soja", "huevo"].map((a) => (
-              <label key={a} className="block">
-                <input
-                  type="checkbox"
-                  value={a}
-                  checked={formData.alergias.includes(a)}
-                  onChange={(e) => handleMultiChange(e, "alergias")}
-                  className="mr-2"
-                />
-                {a}
-              </label>
-            ))}
+          {/* Alergias */}
+          <fieldset className="border border-gray-300 rounded-lg p-4">
+            <legend className="text-sm font-medium text-gray-700 mb-2">Alergias</legend>
+            <div className="grid grid-cols-2 gap-2">
+              {["gluten", "lactosa", "frutos secos", "marisco", "soja", "huevo"].map((a) => (
+                <label key={a} className="flex items-center text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    value={a}
+                    checked={formData.alergias.includes(a)}
+                    onChange={(e) => handleMultiChange(e, "alergias")}
+                    className="mr-2"
+                  />
+                  {a}
+                </label>
+              ))}
+            </div>
           </fieldset>
 
-          <fieldset className="border rounded p-2">
-            <legend className="text-sm font-medium text-gray-700">Enfermedades</legend>
-            {[
-              "diabetes",
-              "hipertension",
-              "obesidad",
-              "anemia",
-              "renal",
-              "hipotiroidismo",
-              "colon irritable",
-            ].map((e) => (
-              <label key={e} className="block">
-                <input
-                  type="checkbox"
-                  value={e}
-                  checked={formData.enfermedades.includes(e)}
-                  onChange={(ev) => handleMultiChange(ev, "enfermedades")}
-                  className="mr-2"
-                />
-                {e}
-              </label>
-            ))}
+          {/* Enfermedades */}
+          <fieldset className="border border-gray-300 rounded-lg p-4">
+            <legend className="text-sm font-medium text-gray-700 mb-2">Enfermedades</legend>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                "diabetes",
+                "hipertension",
+                "obesidad",
+                "anemia",
+                "renal",
+                "hipotiroidismo",
+                "colon irritable",
+              ].map((e) => (
+                <label key={e} className="flex items-center text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    value={e}
+                    checked={formData.enfermedades.includes(e)}
+                    onChange={(ev) => handleMultiChange(ev, "enfermedades")}
+                    className="mr-2"
+                  />
+                  {e}
+                </label>
+              ))}
+            </div>
           </fieldset>
 
+          {/* Preferencias */}
           <input
             type="text"
             name="preferencias"
@@ -219,32 +257,18 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
               })
             }
             placeholder="Preferencias alimentarias (ej. vegano, sin azúcares...)"
-            className="w-full p-2 border rounded"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
           />
 
-          <select
-            name="actividad"
-            value={formData.actividad}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
-          >
-            <option value="">Selecciona tu nivel de actividad</option>
-            <option value="sedentario">Sedentario</option>
-            <option value="ligero">Ligero</option>
-            <option value="moderado">Moderado</option>
-            <option value="intenso">Intenso</option>
-            <option value="muy intenso">Muy intenso</option>
-          </select>
-
+          {/* Número de comidas */}
           <div>
-            <label className="block font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               ¿Cuántas comidas quieres al día?
             </label>
             <select
               value={numeroComidasDia}
               onChange={(e) => setNumeroComidasDia(parseInt(e.target.value))}
-              className="w-full p-2 border rounded"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
               required
             >
               <option value={3}>3 comidas</option>
@@ -253,9 +277,10 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
             </select>
           </div>
 
+          {/* Botón */}
           <button
             type="submit"
-            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 mt-2"
+            className="w-full py-2 px-4 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition duration-200"
           >
             Guardar y generar dieta
           </button>
