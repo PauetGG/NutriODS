@@ -4,6 +4,7 @@ import { useAuth } from "../context/useAuth";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import Swal from "sweetalert2";
 
 const modelosChico = [
   "https://models.readyplayer.me/686e3c51102ef4f7b8044753.glb",
@@ -86,7 +87,7 @@ export const ProgresoPage = () => {
         // 3. Verificar si ya existe seguimiento físico para hoy
         const hoy = new Date().toISOString().split("T")[0];
         const seguimientoRes = await axios.get(`http://localhost:8080/api/seguimiento-fisico/buscar`, {
-          params: { usuarioId: id, fecha: hoy },
+          params: { dietaId: dietaId, fecha: hoy },
         });
 
         const data = seguimientoRes.data;
@@ -164,10 +165,20 @@ export const ProgresoPage = () => {
             : [],
       },
     });
-      alert("Progreso guardado correctamente");
+      await Swal.fire({
+        icon: "success",
+        title: "¡Progreso guardado!",
+        text: "Tu progreso se ha guardado correctamente.",
+        confirmButtonColor: "#2563eb", // azul
+      });
     } catch (error) {
       console.error("Error al guardar el progreso:", error);
-      alert("Hubo un error al guardar el progreso");
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Hubo un error al guardar el progreso.",
+        confirmButtonColor: "#ef4444", // rojo
+      });
     }
   };
    
@@ -279,7 +290,7 @@ export const ProgresoPage = () => {
 
         {zonaMuscular && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <select
                 value={ejercicioGym}
                 onChange={(e) => setEjercicioGym(e.target.value)}
@@ -320,26 +331,44 @@ export const ProgresoPage = () => {
                 onChange={(e) => setPesoEjercicio(parseFloat(e.target.value))}
                 className="border rounded px-4 py-2 shadow-sm"
               />
+
+              <input
+                type="number"
+                min={1}
+                placeholder="Reps"
+                value={repsEjercicio ?? ""}
+                onChange={(e) => setRepsEjercicio(parseInt(e.target.value))}
+                className="border rounded px-4 py-2 shadow-sm"
+              />
             </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  if (ejercicioGym && zonaMuscular && pesoEjercicio !== null && repsEjercicio !== null) {
-                    setEjerciciosGimnasio((prev) => [
-                      ...prev,
-                      { ejercicio: ejercicioGym, zona: zonaMuscular, peso: pesoEjercicio, reps: repsEjercicio },
-                    ]);
-                    setEjercicioGym("");
-                    setZonaMuscular("");
-                    setPesoEjercicio(null);
-                    setRepsEjercicio(null);
-                  }
-                }}
-                className="mt-2 bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
-              >
-                Añadir ejercicio
-              </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (
+                  ejercicioGym &&
+                  zonaMuscular &&
+                  pesoEjercicio !== null &&
+                  repsEjercicio !== null
+                ) {
+                  setEjerciciosGimnasio((prev) => [
+                    ...prev,
+                    {
+                      ejercicio: ejercicioGym,
+                      zona: zonaMuscular,
+                      peso: pesoEjercicio,
+                      reps: repsEjercicio,
+                    },
+                  ]);
+                  setEjercicioGym("");
+                  setPesoEjercicio(null);
+                  setRepsEjercicio(null);
+                }
+              }}
+              className="mt-2 bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+            >
+              Añadir ejercicio
+            </button>
 
             {ejerciciosGimnasio.length > 0 && (
               <ul className="mt-3 space-y-1 text-sm text-gray-700">
@@ -348,7 +377,9 @@ export const ProgresoPage = () => {
                     key={index}
                     className="flex justify-between items-center bg-gray-100 px-3 py-1 rounded"
                   >
-                    <span>{item.zona} – {item.ejercicio}: {item.peso} kg</span>
+                    <span>
+                      {item.zona} – {item.ejercicio}: {item.peso} kg, {item.reps} reps
+                    </span>
                     <button
                       type="button"
                       onClick={() =>

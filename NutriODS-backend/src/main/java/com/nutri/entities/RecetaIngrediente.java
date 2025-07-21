@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "receta_ingrediente")
 @Data
@@ -20,9 +22,10 @@ public class RecetaIngrediente {
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("recetaId")
     @JoinColumn(name = "receta_id", nullable = false)
+    @JsonBackReference
     private Receta receta;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("ingredienteId")
     @JoinColumn(name = "ingrediente_id", nullable = false)
     private Ingrediente ingrediente;

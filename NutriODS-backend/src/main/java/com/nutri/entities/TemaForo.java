@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +41,7 @@ public class TemaForo {
     @NotNull(message = "El autor del tema es obligatorio")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Usuario usuario;
 
     @NotBlank(message = "El título es obligatorio")
@@ -65,9 +69,11 @@ public class TemaForo {
     private LocalDateTime modified;
 
     @OneToMany(mappedBy = "tema", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private Set<RespuestaForo> respuestas = new HashSet<>();
 
     @OneToMany(mappedBy = "tema", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("tema-likes")
     private Set<LikeForo> likes = new HashSet<>();
 
     @PrePersist

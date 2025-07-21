@@ -38,7 +38,7 @@ export default function ArticulosPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 min-h-screen pt-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold text-center text-emerald-700 mb-10">
           Artículos Educativos
@@ -96,7 +96,7 @@ export default function ArticulosPage() {
               <img
                 src={articulo.imagenUrl}
                 alt={articulo.titulo}
-                className="w-full h-48 object-cover"
+                className="w-full h-48 object-contain"
               />
               <div className="p-5">
                 <h2 className="text-lg font-semibold text-gray-800 mb-1">{articulo.titulo}</h2>

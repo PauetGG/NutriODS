@@ -1,8 +1,10 @@
 package com.nutri.entities;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -70,7 +72,8 @@ public class Receta {
 
     // Relación con ingredientes (tabla intermedia)
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<RecetaIngrediente> ingredientes = new HashSet<>();
+    @JsonManagedReference
+    private List<RecetaIngrediente> ingredientes = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

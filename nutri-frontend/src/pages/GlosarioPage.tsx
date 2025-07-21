@@ -74,7 +74,7 @@ export default function GlosarioPage() {
   const totalPaginas = Math.ceil(glosario.length / itemsPorPagina);
 
   return (
-    <div className="p-6 pt-24 min-h-screen bg-gray-100">
+    <div className="p-6 pt-10 min-h-screen bg-gray-100">
       <h1 className="text-4xl font-bold text-center text-emerald-700 mb-8">Glosario Nutricional</h1>
 
       {/* Filtros */}
@@ -119,7 +119,7 @@ export default function GlosarioPage() {
             <img
               src={item.imagenUrl}
               alt={item.termino}
-              className="w-full h-40 object-cover rounded-lg mb-4"
+              className="w-full h-40 object-contain rounded-lg mb-4"
             />
             <h2 className="text-xl font-semibold text-emerald-700">{item.termino}</h2>
             <p className="text-sm text-gray-600 mt-1">Categoría: {item.categoria}</p>
@@ -165,7 +165,7 @@ export default function GlosarioPage() {
             <img
               src={itemSeleccionado.imagenUrl}
               alt={itemSeleccionado.termino}
-              className="w-full h-52 object-cover rounded-lg mb-4"
+              className="w-full h-52 object-contain rounded-lg mb-4"
             />
             <h2 className="text-2xl font-bold mb-2 text-emerald-700">{itemSeleccionado.termino}</h2>
             <p className="text-gray-700 mb-4">{itemSeleccionado.definicion}</p>

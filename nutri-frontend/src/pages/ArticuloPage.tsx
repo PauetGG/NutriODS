@@ -118,7 +118,7 @@ export default function ArticuloPage() {
       <img
         src={articulo.imagenUrl}
         alt={articulo.titulo}
-        className="w-full h-72 object-cover rounded-xl mb-6 shadow-sm"
+        className="w-full h-72 object-contain rounded-xl mb-6 shadow-sm"
       />
 
       <h1 className="text-4xl font-extrabold mb-2 text-emerald-700">{articulo.titulo}</h1>

@@ -1,5 +1,8 @@
 package com.nutri.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,10 +27,12 @@ public class LikeForo {
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("usuarioId")
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("temaId")
     @JoinColumn(name = "tema_foro_id", nullable = false)
+    @JsonBackReference("tema-likes")
     private TemaForo tema;
 }

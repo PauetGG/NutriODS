@@ -1,6 +1,6 @@
 package com.nutri.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,8 +46,8 @@ public class GimnasioEjercicio {
     @Column(nullable = false)
     private Integer reps;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seguimiento_id", nullable = false)
+    @JsonBackReference
     private SeguimientoFisico seguimiento;
 }

@@ -8,6 +8,20 @@ type Props = {
   onClose?: () => void;
 };
 
+// Helper para fetch con timeout
+function fetchWithTimeout(
+  resource: RequestInfo | URL,
+  options: RequestInit = {},
+  timeout = 10000
+): Promise<Response> {
+  return Promise.race([
+    fetch(resource, options),
+    new Promise<Response>((_, reject) =>
+      setTimeout(() => reject(new Error("Tiempo de espera agotado")), timeout)
+    ),
+  ]);
+}
+
 function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
   const [formData, setFormData] = useState<DatosUsuarioDTO>({
     altura: datosIniciales?.altura || "",
@@ -41,80 +55,76 @@ function DatosUsuarioForm({ datosIniciales, onClose }: Props) {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!id) {
-    await Swal.fire("Error", "No se ha encontrado el ID del usuario.", "error");
-    return;
-  }
+    if (!id) {
+      await Swal.fire("Error", "No se ha encontrado el ID del usuario.", "error");
+      return;
+    }
 
-  try {
-    // Mostrar mensaje de cargando
-    await Swal.fire({
-      title: "Guardando...",
-      text: "Por favor espera un momento",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    let errorMsg = "Ocurrió un error durante el proceso.";
+    try {
+      // Guardar datos personales
+      const updateRes = await fetchWithTimeout(`http://localhost:8080/api/usuarios/${id}/datos`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          alergias: formData.alergias.length ? formData.alergias : null,
+          enfermedades: formData.enfermedades.length ? formData.enfermedades : null,
+          preferencias: formData.preferencias.length ? formData.preferencias : null,
+        }),
+      });
 
-    // Guardar datos personales
-    const updateRes = await fetch(`http://localhost:8080/api/usuarios/${id}/datos`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...formData,
-        alergias: formData.alergias.length ? formData.alergias : null,
-        enfermedades: formData.enfermedades.length ? formData.enfermedades : null,
-        preferencias: formData.preferencias.length ? formData.preferencias : null,
-      }),
-    });
+      if (!updateRes.ok) {
+        errorMsg = "Error al guardar los datos personales";
+        throw new Error(errorMsg);
+      }
 
-    if (!updateRes.ok) throw new Error("Error al guardar los datos");
+      // Generar dieta personalizada
+      const dietaRes = await fetchWithTimeout("http://localhost:8080/api/dietas/generar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usuarioId: id,
+          nombreDieta: "Dieta personalizada",
+          descripcion: "Generada automáticamente según tus datos",
+          numeroComidasDia,
+        }),
+      });
 
-    // Generar dieta personalizada
-    const dietaRes = await fetch("http://localhost:8080/api/dietas/generar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        usuarioId: id,
-        nombreDieta: "Dieta personalizada",
-        descripcion: "Generada automáticamente según tus datos",
-        numeroComidasDia,
-      }),
-    });
+      if (!dietaRes.ok) {
+        errorMsg = "Error al generar la dieta";
+        throw new Error(errorMsg);
+      }
 
-    if (!dietaRes.ok) throw new Error("Error al generar la dieta");
+      const dieta = await dietaRes.json();
 
-    const dieta = await dietaRes.json();
+      // Generar seguimiento del mes
+      const seguimientoRes = await fetchWithTimeout(
+        `http://localhost:8080/api/seguimiento-dieta/generar-mes/${dieta.id}`,
+        { method: "POST" }
+      );
 
-    // Generar seguimiento del mes
-    const seguimientoRes = await fetch(
-      `http://localhost:8080/api/seguimiento-dieta/generar-mes/${dieta.id}`,
-      { method: "POST" }
-    );
+      if (!seguimientoRes.ok) {
+        errorMsg = "Error al crear el seguimiento";
+        throw new Error(errorMsg);
+      }
 
-    if (!seguimientoRes.ok) throw new Error("Error al crear el seguimiento");
+      await Swal.fire({
+        icon: "success",
+        title: "¡Dieta generada!",
+        text: "Tu dieta y seguimiento se han creado correctamente.",
+        confirmButtonColor: "#10b981",
+      });
 
-    Swal.close(); // Cierra el loader
-
-    // Mostrar mensaje de éxito
-    await Swal.fire({
-      icon: "success",
-      title: "¡Dieta generada!",
-      text: "Tu dieta y seguimiento se han creado correctamente.",
-      confirmButtonColor: "#10b981",
-    });
-
-    if (onClose) onClose();
-  } catch (error) {
-    console.error("Error:", error);
-    Swal.close(); // Asegura que se cierra también si hay error
-    await Swal.fire("Oops...", "Ocurrió un error durante el proceso.", "error");
-  }
-};
+      if (onClose) onClose();
+    } catch (error: unknown) {
+      console.error("Error:", error);
+      const errMsg = error instanceof Error ? error.message : "";
+      await Swal.fire("Oops...", `${errorMsg}${errMsg ? "\n" + errMsg : ""}`, "error");
+    }
+  };
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-opacity-40 z-50 flex justify-center items-center px-4">

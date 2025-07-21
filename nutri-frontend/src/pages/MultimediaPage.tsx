@@ -47,7 +47,7 @@ export default function MultimediaPage() {
   };
 
   return (
-    <div className="p-6 pt-24 min-h-screen bg-gray-100">
+    <div className="p-6 pt-10 min-h-screen bg-gray-100">
       <h1 className="text-4xl font-bold text-center text-emerald-700 mb-8">Recursos Educativos</h1>
 
       {/* Filtros */}

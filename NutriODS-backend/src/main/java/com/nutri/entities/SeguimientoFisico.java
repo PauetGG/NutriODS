@@ -5,22 +5,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -37,20 +25,11 @@ public class SeguimientoFisico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "La dieta es obligatoria")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dieta_id", nullable = false)
-    @NotNull(message = "La dieta es obligatoria")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Dieta dieta;
-
-
-    @NotNull(message = "El día de la semana es obligatorio")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "dia_semana", nullable = false, length = 10)
-    private DiaSemana diaSemana;
-
-    @NotNull(message = "El número de semana es obligatorio")
-    @Column(nullable = false)
-    private Integer semana;
 
     @NotNull(message = "El peso es obligatorio")
     @DecimalMin(value = "30.0", message = "El peso mínimo permitido es 30 kg")
@@ -86,15 +65,20 @@ public class SeguimientoFisico {
     @Column(nullable = false)
     private LocalDate fecha;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime created;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.created = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
-    public enum DiaSemana {
-        lunes, martes, miércoles, jueves, viernes, sábado, domingo
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

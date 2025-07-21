@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { CrearTemaForm } from "../components/CrearTemaForm"; // Ajusta la ruta si es necesario
+import { CrearTemaForm } from "../components/CrearTemaForm";
+import { useAuth } from "../context/useAuth";
+import Swal from "sweetalert2";
 
 interface TemaForo {
   id: number;
@@ -21,18 +23,45 @@ export default function ForoPage() {
   const [temas, setTemas] = useState<TemaForo[]>([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("todos");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const { id: idUsuario } = useAuth();
 
-  useEffect(() => {
+  // Cargar temas
+  const cargarTemas = () => {
     axios
-      .get("http://localhost:8080/api/foro")
+      .get("http://localhost:8080/api/foro/temas")
       .then((res) => setTemas(res.data))
       .catch((err) => console.error("Error al cargar los temas del foro", err));
+  };
+
+  useEffect(() => {
+    cargarTemas();
   }, []);
 
   const temasFiltrados =
     categoriaSeleccionada === "todos"
       ? temas
       : temas.filter((t) => t.categoria === categoriaSeleccionada);
+
+  // Crear tema
+  const handleCrearTema = async (formData: { titulo: string; contenido: string; categoria: string }) => {
+    if (!idUsuario) {
+      Swal.fire({ icon: "error", title: "Error", text: "Debes iniciar sesión para crear un tema." });
+      return;
+    }
+    try {
+      await axios.post("http://localhost:8080/api/foro/temas", {
+        usuario: { id: idUsuario },
+        titulo: formData.titulo,
+        contenido: formData.contenido,
+        categoria: formData.categoria,
+      });
+      Swal.fire({ icon: "success", title: "¡Tema publicado!", text: "Tu tema se ha publicado correctamente." });
+      setMostrarFormulario(false);
+      cargarTemas();
+    } catch (err) {
+      Swal.fire({ icon: "error", title: "Error", text: "No se pudo publicar el tema." });
+    }
+  };
 
   return (
     <div className="p-8 bg-white min-h-screen">
@@ -48,17 +77,7 @@ export default function ForoPage() {
 
       {/* Formulario para crear tema */}
       {mostrarFormulario && (
-        <div className="mb-10">
-          <CrearTemaForm />
-          <div className="text-right mt-2">
-            <button
-              onClick={() => setMostrarFormulario(false)}
-              className="text-sm text-gray-500 hover:underline"
-            >
-              ❌ Cancelar
-            </button>
-          </div>
-        </div>
+        <CrearTemaForm onClose={() => setMostrarFormulario(false)} onSubmit={handleCrearTema} />
       )}
 
       {/* Filtros */}

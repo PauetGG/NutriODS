@@ -35,7 +35,7 @@ public class SeguimientoFisicoController {
     @Autowired
     private GimnasioEjercicioService gimnasioService;
 
-    @PostMapping(consumes = "application/json")
+    @PostMapping
     public ResponseEntity<SeguimientoFisico> crearSeguimiento(@RequestBody SeguimientoFisico seguimiento) {
         if (Boolean.FALSE.equals(seguimiento.getEntrenoHoy())) {
             seguimiento.setTipoEntreno(null);
