@@ -17,6 +17,12 @@ public class SeguimientoHabitosService {
     public SeguimientoHabitosService(SeguimientoHabitosRepository seguimientoHabitosRepository) {
         this.seguimientoHabitosRepository = seguimientoHabitosRepository;
     }
+    
+	// Obtener todos los seguimientos
+    public List<SeguimientoHabitos> findAll() {
+        return seguimientoHabitosRepository.findAll();
+    }
+
 
     // Guardar o actualizar un registro
     public SeguimientoHabitos save(SeguimientoHabitos seguimientoHabitos) {
