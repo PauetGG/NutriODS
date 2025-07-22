@@ -6,22 +6,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -59,7 +45,7 @@ public class Receta {
     @Min(value = 1, message = "Debe haber al menos una ración")
     private Integer raciones = 1;
 
-    @Size(max = 855, message = "La URL de la imagen no puede superar los 255 caracteres")
+    @Size(max = 255, message = "La URL de la imagen no puede superar los 255 caracteres")
     private String imagenUrl;
 
     private Boolean visible = true;

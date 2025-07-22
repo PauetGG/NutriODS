@@ -55,6 +55,7 @@ public class RecetaController {
         }
         return ResponseEntity.notFound().build();
     }
+
     @GetMapping("/visible")
     public List<Receta> findRecetasVisibles() {
         return recetaService.findRecetasVisibles();
