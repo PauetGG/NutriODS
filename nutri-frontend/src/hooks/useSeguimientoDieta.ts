@@ -1,4 +1,3 @@
-// hooks/useSeguimientoDieta.ts
 import { useCallback, useEffect, useState } from "react";
 
 export type Seguimiento = {
@@ -48,6 +47,53 @@ export function useSeguimientoDieta(dietaId: number) {
     if (dietaId) fetchSeguimiento();
   }, [fetchSeguimiento, dietaId]);
 
-  // ✅ Ahora también exportamos setSeguimiento
-  return { seguimiento, setSeguimiento, fechaInicioDieta, fetchSeguimiento };
+  // ✅ Filtrado hasta el día anterior
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const seguimientoFiltrado = seguimiento.filter(
+    (s) => new Date(s.fecha) < hoy
+  );
+
+  // ✅ Estadísticas globales
+  const totalComidasPlanificadas = seguimientoFiltrado.length;
+  const totalComidasConsumidas = seguimientoFiltrado.filter((s) => s.consumido).length;
+
+  const totalCaloriasConsumidas = seguimientoFiltrado
+    .filter((s) => s.consumido)
+    .reduce((sum, s) => sum + s.comidaModelo.caloriasTotales, 0);
+
+  const mediaCaloriasPorComida =
+    totalComidasConsumidas > 0
+      ? totalCaloriasConsumidas / totalComidasConsumidas
+      : 0;
+
+  const notasContadas: Record<string, number> = {};
+  seguimientoFiltrado.forEach((s) => {
+    const nota = s.notas?.trim();
+    if (nota) {
+      notasContadas[nota] = (notasContadas[nota] || 0) + 1;
+    }
+  });
+
+  const notasFrecuentes = Object.entries(notasContadas).map(
+    ([nota, veces]) => ({
+      nota,
+      veces,
+    })
+  );
+
+  return {
+    seguimiento,
+    setSeguimiento,
+    fechaInicioDieta,
+    fetchSeguimiento,
+
+    // Nuevos datos globales
+    seguimientoFiltrado,
+    totalComidasPlanificadas,
+    totalComidasConsumidas,
+    totalCaloriasConsumidas,
+    mediaCaloriasPorComida,
+    notasFrecuentes,
+  };
 }

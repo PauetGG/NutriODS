@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { CrearTemaForm } from "../components/CrearTemaForm";
 import { useAuth } from "../context/useAuth";
+import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
 interface TemaForo {
@@ -59,7 +60,12 @@ export default function ForoPage() {
       setMostrarFormulario(false);
       cargarTemas();
     } catch (err) {
-      Swal.fire({ icon: "error", title: "Error", text: "No se pudo publicar el tema." });
+      console.error("Error al publicar el tema:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo publicar el tema.",
+      });
     }
   };
 
@@ -98,34 +104,38 @@ export default function ForoPage() {
       </div>
 
       {/* Temas */}
-      {temasFiltrados.length === 0 ? (
-        <p className="text-gray-500 text-center mt-20">No hay temas disponibles por ahora.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {temasFiltrados.map((tema) => (
-            <div
-              key={tema.id}
-              className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg p-6 transition-shadow"
-            >
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 capitalize">
-                  {tema.categoria}
-                </span>
-                <span className="text-sm text-gray-400">
-                  {new Date(tema.created).toLocaleDateString("es-ES")}
-                </span>
-              </div>
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">{tema.titulo}</h2>
-              <p className="text-sm text-gray-600 mb-4 line-clamp-3">{tema.contenido}</p>
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>👤 {tema.usuario.username}</span>
-                <span>💬 {tema.num_respuestas}</span>
-                <span>👁️ {tema.visitas}</span>
-              </div>
-            </div>
-          ))}
+{temasFiltrados.length === 0 ? (
+  <p className="text-gray-500 text-center mt-20">
+    No hay temas disponibles por ahora.
+  </p>
+) : (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {temasFiltrados.map((tema) => (
+      <Link
+        key={tema.id}
+        to={`/foro/tema/${tema.id}`}
+        className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg p-6 transition-shadow block"
+      >
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 capitalize">
+            {tema.categoria}
+          </span>
+          <span className="text-sm text-gray-400">
+            {new Date(tema.created).toLocaleDateString("es-ES")}
+          </span>
         </div>
-      )}
+        <h2 className="text-lg font-semibold text-gray-800 mb-2">{tema.titulo}</h2>
+        <p className="text-sm text-gray-600 mb-4 line-clamp-3">{tema.contenido}</p>
+        <div className="flex justify-between text-sm text-gray-500">
+          <span>👤 {tema.usuario.username}</span>
+          <span>💬 {tema.num_respuestas}</span>
+          <span>👁️ {tema.visitas}</span>
+        </div>
+      </Link>
+    ))}
+  </div>
+)}
+
     </div>
   );
 }

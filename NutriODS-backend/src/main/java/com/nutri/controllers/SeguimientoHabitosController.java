@@ -25,6 +25,14 @@ public class SeguimientoHabitosController {
     public SeguimientoHabitosController(SeguimientoHabitosService seguimientoHabitosService) {
         this.seguimientoHabitosService = seguimientoHabitosService;
     }
+    
+ // Obtener todos los seguimientos
+    @GetMapping
+    public ResponseEntity<List<SeguimientoHabitos>> getAll() {
+        List<SeguimientoHabitos> lista = seguimientoHabitosService.findAll();
+        return ResponseEntity.ok(lista);
+    }
+
 
     // Crear o actualizar un registro
     @PostMapping

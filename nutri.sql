@@ -59,6 +59,10 @@ CREATE TABLE comida_modelo (
     sin_soja BOOLEAN DEFAULT FALSE,
     sin_legumbres BOOLEAN DEFAULT FALSE,
     sin_sesamo BOOLEAN DEFAULT FALSE,
+    vegano BOOLEAN DEFAULT FALSE,
+    vegetariano BOOLEAN DEFAULT FALSE,
+    sin_carne BOOLEAN DEFAULT FALSE,
+    sin_pescado BOOLEAN DEFAULT FALSE,
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -96,6 +100,7 @@ CREATE TABLE comida_diaria (
     FOREIGN KEY (dieta_id) REFERENCES dieta(id) ON DELETE CASCADE,
     FOREIGN KEY (comida_modelo_id) REFERENCES comida_modelo(id) ON DELETE CASCADE
 );
+
 CREATE TABLE receta (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
@@ -134,6 +139,61 @@ CREATE TABLE seguimiento_dieta (
     FOREIGN KEY (dieta_id) REFERENCES dieta(id) ON DELETE CASCADE,
     FOREIGN KEY (comida_modelo_id) REFERENCES comida_modelo(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE seguimiento_habitos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    dieta_id INT NOT NULL,
+    fecha DATE NOT NULL,
+    agua DECIMAL(4,2) NOT NULL,
+    sueno_horas DECIMAL(3,1) NOT NULL,
+    calidad_sueno TINYINT NOT NULL,
+    pasos INT NOT NULL,
+    animo TINYINT NOT NULL,
+    estres TINYINT NOT NULL,
+    motivacion TINYINT NOT NULL,
+    aire_libre INT NOT NULL,
+    pantallas DECIMAL(3,1) NOT NULL,
+    reflexion TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (dieta_id) REFERENCES dieta(id),
+    UNIQUE KEY unique_dieta_fecha (dieta_id, fecha)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE seguimiento_fisico (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  fecha DATE NOT NULL,
+  peso FLOAT,
+  entreno_hoy BOOLEAN NOT NULL,
+  tipo_entreno VARCHAR(20),     -- "fuerza", "resistencia", "ambas"
+  tipo_fuerza VARCHAR(20),      -- "calistenia", "gimnasio"
+  velocidad FLOAT,
+  tiempo FLOAT,
+  dieta_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (dieta_id) REFERENCES dieta(id)
+    ON DELETE CASCADE,
+  UNIQUE KEY unique_dieta_fecha (dieta_id, fecha)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE calistenia_ejercicios (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  seguimiento_id BIGINT NOT NULL,
+  ejercicio VARCHAR(50) NOT NULL,
+  repeticiones INT NOT NULL,
+  FOREIGN KEY (seguimiento_id) REFERENCES seguimiento_fisico(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE gimnasio_ejercicios (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  seguimiento_id BIGINT NOT NULL,
+  ejercicio VARCHAR(50) NOT NULL,
+  zona VARCHAR(20) NOT NULL, -- "superior" o "inferior"
+  peso FLOAT NOT NULL,
+  reps INT NOT NULL,
+  FOREIGN KEY (seguimiento_id) REFERENCES seguimiento_fisico(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; 
 
 CREATE TABLE tema_foro (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -553,206 +613,206 @@ INSERT INTO ingrediente (nombre, descripcion, calorias, proteinas, grasas, carbo
 
 INSERT INTO glosario (termino, definicion, fuente, categoria, imagen_url, visible)
 VALUES
-('Nutriente', 'Sustancia presente en los alimentos que es necesaria para el crecimiento, desarrollo y mantenimiento de la vida.', 'FAO/OMS', 'concepto', 'https://www.buenoyvegano.com/wp-content/uploads/2021/02/nutrientes-esenciales.jpg', TRUE),
-('Caloría', 'Unidad de energía que indica la cantidad de energía que aporta un alimento al cuerpo humano.', 'Organización Mundial de la Salud', 'concepto', 'https://images.squarespace-cdn.com/content/v1/561718ebe4b062a227c4fcf2/1569280527161-QPCIQPC34UPN5FXFOHH3/Depositphotos_19949431_xl-2015.jpg?format=2500w', TRUE),
-('Metabolismo', 'Conjunto de procesos químicos que ocurren en el organismo para mantener la vida, incluyendo la conversión de alimentos en energía.', 'MedlinePlus', 'concepto', 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Gluconeog%C3%A9nesis_svg.svg/413px-Gluconeog%C3%A9nesis_svg.svg.png', TRUE),
-('Índice glucémico', 'Medida de la velocidad con la que un alimento eleva el nivel de glucosa en sangre.', 'Harvard Medical School', 'concepto', 'https://images.squarespace-cdn.com/content/v1/561718ebe4b062a227c4fcf2/1522947348788-YIHSFJ0ZO53CYFX3C6B9/Dudas+frecuentes.jpg?format=2500w', TRUE),
-('Densidad nutricional', 'Cantidad de nutrientes que contiene un alimento en relación con su aporte calórico.', 'EFSA', 'concepto', 'https://www.fitnessrevolucionario.com/wp-content/uploads/2021/07/Nivel1DensidadNutricional.jpg', TRUE),
-('Digestión', 'Proceso por el cual el cuerpo descompone los alimentos en nutrientes que puede absorber y utilizar.', 'NIH', 'concepto', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Digestive_system_diagram_es.svg/800px-Digestive_system_diagram_es.svg.png', TRUE),
-('Balance energético', 'Relación entre la energía que se consume a través de los alimentos y la que se gasta en las funciones corporales y actividad física.', 'FAO', 'concepto', 'https://www.blogdebiologia.com/wp-content/uploads/2016/03/balance-energetico.jpg', TRUE),
-('Necesidades energéticas', 'Cantidad de energía que una persona requiere diariamente para mantener sus funciones vitales y nivel de actividad.', 'EFSA', 'concepto', 'https://www.foroatletismo.com/imagenes/2013/10/C%C3%A1lculo-calor%C3%ADas-diarias-necesarias-dieta.jpg', TRUE),
-('Ración', 'Cantidad estándar de un alimento utilizada como referencia para evaluar el consumo.', 'Ministerio de Sanidad España', 'concepto', 'https://partaste.com/wp-content/uploads/cimparones_fritos_racion.png', TRUE),
-('Etiqueta nutricional', 'Información obligatoria que aparece en el envase de los alimentos sobre su composición nutricional.', 'AESAN', 'concepto', 'https://image.tuasaude.com/media/article/en/vt/etiqueta-nutricional_36306.jpg?width=1372&height=974', TRUE),
-('Valor nutricional', 'Conjunto de nutrientes y energía que aporta un alimento por una cantidad determinada.', 'AESAN', 'concepto', 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQSa0JKKe-Z1ZWDF-Qblyn2EVtZuixK_yFSdsLrzNsNKQcBzALtRDbH1-gwhfpV', TRUE),
-('Requerimientos diarios', 'Cantidad estimada de cada nutriente que debe consumir una persona diariamente para mantener la salud.', 'EFSA', 'concepto', 'https://thefoodtech.com/wp-content/uploads/2020/05/saciedad-1-828x548.jpg', TRUE),
-('Saciedad', 'Sensación de plenitud que indica que no se necesita seguir comiendo.', 'FAO', 'concepto', 'https://universidadeuropea.com/resources/media/images/estado-nutricional-800x450.width-1200.format-webp.webp', TRUE),
-('Estado nutricional', 'Condición física resultante del equilibrio entre el consumo de nutrientes y las necesidades del organismo.', 'OMS', 'concepto', 'https://universidadeuropea.com/resources/media/images/estado-nutricional-800x450.width-1200.format-webp.webp', TRUE),
-('Absorción', 'Proceso mediante el cual los nutrientes pasan del sistema digestivo a la sangre o linfa.', 'NIH', 'concepto', 'https://deconceptos.com/wp-content/uploads/2010/06/concepto-de-absorcion.png', TRUE),
-('Malnutrición', 'Condición que resulta de una alimentación inadecuada o desequilibrada, ya sea por exceso o defecto.', 'OMS', 'concepto', 'https://www.fao.org/images/newsroomlibraries/default-album/fao_25028_016-(1).jpg?sfvrsn=ceb0ec8f_8', TRUE),
-('Alimento funcional', 'Alimento que, además de nutrir, proporciona beneficios adicionales para la salud.', 'EFSA', 'concepto', 'https://alqueria.com.co/sites/default/files/styles/1100x530/public/2022-04/260422-Blog-Alimentos-Funcionales.jpg?h=2dfa7a18&itok=BtRgj71K', TRUE),
-('Biodisponibilidad', 'Proporción de un nutriente que es absorbido y utilizado efectivamente por el organismo.', 'FAO', 'concepto', 'https://ghc.com.mx/wp-content/uploads/2022/03/woman-s-hand-pours-the-medicine-pills-out-of-the-bottle-scaled-2560x1280.jpg', TRUE),
-('Perfil nutricional', 'Descripción de la cantidad de nutrientes y energía contenida en un alimento o dieta.', 'AESAN', 'concepto', 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQAsXiH8XjQsnOFpVACDeke_wpCnSXSVNKl0pp1IsNOqNd4OB4816CL0vsuDSye', TRUE),
-('Educación nutricional', 'Proceso que permite adquirir conocimientos y hábitos para mejorar la alimentación y la salud.', 'Ministerio de Sanidad', 'concepto', 'https://universidadeuropea.com/resources/media/images/educacion-nutricional-800x450.width-1200.format-webp.webp', TRUE),
-('Hábitos alimentarios', 'Conjunto de comportamientos adquiridos por una persona o grupo respecto a la elección y consumo de alimentos.', 'FAO', 'concepto', 'https://postgradomedicina.com/wp-content/uploads/habitos-alimentarios-saludables.jpg', TRUE),
-('Dieta equilibrada', 'Plan de alimentación que proporciona todos los nutrientes necesarios en cantidades adecuadas para mantener la salud.', 'OMS', 'concepto', 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRyIphUoXyE3v95sv68L79feejhtAc4NDOnGJZqAnbT7o7m51MVTM8vWHr2ySAY', TRUE),
-('Composición corporal', 'Distribución de masa muscular, grasa, hueso y otros componentes en el cuerpo.', 'NIH', 'concepto', 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSSukVNO_uFvBMH3EXM7lvSjE9ceI7HxF-yLywlzZHoMdZDh5aKbW6F7gEbsxxX', TRUE),
-('Nutrición personalizada', 'Enfoque dietético adaptado a las necesidades individuales según genética, metabolismo y estilo de vida.', 'EFSA', 'concepto', 'https://saraylopeznutricion.com/wp-content/uploads/2024/01/Los-Beneficios-de-una-Nutricion-Personalizada-1536x864.jpg', TRUE),
-('Alimentación intuitiva', 'Estilo de alimentación basado en señales internas como el hambre y la saciedad, sin restricciones externas.', 'Academy of Nutrition and Dietetics', 'concepto', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl7pzlr8LE9kvpvKjnlP0cthsYClRMd7ferv7i2B46wjnssO41Al2BHrOnQacz', TRUE),
-('Etiqueta de ingredientes', 'Lista que muestra todos los ingredientes presentes en un producto alimenticio, ordenados por cantidad.', 'AESAN', 'concepto', 'https://www.centrojuliafarre.es/wp-content/uploads/2017/06/como-leer-etiquetado-alimentario.jpg', TRUE),
-('Contaminante alimentario', 'Sustancia no deseada presente en alimentos que puede afectar la salud.', 'EFSA', 'concepto', 'https://ejemplo.com/contaminante-alimentario.jpg', TRUE),
-('Nutrigenómica', 'Estudio de cómo los alimentos afectan la expresión genética y el metabolismo.', 'Genomics and Nutrition Journal', 'concepto', 'https://ejemplo.com/nutrigenomica.jpg', TRUE),
-('Saciedad hormonal', 'Sensación de plenitud regulada por hormonas como la leptina y la grelina.', 'NIH', 'concepto', 'https://ejemplo.com/saciedad-hormonal.jpg', TRUE),
-('Hidratación', 'Estado de equilibrio de líquidos en el organismo, esencial para el funcionamiento celular.', 'OMS', 'concepto', 'https://ejemplo.com/hidratacion.jpg', TRUE),
-('Proteínas', 'Macronutrientes esenciales formados por aminoácidos que participan en la construcción y reparación de tejidos.', 'FAO/OMS', 'macronutriente', 'https://ejemplo.com/proteinas.jpg', TRUE),
-('Carbohidratos', 'Macronutrientes que constituyen la principal fuente de energía del cuerpo, presentes en alimentos como cereales, frutas y legumbres.', 'EFSA', 'macronutriente', 'https://ejemplo.com/carbohidratos.jpg', TRUE),
-('Grasas', 'Nutrientes energéticos que también cumplen funciones estructurales y hormonales, incluyendo grasas saturadas, insaturadas y trans.', 'OMS', 'macronutriente', 'https://ejemplo.com/grasas.jpg', TRUE),
-('Fibra dietética', 'Tipo de carbohidrato no digerible que favorece el tránsito intestinal y la salud digestiva.', 'MedlinePlus', 'macronutriente', 'https://ejemplo.com/fibra.jpg', TRUE),
-('Agua', 'Elemento vital que actúa como medio de transporte, regula la temperatura y permite múltiples funciones biológicas.', 'FAO', 'macronutriente', 'https://ejemplo.com/agua.jpg', TRUE),
-('Vitamina A', 'Vitamina liposoluble que contribuye a la visión, el sistema inmunitario y la salud de la piel.', 'EFSA', 'vitamina', 'https://ejemplo.com/vitamina-a.jpg', TRUE),
-('Vitamina D', 'Vitamina liposoluble que favorece la absorción del calcio y el fósforo, esencial para la salud ósea.', 'OMS', 'vitamina', 'https://ejemplo.com/vitamina-d.jpg', TRUE),
-('Vitamina E', 'Antioxidante liposoluble que protege las células frente al daño oxidativo.', 'FAO', 'vitamina', 'https://ejemplo.com/vitamina-e.jpg', TRUE),
-('Vitamina K', 'Vitamina liposoluble que interviene en la coagulación de la sangre y la salud ósea.', 'NIH', 'vitamina', 'https://ejemplo.com/vitamina-k.jpg', TRUE),
-('Calcio', 'Mineral esencial para la formación y mantenimiento de huesos y dientes, también participa en la contracción muscular y la coagulación sanguínea.', 'EFSA', 'mineral', 'https://ejemplo.com/calcio.jpg', TRUE),
-('Hierro', 'Mineral necesario para la formación de hemoglobina y el transporte de oxígeno en la sangre.', 'OMS', 'mineral', 'https://ejemplo.com/hierro.jpg', TRUE),
-('Magnesio', 'Mineral que participa en más de 300 reacciones bioquímicas del cuerpo, incluyendo la función muscular y nerviosa.', 'NIH', 'mineral', 'https://ejemplo.com/magnesio.jpg', TRUE),
-('Zinc', 'Mineral implicado en el sistema inmunológico, la cicatrización y la división celular.', 'FAO', 'mineral', 'https://ejemplo.com/zinc.jpg', TRUE),
-('Potasio', 'Mineral que ayuda a mantener el equilibrio de líquidos, la función muscular y la actividad eléctrica del corazón.', 'OMS', 'mineral', 'https://ejemplo.com/potasio.jpg', TRUE),
-('Fósforo', 'Mineral importante para la formación de huesos y dientes, así como para la producción de energía celular.', 'EFSA', 'mineral', 'https://ejemplo.com/fosforo.jpg', TRUE),
-('Sodio', 'Mineral esencial para el equilibrio de líquidos y la función nerviosa, aunque su exceso puede afectar la salud cardiovascular.', 'AESAN', 'mineral', 'https://ejemplo.com/sodio.jpg', TRUE),
-('Yodo', 'Mineral necesario para la producción de hormonas tiroideas que regulan el metabolismo.', 'FAO', 'mineral', 'https://ejemplo.com/yodo.jpg', TRUE),
-('Selenio', 'Antioxidante que protege las células del daño y apoya la función inmunitaria y tiroidea.', 'NIH', 'mineral', 'https://ejemplo.com/selenio.jpg', TRUE),
-('Cobre', 'Mineral que participa en la producción de energía, la formación de tejidos conectivos y el sistema nervioso.', 'OMS', 'mineral', 'https://ejemplo.com/cobre.jpg', TRUE),
-('Manganeso', 'Mineral involucrado en el metabolismo de carbohidratos y lípidos, y en la formación de huesos.', 'EFSA', 'mineral', 'https://ejemplo.com/manganeso.jpg', TRUE),
-('Flúor', 'Mineral que fortalece el esmalte dental y previene las caries.', 'OMS', 'mineral', 'https://ejemplo.com/fluor.jpg', TRUE),
-('Cromo', 'Mineral que contribuye al metabolismo de la glucosa y mejora la acción de la insulina.', 'NIH', 'mineral', 'https://ejemplo.com/cromo.jpg', TRUE),
-('Molibdeno', 'Mineral que forma parte de enzimas implicadas en el metabolismo de aminoácidos y purinas.', 'FAO', 'mineral', 'https://ejemplo.com/molibdeno.jpg', TRUE),
-('Cloro', 'Mineral esencial para la producción de jugos gástricos y el equilibrio de líquidos en el organismo.', 'EFSA', 'mineral', 'https://ejemplo.com/cloro.jpg', TRUE),
-('Níquel', 'Mineral traza que participa en algunas enzimas, aunque sus funciones en humanos no están completamente claras.', 'EFSA', 'mineral', 'https://ejemplo.com/niquel.jpg', TRUE),
-('Silicio', 'Mineral que interviene en la síntesis del colágeno y puede contribuir a la salud ósea y cutánea.', 'NIH', 'mineral', 'https://ejemplo.com/silicio.jpg', TRUE),
-('Boro', 'Mineral que podría estar relacionado con el metabolismo del calcio, magnesio y fósforo.', 'FAO', 'mineral', 'https://ejemplo.com/boro.jpg', TRUE),
-('Litio', 'Oligoelemento que se estudia por su posible papel en la función neurológica y la salud mental.', 'NIH', 'mineral', 'https://ejemplo.com/litio.jpg', TRUE),
-('Vanadio', 'Oligoelemento presente en pequeñas cantidades en el cuerpo, se investiga su papel en el metabolismo de lípidos y glucosa.', 'EFSA', 'mineral', 'https://ejemplo.com/vanadio.jpg', TRUE),
-('Proteína en polvo', 'Suplemento alimenticio utilizado para aumentar la ingesta proteica, común en dietas deportivas o hipocalóricas.', 'EFSA', 'suplemento', 'https://ejemplo.com/proteina-polvo.jpg', TRUE),
-('Creatina', 'Compuesto natural que mejora el rendimiento en ejercicios de alta intensidad y favorece la recuperación muscular.', 'NIH', 'suplemento', 'https://ejemplo.com/creatina.jpg', TRUE),
-('Omega-3', 'Ácidos grasos esenciales que se suplementan por su efecto antiinflamatorio y beneficios cardiovasculares.', 'FAO', 'suplemento', 'https://ejemplo.com/omega-3.jpg', TRUE),
-('Multivitamínico', 'Suplemento que combina varias vitaminas y minerales para cubrir requerimientos nutricionales diarios.', 'OMS', 'suplemento', 'https://ejemplo.com/multivitaminico.jpg', TRUE),
-('Vitamina D3', 'Suplemento liposoluble usado para mantener niveles óptimos de vitamina D, especialmente en personas con baja exposición solar.', 'EFSA', 'suplemento', 'https://ejemplo.com/vitamina-d3.jpg', TRUE),
-('Colágeno hidrolizado', 'Suplemento que aporta péptidos de colágeno, favoreciendo la salud articular, cutánea y ósea.', 'NIH', 'suplemento', 'https://ejemplo.com/colageno.jpg', TRUE),
-('Magnesio en comprimidos', 'Forma suplementada de magnesio utilizada para prevenir calambres musculares y mejorar la calidad del sueño.', 'FAO', 'suplemento', 'https://ejemplo.com/magnesio-suplemento.jpg', TRUE),
-('Cafeína', 'Suplemento estimulante que mejora la concentración, el estado de alerta y el rendimiento deportivo.', 'EFSA', 'suplemento', 'https://ejemplo.com/cafeina.jpg', TRUE),
-('BCAA', 'Aminoácidos de cadena ramificada que se suplementan para preservar masa muscular y acelerar la recuperación.', 'NIH', 'suplemento', 'https://ejemplo.com/bcaa.jpg', TRUE),
-('Glutamina', 'Aminoácido que puede apoyar la recuperación muscular y la función inmunológica en situaciones de alta exigencia física.', 'FAO', 'suplemento', 'https://ejemplo.com/glutamina.jpg', TRUE),
-('Dieta mediterránea', 'Patrón alimentario basado en el consumo de frutas, verduras, legumbres, pescado, aceite de oliva y cereales integrales, característico de los países del Mediterráneo.', 'Fundación Dieta Mediterránea', 'dieta', 'https://ejemplo.com/dieta-mediterranea.jpg', TRUE),
-('Dieta cetogénica', 'Dieta alta en grasas, moderada en proteínas y muy baja en carbohidratos, orientada a inducir cetosis para el uso de grasa como fuente principal de energía.', 'EFSA', 'dieta', 'https://ejemplo.com/dieta-cetogenica.jpg', TRUE),
-('Dieta vegana', 'Dieta basada exclusivamente en alimentos de origen vegetal, excluyendo cualquier producto de origen animal.', 'The Vegan Society', 'dieta', 'https://ejemplo.com/dieta-vegana.jpg', TRUE),
-('Dieta vegetariana', 'Dieta que excluye carne y pescado, pero puede incluir productos animales como huevos o lácteos.', 'Academy of Nutrition and Dietetics', 'dieta', 'https://ejemplo.com/dieta-vegetariana.jpg', TRUE),
-('Dieta DASH', 'Dieta diseñada para reducir la presión arterial, rica en frutas, verduras, granos integrales y baja en sodio y grasas saturadas.', 'NIH', 'dieta', 'https://ejemplo.com/dieta-dash.jpg', TRUE),
-('Dieta sin gluten', 'Dieta que elimina el gluten, una proteína presente en trigo, cebada y centeno, indicada para personas con celiaquía o sensibilidad al gluten.', 'AESAN', 'dieta', 'https://ejemplo.com/dieta-sin-gluten.jpg', TRUE),
-('Dieta sin lactosa', 'Plan alimentario que excluye productos lácteos con lactosa, útil para personas con intolerancia a este azúcar.', 'EFSA', 'dieta', 'https://ejemplo.com/dieta-sin-lactosa.jpg', TRUE),
-('Dieta hipocalórica', 'Dieta con un aporte energético reducido respecto a las necesidades del individuo, utilizada frecuentemente en procesos de pérdida de peso.', 'OMS', 'dieta', 'https://ejemplo.com/dieta-hipocalorica.jpg', TRUE),
-('Dieta hiperproteica', 'Dieta rica en proteínas que busca preservar la masa muscular, especialmente en contextos de entrenamiento o pérdida de grasa.', 'NIH', 'dieta', 'https://ejemplo.com/dieta-hiperproteica.jpg', TRUE),
-('Ayuno intermitente', 'Patrón de alimentación que alterna períodos de ingesta con períodos de ayuno, con el objetivo de mejorar la composición corporal o la salud metabólica.', 'Harvard Health Publishing', 'dieta', 'https://ejemplo.com/ayuno-intermitente.jpg', TRUE),
-('Ejercicio aeróbico', 'Actividad física de intensidad moderada y larga duración que mejora la capacidad cardiovascular y la quema de grasa.', 'OMS', 'deporte', 'https://ejemplo.com/ejercicio-aerobico.jpg', TRUE),
-('Ejercicio anaeróbico', 'Actividad de alta intensidad y corta duración que depende de reservas de energía sin oxígeno, como el entrenamiento de fuerza.', 'NIH', 'deporte', 'https://ejemplo.com/ejercicio-anaerobico.jpg', TRUE),
-('VO2 máximo', 'Volumen máximo de oxígeno que el cuerpo puede utilizar durante el ejercicio intenso, indicador clave de resistencia cardiovascular.', 'EFSA', 'deporte', 'https://ejemplo.com/vo2max.jpg', TRUE),
-('Recuperación muscular', 'Proceso fisiológico de regeneración de fibras musculares después del ejercicio, esencial para el rendimiento y prevención de lesiones.', 'FAO', 'deporte', 'https://ejemplo.com/recuperacion-muscular.jpg', TRUE),
-('Gasto energético', 'Cantidad de energía que el cuerpo utiliza en reposo, actividad física y digestión.', 'EFSA', 'deporte', 'https://ejemplo.com/gasto-energetico.jpg', TRUE),
-('Entrenamiento de resistencia', 'Actividad que implica la repetición de movimientos con carga para aumentar fuerza muscular y masa magra.', 'NIH', 'deporte', 'https://ejemplo.com/entrenamiento-resistencia.jpg', TRUE),
-('Rendimiento deportivo', 'Capacidad de un atleta para ejecutar una actividad física con eficacia y eficiencia.', 'OMS', 'deporte', 'https://ejemplo.com/rendimiento-deportivo.jpg', TRUE);
+('Nutriente', 'Sustancia presente en los alimentos que es necesaria para el crecimiento, desarrollo y mantenimiento de la vida.', 'FAO/OMS', 'concepto', 'https://rebagliatisalud.edu.pe/wp-content/uploads/2020/12/Cuales-son-los-nutrientes-esenciales-para-un-estilo-de-vida-saludable.jpg', TRUE),
+('Caloría', 'Unidad de energía que indica la cantidad de energía que aporta un alimento al cuerpo humano.', 'Organización Mundial de la Salud', 'concepto', 'https://images.squarespace-cdn.com/content/v1/561718ebe4b062a227c4fcf2/1569280527161-QPCIQPC34UPN5FXFOHH3/Depositphotos_19949431_xl-2015.jpg', TRUE),
+('Metabolismo', 'Conjunto de procesos químicos que ocurren en el organismo para mantener la vida, incluyendo la conversión de alimentos en energía.', 'MedlinePlus', 'concepto', 'https://img1.wsimg.com/isteam/ip/7eae2463-e66f-4d1c-9d35-036f19724710/Metabolismo.jpg', TRUE),
+('Índice glucémico', 'Medida de la velocidad con la que un alimento eleva el nivel de glucosa en sangre.', 'Harvard Medical School', 'concepto', 'https://www.siacardio.com/wp-content/uploads/2022/01/Efecto-de-los-patrones-diet%C3%A9ticos-de-bajo-indice-glucemico-o-de-carga-sobre-el-control-glucemico.png', TRUE),
+('Densidad nutricional', 'Cantidad de nutrientes que contiene un alimento en relación con su aporte calórico.', 'EFSA', 'concepto', 'https://cdn.businessinsider.es/sites/navi.axelspringer.es/public/media/image/2022/08/alimentos-gran-densidad-nutricional-2794819.jpg?tf=3840x', TRUE),
+('Digestión', 'Proceso por el cual el cuerpo descompone los alimentos en nutrientes que puede absorber y utilizar.', 'NIH', 'concepto', 'https://cloudfront-eu-central-1.images.arcpublishing.com/prisaradio/B5LI7AXSIJKKNJ4CAF7FCNGK4Q.jpg', TRUE),
+('Balance energético', 'Relación entre la energía que se consume a través de los alimentos y la que se gasta en las funciones corporales y actividad física.', 'FAO', 'concepto', 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgxJXueEryc_ZFoeD9fKvwCEao5-JIAkHycfGgefuP4H8DOUXg4Ys3DQoZgqpwzLOxZK1Ja7Hkzrlc_9AHpuwDP1PStL6HO9SNEaFHf_6dqvdaBQTmGism7fMMghyfFcIiMv3OpzP-qltA/s640/3.jpg', TRUE),
+('Necesidades energéticas', 'Cantidad de energía que una persona requiere diariamente para mantener sus funciones vitales y nivel de actividad.', 'EFSA', 'concepto', 'https://www.fundacioncadah.org/j289eghfd7511986_uploads/OMEGA%203%20Y%20TDAH.jpg', TRUE),
+('Ración', 'Cantidad estándar de un alimento utilizada como referencia para evaluar el consumo.', 'Ministerio de Sanidad España', 'concepto', 'https://www.consumer.es/app/uploads/2019/07/img_racion-vegetal-hd.jpg', TRUE),
+('Etiqueta nutricional', 'Información obligatoria que aparece en el envase de los alimentos sobre su composición nutricional.', 'AESAN', 'concepto', 'https://image.tuasaude.com/media/article/en/vt/etiqueta-nutricional_36306.jpg', TRUE),
+('Valor nutricional', 'Conjunto de nutrientes y energía que aporta un alimento por una cantidad determinada.', 'AESAN', 'concepto', 'https://blog.farmasky.com/wp-content/uploads/2022/05/valor-nutricional-alimentos.jpg', TRUE),
+('Requerimientos diarios', 'Cantidad estimada de cada nutriente que debe consumir una persona diariamente para mantener la salud.', 'EFSA', 'concepto', 'https://www.uaeh.edu.mx/covid-hidalgo/images/nutricion.jpg', TRUE),
+('Saciedad', 'Sensación de plenitud que indica que no se necesita seguir comiendo.', 'FAO', 'concepto', 'https://www.abc.com.py/resizer/dC_qDKVdZUfLd5yvY4sHdS0KNww=/arc-anglerfish-arc2-prod-abccolor/public/STAHMFQOSZD4PGKCRDHLUPRBGQ.jpg', TRUE),
+('Estado nutricional', 'Condición física resultante del equilibrio entre el consumo de nutrientes y las necesidades del organismo.', 'OMS', 'concepto', 'https://personaconsumidora.elika.eus/wp-content/uploads/2022/06/Estado_Nutri-Post-de-Twitter.jpg', TRUE),
+('Absorción', 'Proceso mediante el cual los nutrientes pasan del sistema digestivo a la sangre o linfa.', 'NIH', 'concepto', 'https://www.shutterstock.com/image-vector/realistic-drop-layered-absorbent-core-600nw-2567455607.jpg', TRUE),
+('Malnutrición', 'Condición que resulta de una alimentación inadecuada o desequilibrada, ya sea por exceso o defecto.', 'OMS', 'concepto', 'https://consejonutricional.com/wp-content/uploads/2012/06/malnutricic3b3n.jpg', TRUE),
+('Alimento funcional', 'Alimento que, además de nutrir, proporciona beneficios adicionales para la salud.', 'EFSA', 'concepto', 'https://alqueria.com.co/sites/default/files/2022-04/260422-Blog-Alimentos-Funcionales.jpg', TRUE),
+('Biodisponibilidad', 'Proporción de un nutriente que es absorbido y utilizado efectivamente por el organismo.', 'FAO', 'concepto', 'https://usil-blog.s3.amazonaws.com/PROD/blog/image/biodisponibilidad-innovacion-alimentos.jpg', TRUE),
+('Perfil nutricional', 'Descripción de la cantidad de nutrientes y energía contenida en un alimento o dieta.', 'AESAN', 'concepto', 'https://labsaenzrenauld.com/wp-content/uploads/2020/10/Perfil-nutricional_730277116.jpg', TRUE),
+('Educación nutricional', 'Proceso que permite adquirir conocimientos y hábitos para mejorar la alimentación y la salud.', 'Ministerio de Sanidad', 'concepto', 'https://staticnew-prod.topdoctors.com.ar/image/large/88bfe17c-5de6-49c9-a68b-49bd690828df', TRUE),
+('Hábitos alimentarios', 'Conjunto de comportamientos adquiridos por una persona o grupo respecto a la elección y consumo de alimentos.', 'FAO', 'concepto', 'https://blog.hospitalangeles.com/wp-content/uploads/2025/02/7-alimentos.jpg', TRUE),
+('Dieta equilibrada', 'Plan de alimentación que proporciona todos los nutrientes necesarios en cantidades adecuadas para mantener la salud.', 'OMS', 'concepto', 'https://cdn0.uncomo.com/es/posts/1/8/1/principales_caracteristicas_de_una_dieta_equilibrada_17181_orig.jpg', TRUE),
+('Composición corporal', 'Distribución de masa muscular, grasa, hueso y otros componentes en el cuerpo.', 'NIH', 'concepto', 'https://postgradomedicina.com/wp-content/uploads/composicio%CC%81n-corporal.jpg', TRUE),
+('Nutrición personalizada', 'Enfoque dietético adaptado a las necesidades individuales según genética, metabolismo y estilo de vida.', 'EFSA', 'concepto', 'https://relevanciamedica.com/wp-content/uploads/2015/03/Nutricion-Personalizada.jpg', TRUE),
+('Alimentación intuitiva', 'Estilo de alimentación basado en señales internas como el hambre y la saciedad, sin restricciones externas.', 'Academy of Nutrition and Dietetics', 'concepto', 'https://www.clikisalud.net/wp-content/uploads/2022/03/alimentacion-intuitiva.jpg', TRUE),
+('Etiqueta de ingredientes', 'Lista que muestra todos los ingredientes presentes en un producto alimenticio, ordenados por cantidad.', 'AESAN', 'concepto', 'https://www.ifp.es/sites/ifp.es/files/images/lista%20ingredientes.jpg', TRUE),
+('Contaminante alimentario', 'Sustancia no deseada presente en alimentos que puede afectar la salud.', 'EFSA', 'concepto', 'https://www.webconsultas.com/sites/default/files/media/2020/04/14/alimentos_contaminados.jpg', TRUE),
+('Nutrigenómica', 'Estudio de cómo los alimentos afectan la expresión genética y el metabolismo.', 'Genomics and Nutrition Journal', 'concepto', 'https://ecuador.unir.net/wp-content/uploads/sites/8/2023/01/hebra-de-adn-hecha-de-frutas-y-verduras-frescas-servidas-listas-para-comer-para-el-concepto-de.jpg_s1024x1024wisk20cU8cIgBHgTAqyNr9nE_Del51BOJ_7UfmtdSwsxP9R47U.jpg', TRUE),
+('Saciedad hormonal', 'Sensación de plenitud regulada por hormonas como la leptina y la grelina.', 'NIH', 'concepto', 'https://tienda.iogenixnutrition.com/blog/wp-content/uploads/2024/07/Mesa-de-trabajo-2.png', TRUE),
+('Hidratación', 'Estado de equilibrio de líquidos en el organismo, esencial para el funcionamiento celular.', 'OMS', 'concepto', 'https://www.latam.abbott/content/dam/corp/abbott/en-us/hub/a-child-drinks-water-fro-930x405.jpeg', TRUE),
+('Proteínas', 'Macronutrientes esenciales formados por aminoácidos que participan en la construcción y reparación de tejidos.', 'FAO/OMS', 'macronutriente', 'https://medlineplus.gov/images/DietaryProtein_share.jpg', TRUE),
+('Carbohidratos', 'Macronutrientes que constituyen la principal fuente de energía del cuerpo, presentes en alimentos como cereales, frutas y legumbres.', 'EFSA', 'macronutriente', 'https://strapi.fitia.app/uploads/carbohidratos_ba2f3a3500.jpg', TRUE),
+('Grasas', 'Nutrientes energéticos que también cumplen funciones estructurales y hormonales, incluyendo grasas saturadas, insaturadas y trans.', 'OMS', 'macronutriente', 'https://www.beloleum.com/wp-content/uploads/2022/06/grasas-saludables-e1658910360463.png', TRUE),
+('Fibra dietética', 'Tipo de carbohidrato no digerible que favorece el tránsito intestinal y la salud digestiva.', 'MedlinePlus', 'macronutriente', 'https://www.eroski.es/wp-content/uploads/2022/09/CABECERA_OCT_FIBRA_CAST.jpg', TRUE),
+('Agua', 'Elemento vital que actúa como medio de transporte, regula la temperatura y permite múltiples funciones biológicas.', 'FAO', 'macronutriente', 'https://hidrogenoaragon.org/wp-content/uploads/2023/08/el-agua-elemento-vital-para-la-obtencion-de-hidrogeno-verde-fundacion-hidrogeno-aragon-scaled.jpg', TRUE),
+('Vitamina A', 'Vitamina liposoluble que contribuye a la visión, el sistema inmunitario y la salud de la piel.', 'EFSA', 'vitamina', 'https://www.nutrimarket.com/blog/wp-content/uploads/2023/02/1-1.png', TRUE),
+('Vitamina D', 'Vitamina liposoluble que favorece la absorción del calcio y el fósforo, esencial para la salud ósea.', 'OMS', 'vitamina', 'https://cdn.static.aptavs.com/imagenes/la-importancia-de-la-vitamina-d-en-nuestro-organismo.jpg', TRUE),
+('Vitamina E', 'Antioxidante liposoluble que protege las células frente al daño oxidativo.', 'FAO', 'vitamina', 'https://storage.googleapis.com/uriach--corp-web--pro--aquilea-django--resources--5ad9/images/vitamin-e.2e16d0ba.fill-767x384.jpg', TRUE),
+('Vitamina K', 'Vitamina liposoluble que interviene en la coagulación de la sangre y la salud ósea.', 'NIH', 'vitamina', 'https://crossdna.com/wp-content/uploads/2023/12/Depositphotos_537041690_S.jpg', TRUE),
+('Calcio', 'Mineral esencial para la formación y mantenimiento de huesos y dientes, también participa en la contracción muscular y la coagulación sanguínea.', 'EFSA', 'mineral', 'https://www.clikisalud.net/wp-content/uploads/2017/11/importancia-calcio-salud-cuerpo.jpg', TRUE),
+('Hierro', 'Mineral necesario para la formación de hemoglobina y el transporte de oxígeno en la sangre.', 'OMS', 'mineral', 'https://nereapediatra.com/wp-content/uploads/2022/04/Blog-6.png', TRUE),
+('Magnesio', 'Mineral que participa en más de 300 reacciones bioquímicas del cuerpo, incluyendo la función muscular y nerviosa.', 'NIH', 'mineral', 'https://laboratoriosfarma.com/wp-content/uploads/2024/07/Citrato-de-Magnesio-1.png', TRUE),
+('Zinc', 'Mineral implicado en el sistema inmunológico, la cicatrización y la división celular.', 'FAO', 'mineral', 'https://cdn0.uncomo.com/es/posts/3/5/7/alimentos_ricos_en_zinc_51753_orig.jpg', TRUE),
+('Potasio', 'Mineral que ayuda a mantener el equilibrio de líquidos, la función muscular y la actividad eléctrica del corazón.', 'OMS', 'mineral', 'https://www.casapia.com/blog/wp-content/uploads/2008/05/POTASIO.jpg', TRUE),
+('Fósforo', 'Mineral importante para la formación de huesos y dientes, así como para la producción de energía celular.', 'EFSA', 'mineral', 'https://www.casapia.com/blog/wp-content/uploads/2008/05/fosforo-1.jpg', TRUE),
+('Sodio', 'Mineral esencial para el equilibrio de líquidos y la función nerviosa, aunque su exceso puede afectar la salud cardiovascular.', 'AESAN', 'mineral', 'https://c.files.bbci.co.uk/138B3/production/_123915008_gettyimages-1026396212.jpg', TRUE),
+('Yodo', 'Mineral necesario para la producción de hormonas tiroideas que regulan el metabolismo.', 'FAO', 'mineral', 'https://images.ecestaticos.com/KQIg_z-iw3RU3qC3talGb7ExwBc=/197x31:2180x1514/1200x899/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fd0b%2Ffb8%2F879%2Fd0bfb887910738ecad5f81a29808102b.jpg', TRUE),
+('Selenio', 'Antioxidante que protege las células del daño y apoya la función inmunitaria y tiroidea.', 'NIH', 'mineral', 'https://www.ericfavre.com/lifestyle/es/wp-content/uploads/sites/8/2021/09/selenium.jpg', TRUE),
+('Cobre', 'Mineral que participa en la producción de energía, la formación de tejidos conectivos y el sistema nervioso.', 'OMS', 'mineral', 'https://s1.abcstatics.com/media/bienestar/2022/08/25/cobre-alimentacion-kzQC--1248x698@abc.jpg', TRUE),
+('Manganeso', 'Mineral involucrado en el metabolismo de carbohidratos y lípidos, y en la formación de huesos.', 'EFSA', 'mineral', 'https://s1.abcstatics.com/media/bienestar/2022/08/24/manganeso-k5iG--620x349@abc.jpg', TRUE),
+('Flúor', 'Mineral que fortalece el esmalte dental y previene las caries.', 'OMS', 'mineral', 'https://www.drfabregues.com/wp-content/uploads/alimentos-con-fluor.jpg', TRUE),
+('Cromo', 'Mineral que contribuye al metabolismo de la glucosa y mejora la acción de la insulina.', 'NIH', 'mineral', 'https://www.ericfavre.com/lifestyle/es/wp-content/uploads/sites/8/2021/09/chrome.jpg', TRUE),
+('Molibdeno', 'Mineral que forma parte de enzimas implicadas en el metabolismo de aminoácidos y purinas.', 'FAO', 'mineral', 'https://www.masmusculo.com/blog/wp-content/uploads/2015/08/alimentos-ricos-en-molibdeno.jpg', TRUE),
+('Cloro', 'Mineral esencial para la producción de jugos gástricos y el equilibrio de líquidos en el organismo.', 'EFSA', 'mineral', 'https://cdn.agenciasinc.es/var/ezwebin_site/storage/images/_aliases/img_1col/multimedia/ilustraciones/cloro-el-desinfectante-que-ayuda-a-digerir-los-alimentos/6550245-1-esl-MX/Cloro-el-desinfectante-que-ayuda-a-digerir-los-alimentos.jpg', TRUE),
+('Níquel', 'Mineral traza que participa en algunas enzimas, aunque sus funciones en humanos no están completamente claras.', 'EFSA', 'mineral', 'https://atriainnovation.com/uploads/2023/11/5-3.jpg', TRUE),
+('Silicio', 'Mineral que interviene en la síntesis del colágeno y puede contribuir a la salud ósea y cutánea.', 'NIH', 'mineral', 'https://www.ericfavre.com/lifestyle/es/wp-content/uploads/sites/8/2021/09/silicium.jpg', TRUE),
+('Boro', 'Mineral que podría estar relacionado con el metabolismo del calcio, magnesio y fósforo.', 'FAO', 'mineral', 'https://www.porticozamora.es/wp-content/uploads/2019/12/Alimentos-ricos-en-boro.jpg', TRUE),
+('Litio', 'Oligoelemento que se estudia por su posible papel en la función neurológica y la salud mental.', 'NIH', 'mineral', 'https://cdn.sportadictos.com/files/2019/01/Personas-tomando-alimentos.jpg', TRUE),
+('Vanadio', 'Oligoelemento presente en pequeñas cantidades en el cuerpo, se investiga su papel en el metabolismo de lípidos y glucosa.', 'EFSA', 'mineral', 'https://biotrendies.com/wp-content/uploads/2016/11/mineral-vanadio.jpg', TRUE),
+('Proteína en polvo', 'Suplemento alimenticio utilizado para aumentar la ingesta proteica, común en dietas deportivas o hipocalóricas.', 'EFSA', 'suplemento', 'https://www.icns.es/img/news/513.jpg', TRUE),
+('Creatina', 'Compuesto natural que mejora el rendimiento en ejercicios de alta intensidad y favorece la recuperación muscular.', 'NIH', 'suplemento', 'https://www.labolsadelcorredor.com/wp-content/uploads/2021/10/creatina-en-polvo.jpg', TRUE),
+('Omega-3', 'Ácidos grasos esenciales que se suplementan por su efecto antiinflamatorio y beneficios cardiovasculares.', 'FAO', 'suplemento', 'https://krissia.es/wp-content/uploads/2023/04/Omega-3.jpg', TRUE),
+('Multivitamínico', 'Suplemento que combina varias vitaminas y minerales para cubrir requerimientos nutricionales diarios.', 'OMS', 'suplemento', 'https://postgradomedicina.com/wp-content/uploads/multivitaminico.jpg', TRUE),
+('Vitamina D3', 'Suplemento liposoluble usado para mantener niveles óptimos de vitamina D, especialmente en personas con baja exposición solar.', 'EFSA', 'suplemento', 'https://www.bio-dis.com/wp-content/uploads/2021/04/NE2807-VITAMINA-D3-60-PERLAS-OK.jpg', TRUE),
+('Colágeno hidrolizado', 'Suplemento que aporta péptidos de colágeno, favoreciendo la salud articular, cutánea y ósea.', 'NIH', 'suplemento', 'https://storage.googleapis.com/uriach--corp-web--pro--fisiocrem-django--resources--df81/images/alimentos-colageno.2e16d0ba.fill-1440x486.original.png', TRUE),
+('Magnesio en comprimidos', 'Forma suplementada de magnesio utilizada para prevenir calambres musculares y mejorar la calidad del sueño.', 'FAO', 'suplemento', 'https://www.consumer.es/app/uploads/2020/06/suplementos-magnesio-mejora-estado-animo.jpg', TRUE),
+('Cafeína', 'Suplemento estimulante que mejora la concentración, el estado de alerta y el rendimiento deportivo.', 'EFSA', 'suplemento', 'https://www.soycorredor.es/uploads/s1/44/69/00/5ca36b720de69460168b4a3b-la-cafeina-beneficios-y-contraindicaciones-de-su-consumo-nzm.jpeg', TRUE),
+('BCAA', 'Aminoácidos de cadena ramificada que se suplementan para preservar masa muscular y acelerar la recuperación.', 'NIH', 'suplemento', 'https://www.palabraderunner.com/wp-content/uploads/2020/07/bcaa-que-es-suplemento.jpg', TRUE),
+('Glutamina', 'Aminoácido que puede apoyar la recuperación muscular y la función inmunológica en situaciones de alta exigencia física.', 'FAO', 'suplemento', 'https://nutripoint.com.pe/wp-content/uploads/2025/06/New_Junio_Glutamina_300G_ON-1024x1024.jpg', TRUE),
+('Dieta mediterránea', 'Patrón alimentario basado en el consumo de frutas, verduras, legumbres, pescado, aceite de oliva y cereales integrales, característico de los países del Mediterráneo.', 'Fundación Dieta Mediterránea', 'dieta', 'https://upload.wikimedia.org/wikipedia/commons/d/dd/DIETA_MEDITERRANEA_ITALIA.JPG', TRUE),
+('Dieta cetogénica', 'Dieta alta en grasas, moderada en proteínas y muy baja en carbohidratos, orientada a inducir cetosis para el uso de grasa como fuente principal de energía.', 'EFSA', 'dieta', 'https://curaprox.es/img/ybc_blog/post/thumb/keto-diet-thumbnail.webp', TRUE),
+('Dieta vegana', 'Dieta basada exclusivamente en alimentos de origen vegetal, excluyendo cualquier producto de origen animal.', 'The Vegan Society', 'dieta', 'https://yupickcafe.es/wp-content/uploads/2024/07/cual-es-la-alimentacion-de-un-vegano.jpg', TRUE),
+('Dieta vegetariana', 'Dieta que excluye carne y pescado, pero puede incluir productos animales como huevos o lácteos.', 'Academy of Nutrition and Dietetics', 'dieta', 'https://staticnew-prod.topdoctors.mx/files/Image/large/44fae64371e1cda08877e2f762b00f32.jpeg', TRUE),
+('Dieta DASH', 'Dieta diseñada para reducir la presión arterial, rica en frutas, verduras, granos integrales y baja en sodio y grasas saturadas.', 'NIH', 'dieta', 'https://mejorconsalud.as.com/wp-content/uploads/2023/08/dieta-dash-768x512.jpg', TRUE),
+('Dieta sin gluten', 'Dieta que elimina el gluten, una proteína presente en trigo, cebada y centeno, indicada para personas con celiaquía o sensibilidad al gluten.', 'AESAN', 'dieta', 'https://www.tuotromedico.com/include/images/fotosContenidos/DietaSinGluten.webp', TRUE),
+('Dieta sin lactosa', 'Plan alimentario que excluye productos lácteos con lactosa, útil para personas con intolerancia a este azúcar.', 'EFSA', 'dieta', 'https://www.nohayexcusas.es/wp-content/uploads/2019/05/intolerancia-lactosa-2.jpg', TRUE),
+('Dieta hipocalórica', 'Dieta con un aporte energético reducido respecto a las necesidades del individuo, utilizada frecuentemente en procesos de pérdida de peso.', 'OMS', 'dieta', 'https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2023/02/21/16769715969831.jpg', TRUE),
+('Dieta hiperproteica', 'Dieta rica en proteínas que busca preservar la masa muscular, especialmente en contextos de entrenamiento o pérdida de grasa.', 'NIH', 'dieta', 'https://www.supersmart.com/data/images/blog/regime-hyperproteine-aliments.jpg', TRUE),
+('Ayuno intermitente', 'Patrón de alimentación que alterna períodos de ingesta con períodos de ayuno, con el objetivo de mejorar la composición corporal o la salud metabólica.', 'Harvard Health Publishing', 'dieta', 'https://yoelijocuidarme.es/wp-content/uploads/2020/05/ayuno-intermitente.jpg', TRUE),
+('Ejercicio aeróbico', 'Actividad física de intensidad moderada y larga duración que mejora la capacidad cardiovascular y la quema de grasa.', 'OMS', 'deporte', 'https://clinicarozalen.com/wp-content/uploads/2024/04/correr-1.jpg', TRUE),
+('Ejercicio anaeróbico', 'Actividad de alta intensidad y corta duración que depende de reservas de energía sin oxígeno, como el entrenamiento de fuerza.', 'NIH', 'deporte', 'https://media.gq.com.mx/photos/5edf13ca33e77eb4001edc1f/master/pass/GettyImages-915835422.jpg', TRUE),
+('VO2 máximo', 'Volumen máximo de oxígeno que el cuerpo puede utilizar durante el ejercicio intenso, indicador clave de resistencia cardiovascular.', 'EFSA', 'deporte', 'https://www.palabraderunner.com/wp-content/uploads/2017/09/vo2-max-test.jpg', TRUE),
+('Recuperación muscular', 'Proceso fisiológico de regeneración de fibras musculares después del ejercicio, esencial para el rendimiento y prevención de lesiones.', 'FAO', 'deporte', 'https://movipas.com/wp-content/uploads/2024/06/Crioterapia-recuperacion-muscular.webp', TRUE),
+('Gasto energético', 'Cantidad de energía que el cuerpo utiliza en reposo, actividad física y digestión.', 'EFSA', 'deporte', 'https://www.ericfavre.com/lifestyle/es/wp-content/uploads/sites/8/2021/09/depense-calorique-metabolisme.jpg', TRUE),
+('Entrenamiento de resistencia', 'Actividad que implica la repetición de movimientos con carga para aumentar fuerza muscular y masa magra.', 'NIH', 'deporte', 'https://cienciasdeportivas.com/wp-content/uploads/tipos-de-entrenamiento-de-resistencia.png', TRUE),
+('Rendimiento deportivo', 'Capacidad de un atleta para ejecutar una actividad física con eficacia y eficiencia.', 'OMS', 'deporte', 'https://universidadeuropea.com/resources/media/images/rendimiento_deportivo_og.original.jpg', TRUE);
 INSERT INTO glosario (termino, definicion, fuente, categoria, imagen_url, visible)
 VALUES
-('Suplementación deportiva', 'Uso de productos nutricionales para optimizar el rendimiento, recuperación o salud en el contexto del deporte.', 'EFSA', 'deporte', 'https://ejemplo.com/suplementacion-deportiva.jpg', TRUE),
-('Carga glucogénica', 'Técnica nutricional que busca maximizar los depósitos de glucógeno muscular antes de una competición.', 'NIH', 'deporte', 'https://ejemplo.com/carga-glucogenica.jpg', TRUE),
-('Deshidratación', 'Estado de déficit de agua corporal que puede afectar el rendimiento físico y mental.', 'OMS', 'deporte', 'https://ejemplo.com/deshidratacion.jpg', TRUE),
-('Ácido fólico', 'Forma sintética del folato, una vitamina B necesaria para la producción de ADN y el desarrollo celular, especialmente importante en el embarazo.', 'OMS', 'micronutriente', 'https://ejemplo.com/acido-folico.jpg', TRUE),
-('Colina', 'Micronutriente relacionado con la vitamina B que participa en funciones hepáticas, desarrollo cerebral y síntesis de neurotransmisores.', 'NIH', 'micronutriente', 'https://ejemplo.com/colina.jpg', TRUE),
-('Carotenoides', 'Pigmentos vegetales con propiedades antioxidantes, precursores de la vitamina A, presentes en frutas y verduras de color naranja y rojo.', 'EFSA', 'micronutriente', 'https://ejemplo.com/carotenoides.jpg', TRUE),
-('Flavonoides', 'Compuestos bioactivos con función antioxidante y antiinflamatoria, presentes en frutas, verduras, té y vino tinto.', 'FAO', 'micronutriente', 'https://ejemplo.com/flavonoides.jpg', TRUE),
-('Luteína', 'Carotenoide que se acumula en la retina y puede ayudar a proteger la salud ocular.', 'NIH', 'micronutriente', 'https://ejemplo.com/luteina.jpg', TRUE),
-('Licopeno', 'Carotenoide con potentes propiedades antioxidantes, abundante en el tomate y otros frutos rojos.', 'EFSA', 'micronutriente', 'https://ejemplo.com/licopeno.jpg', TRUE),
-('Inositol', 'Micronutriente involucrado en funciones celulares, hormonales y del sistema nervioso, a menudo clasificado con el complejo B.', 'FAO', 'micronutriente', 'https://ejemplo.com/inositol.jpg', TRUE),
-('Coenzima Q10', 'Compuesto antioxidante que participa en la producción de energía celular y puede apoyar la salud cardiovascular.', 'NIH', 'micronutriente', 'https://ejemplo.com/coenzima-q10.jpg', TRUE),
-('Taurina', 'Aminoácido sulfonado con funciones antioxidantes y reguladoras de la presión osmótica, presente en muchos tejidos humanos.', 'EFSA', 'micronutriente', 'https://ejemplo.com/taurina.jpg', TRUE),
-('Betacaroteno', 'Precursor de la vitamina A con función antioxidante, presente en alimentos de origen vegetal como la zanahoria.', 'OMS', 'micronutriente', 'https://ejemplo.com/betacaroteno.jpg', TRUE),
-('Alimento ultraprocesado', 'Producto industrial comestible con múltiples ingredientes y aditivos, asociado a un bajo valor nutricional y alto riesgo de enfermedades crónicas.', 'NOVA', 'otro', 'https://ejemplo.com/ultraprocesado.jpg', TRUE),
-('Nutrición emocional', 'Relación entre la alimentación y las emociones, que puede afectar hábitos como el hambre emocional o el atracón.', 'Harvard Health', 'otro', 'https://ejemplo.com/nutricion-emocional.jpg', TRUE),
-('Carga glucémica', 'Indicador que combina el índice glucémico y la cantidad de carbohidratos de un alimento para estimar su impacto glucémico real.', 'EFSA', 'otro', 'https://ejemplo.com/carga-glucemica.jpg', TRUE),
-('Etiquetado nutricional', 'Información obligatoria o voluntaria que figura en los envases de alimentos sobre su composición y propiedades.', 'AESAN', 'otro', 'https://ejemplo.com/etiquetado.jpg', TRUE),
-('Conservantes', 'Sustancias añadidas a los alimentos para evitar su deterioro microbiano o químico.', 'FAO', 'otro', 'https://ejemplo.com/conservantes.jpg', TRUE),
-('Aditivos alimentarios', 'Sustancias utilizadas para mejorar el sabor, color, textura o conservación de los productos alimenticios.', 'EFSA', 'otro', 'https://ejemplo.com/aditivos.jpg', TRUE),
-('Nutracéutico', 'Producto derivado de alimentos con beneficios médicos o de salud, incluyendo suplementos o alimentos funcionales.', 'NIH', 'otro', 'https://ejemplo.com/nutraceutico.jpg', TRUE),
-('Transgénico', 'Organismo modificado genéticamente (OMG) al que se le han insertado genes de otra especie para mejorar su rendimiento o resistencia.', 'FAO', 'otro', 'https://ejemplo.com/transgenico.jpg', TRUE),
-('Sostenibilidad alimentaria', 'Capacidad de los sistemas de alimentación para proporcionar alimentos seguros y nutritivos sin comprometer los recursos de las generaciones futuras.', 'FAO', 'otro', 'https://ejemplo.com/sostenibilidad.jpg', TRUE),
-('Huella ecológica', 'Indicador del impacto ambiental de una persona o sistema, incluyendo la cantidad de recursos naturales consumidos.', 'WWF', 'otro', 'https://ejemplo.com/huella-ecologica.jpg', TRUE),
-('Huella hídrica', 'Cantidad de agua utilizada directa o indirectamente para producir un alimento o servicio.', 'Water Footprint Network', 'otro', 'https://ejemplo.com/huella-hidrica.jpg', TRUE),
-('Desperdicio alimentario', 'Pérdida de alimentos comestibles en cualquier etapa de la cadena alimentaria, desde la producción hasta el consumo.', 'FAO', 'otro', 'https://ejemplo.com/desperdicio-alimentario.jpg', TRUE),
-('Proximidad alimentaria', 'Consumo de alimentos producidos localmente para reducir transporte, emisiones y apoyar la economía local.', 'Slow Food', 'otro', 'https://ejemplo.com/proximidad-alimentaria.jpg', TRUE),
-('Alimentación consciente', 'Actitud de comer con plena atención al acto de alimentarse, respetando el hambre, la saciedad y el entorno.', 'Harvard T.H. Chan', 'otro', 'https://ejemplo.com/alimentacion-consciente.jpg', TRUE),
-('Alimentación sostenible', 'Dieta saludable que tiene bajo impacto ambiental, protege la biodiversidad y promueve la equidad económica y social.', 'EFSA', 'otro', 'https://ejemplo.com/alimentacion-sostenible.jpg', TRUE),
-('Ecoetiquetado', 'Sistema de etiquetado que informa sobre el impacto ambiental de un producto, promoviendo elecciones responsables.', 'UE', 'otro', 'https://ejemplo.com/ecoetiquetado.jpg', TRUE),
-('Kilómetro cero', 'Concepto que promueve el consumo de alimentos producidos cerca del punto de venta o consumo, para reducir emisiones.', 'Slow Food', 'otro', 'https://ejemplo.com/km0.jpg', TRUE),
-('Economía circular alimentaria', 'Modelo que busca reutilizar, reciclar y reducir el desperdicio en toda la cadena alimentaria.', 'Circular Economy EU', 'otro', 'https://ejemplo.com/economia-circular.jpg', TRUE);
+('Suplementación deportiva', 'Uso de productos nutricionales para optimizar el rendimiento, recuperación o salud en el contexto del deporte.', 'EFSA', 'deporte', 'https://www.sportlife.es/uploads/s1/76/22/87/5/article-piramide-suplementos-deportivos-56b0ba6e37d45.jpeg', TRUE),
+('Carga glucogénica', 'Técnica nutricional que busca maximizar los depósitos de glucógeno muscular antes de una competición.', 'NIH', 'deporte', 'https://www.babelsport.com/blog/imagenes/carga-carbohidratos-runner.jpg', TRUE),
+('Deshidratación', 'Estado de déficit de agua corporal que puede afectar el rendimiento físico y mental.', 'OMS', 'deporte', 'https://www.gruposcanner.biz/wp-content/uploads/2018/07/Deshidratacion-como-prevenirla-540x280.jpg', TRUE),
+('Ácido fólico', 'Forma sintética del folato, una vitamina B necesaria para la producción de ADN y el desarrollo celular, especialmente importante en el embarazo.', 'OMS', 'micronutriente', 'https://iberofarmacos.net/wp-content/uploads/2024/09/ACIDO-FOLICO-5-MG-scaled.jpg', TRUE),
+('Colina', 'Micronutriente relacionado con la vitamina B que participa en funciones hepáticas, desarrollo cerebral y síntesis de neurotransmisores.', 'NIH', 'micronutriente', 'https://www.infobae.com/new-resizer/PiVKiv06IutlF31aqLgkpIUEFIg=/arc-anglerfish-arc2-prod-infobae/public/KNX6THKJM5HCBOQ4QGAHCVNVWI.jpg', TRUE),
+('Carotenoides', 'Pigmentos vegetales con propiedades antioxidantes, precursores de la vitamina A, presentes en frutas y verduras de color naranja y rojo.', 'EFSA', 'micronutriente', 'https://nutresalut.com/wp-content/uploads/2022/05/Carotenoids_AdobeStock-scaled.jpeg', TRUE),
+('Flavonoides', 'Compuestos bioactivos con función antioxidante y antiinflamatoria, presentes en frutas, verduras, té y vino tinto.', 'FAO', 'micronutriente', 'https://ichef.bbci.co.uk/ace/ws/640/cpsprodpb/B433/production/_108313164_gettyimages-615522818.jpg.webp', TRUE),
+('Luteína', 'Carotenoide que se acumula en la retina y puede ayudar a proteger la salud ocular.', 'NIH', 'micronutriente', 'https://fernandez-vega.com/blog/wp-content/uploads/2025/05/luteina.png', TRUE),
+('Licopeno', 'Carotenoide con potentes propiedades antioxidantes, abundante en el tomate y otros frutos rojos.', 'EFSA', 'micronutriente', 'https://www.druni.es/blog/wp-content/uploads/2023/10/Licopeno-Img01-211023.jpg', TRUE),
+('Inositol', 'Micronutriente involucrado en funciones celulares, hormonales y del sistema nervioso, a menudo clasificado con el complejo B.', 'FAO', 'micronutriente', 'https://www.solgar.es/media/catalog/product/cache/841564aa151c7256e353391159214053/1/2/12550263.jpg', TRUE),
+('Coenzima Q10', 'Compuesto antioxidante que participa en la producción de energía celular y puede apoyar la salud cardiovascular.', 'NIH', 'micronutriente', 'https://www.saludterapia.com/images/saludterapia/general/16919/coenzima-q10.jpg', TRUE),
+('Taurina', 'Aminoácido sulfonado con funciones antioxidantes y reguladoras de la presión osmótica, presente en muchos tejidos humanos.', 'EFSA', 'micronutriente', 'https://elixpharma.com/wp-content/uploads/2021/01/taurina-1-1000x600.jpg', TRUE),
+('Betacaroteno', 'Precursor de la vitamina A con función antioxidante, presente en alimentos de origen vegetal como la zanahoria.', 'OMS', 'micronutriente', 'https://www.primor.eu/blog/wp-content/uploads/2024/02/BETACAROTENOS.jpg', TRUE),
+('Alimento ultraprocesado', 'Producto industrial comestible con múltiples ingredientes y aditivos, asociado a un bajo valor nutricional y alto riesgo de enfermedades crónicas.', 'NOVA', 'otro', 'https://mejorconsalud.as.com/wp-content/uploads/2023/12/alimentos-ultraprocesados.jpg', TRUE),
+('Nutrición emocional', 'Relación entre la alimentación y las emociones, que puede afectar hábitos como el hambre emocional o el atracón.', 'Harvard Health', 'otro', 'https://elsuenodevicky.com/wp-content/uploads/2019/11/Alimentacion_consciente.jpg', TRUE),
+('Carga glucémica', 'Indicador que combina el índice glucémico y la cantidad de carbohidratos de un alimento para estimar su impacto glucémico real.', 'EFSA', 'otro', 'https://i.blogs.es/cc89ba/diabetes/840_560.jpeg', TRUE),
+('Etiquetado nutricional', 'Información obligatoria o voluntaria que figura en los envases de alimentos sobre su composición y propiedades.', 'AESAN', 'otro', 'https://www.noegasystems.com/wp-content/uploads/Etiquetado-y-codificacion-de-las-mercancias-en-el-almacen.jpeg', TRUE),
+('Conservantes', 'Sustancias añadidas a los alimentos para evitar su deterioro microbiano o químico.', 'FAO', 'otro', 'https://csaconsultores.com/wp-content/uploads/2021/09/conservantes-productos-alimenticios.jpg', TRUE),
+('Aditivos alimentarios', 'Sustancias utilizadas para mejorar el sabor, color, textura o conservación de los productos alimenticios.', 'EFSA', 'otro', 'https://www.traza.net/wp-content/uploads/2024/02/Aditivos-alimentarios.jpg', TRUE),
+('Nutracéutico', 'Producto derivado de alimentos con beneficios médicos o de salud, incluyendo suplementos o alimentos funcionales.', 'NIH', 'otro', 'https://www.vitaeinternational.com/wp-content/uploads/2015/11/THE-NEW-WAY-TO-CURE-THROUGH-SMART-NUTRACEUTICALS.jpg', TRUE),
+('Transgénico', 'Organismo modificado genéticamente (OMG) al que se le han insertado genes de otra especie para mejorar su rendimiento o resistencia.', 'FAO', 'otro', 'https://static.excelenciasgourmet.com/cdn/ff/EM3M4RjLm4Kw5ZCz5a6FOndbya1fWGK21KhPYGpfX_0/1721683343/public/2018-04/alimentos-transgenicos.jpg', TRUE),
+('Sostenibilidad alimentaria', 'Capacidad de los sistemas de alimentación para proporcionar alimentos seguros y nutritivos sin comprometer los recursos de las generaciones futuras.', 'FAO', 'otro', 'https://solucionesdesinfeccion.com/wp-content/uploads/sostenibilidad.jpg', TRUE),
+('Huella ecológica', 'Indicador del impacto ambiental de una persona o sistema, incluyendo la cantidad de recursos naturales consumidos.', 'WWF', 'otro', 'https://www.fundacionaquae.org/wp-content/uploads/2020/01/Consejos-para-reducir-la-huella-ecol%C3%B3gica.jpg', TRUE),
+('Huella hídrica', 'Cantidad de agua utilizada directa o indirectamente para producir un alimento o servicio.', 'Water Footprint Network', 'otro', 'https://romin.com/wp-content/uploads/2016/07/huella-hidrica.jpg', TRUE),
+('Desperdicio alimentario', 'Pérdida de alimentos comestibles en cualquier etapa de la cadena alimentaria, desde la producción hasta el consumo.', 'FAO', 'otro', 'https://csaconsultores.com/wp-content/uploads/2023/08/perdida-o-desperdicio-alimentario-cual-es-la-diferencia.png', TRUE),
+('Proximidad alimentaria', 'Consumo de alimentos producidos localmente para reducir transporte, emisiones y apoyar la economía local.', 'Slow Food', 'otro', 'https://raed.academy/wp-content/uploads/2020/05/alimentos-proximidad-dstNtc.jpeg', TRUE),
+('Alimentación consciente', 'Actitud de comer con plena atención al acto de alimentarse, respetando el hambre, la saciedad y el entorno.', 'Harvard T.H. Chan', 'otro', 'https://www.savalnet.cl/medios/mm/reportajes/2021/235910rg01.jpg', TRUE),
+('Alimentación sostenible', 'Dieta saludable que tiene bajo impacto ambiental, protege la biodiversidad y promueve la equidad económica y social.', 'EFSA', 'otro', 'https://www.aperitivoslareal.com/wp-content/uploads/2023/06/Aperitivos-LA-REAL-Blog-Las-claves-de-la-alimentacion-sostenible-2.jpg', TRUE),
+('Ecoetiquetado', 'Sistema de etiquetado que informa sobre el impacto ambiental de un producto, promoviendo elecciones responsables.', 'UE', 'otro', 'https://www.residuosprofesional.com/wp-content/uploads/2022/03/sellos-ecologicos-17032022.jpg', TRUE),
+('Kilómetro cero', 'Concepto que promueve el consumo de alimentos producidos cerca del punto de venta o consumo, para reducir emisiones.', 'Slow Food', 'otro', 'https://enasui.com/wp-content/uploads/2021/05/km0-certificacion-1-1080x630.jpg', TRUE),
+('Economía circular alimentaria', 'Modelo que busca reutilizar, reciclar y reducir el desperdicio en toda la cadena alimentaria.', 'Circular Economy EU', 'otro', 'https://ecotopias.net/wp-content/uploads/2025/03/photo_2025-03-24_23-36-33.jpg', TRUE);
 
 INSERT INTO multimedia (titulo, descripcion, url, tipo, categoria, visible, fecha_publicacion)
 VALUES
-('¿Qué es una dieta saludable?', 'Vídeo educativo de la OMS que explica qué significa comer sano, con recomendaciones prácticas.', 
- 'https://www.youtube.com/watch?v=3FFp9U2yNhc', 'video', 'nutricion', TRUE, '2021-05-12'),
-('Nutrición y salud cardiovascular – Harvard T.H. Chan', 'Artículo web de la Escuela de Salud Pública de Harvard sobre cómo la dieta impacta en el corazón.', 
- 'https://www.hsph.harvard.edu/nutritionsource/healthy-eating-plate/', 'web', 'salud', TRUE, '2023-07-20'),
+('¿Qué es una dieta saludable?', 'Vídeo educativo de Happy Learning Español que explica qué significa comer sano, con recomendaciones prácticas.', 
+ 'https://youtu.be/FaLmwmN1MP0?si=lFT6QdWXZavccOcz', 'video', 'nutricion', TRUE, '2021-05-12'),
+('¿Hay relación entre la dieta y el riesgo cardiovascular? Harvard responde con datos', 'Artículo web de la Escuela de Salud Pública de Harvard sobre cómo la dieta impacta en el corazón.', 
+ 'https://as.com/deporteyvida/2020/06/16/portada/1592291654_075414.html', 'web', 'salud', TRUE, '2023-07-20'),
 ('Ejercicio físico: guía visual para principiantes – NHS UK', 'Infografía sencilla sobre rutinas de ejercicio físico para todos los niveles, según el Servicio de Salud Británico.', 
- 'https://www.nhs.uk/live-well/exercise/', 'web', 'ejercicio', TRUE, '2022-09-10'),
+ 'https://www.nhs.uk/live-well/exercise/physical-activity-guidelines-for-adults-aged-19-to-64/', 'web', 'ejercicio', TRUE, '2022-09-10'),
 ('Cómo leer una etiqueta nutricional – FDA (EE.UU.)', 'PDF oficial que enseña a interpretar etiquetas de alimentos en EE.UU., útil como ejemplo visual.', 
- 'https://www.fda.gov/media/99069/download', 'pdf', 'nutricion', TRUE, '2021-04-01'),
+ 'https://www.fda.gov/food/nutrition-facts-label/como-entender-y-utilizar-la-etiqueta-de-informacion-nutricional', 'pdf', 'nutricion', TRUE, '2021-04-01'),
 ('Mindful Eating explicado por The Nutrition Source – Harvard', 'Artículo que introduce la alimentación consciente con base científica y consejos prácticos.', 
- 'https://www.hsph.harvard.edu/nutritionsource/mindful-eating/', 'web', 'mentalidad', TRUE, '2022-11-15'),
+ 'https://nutritionsource.hsph.harvard.edu/mindful-eating/', 'web', 'mentalidad', TRUE, '2022-11-15'),
 ('Ejercicio físico: beneficios para la salud – Canal UNED', 'Vídeo educativo de la Universidad Nacional de Educación a Distancia sobre cómo el ejercicio impacta la salud física y mental.', 
- 'https://www.youtube.com/watch?v=wFRkLfhXSaY', 'video', 'ejercicio', TRUE, '2020-04-28'),
+ 'https://www.youtube.com/watch?v=5JE5GnH_idQ', 'video', 'ejercicio', TRUE, '2020-04-28'),
 ('Rutina de ejercicios para hacer en casa sin material – Vitónica', 'Artículo con rutinas fáciles y sin equipamiento, ideal para principiantes.', 
- 'https://www.vitonica.com/entrenamiento/rutina-ejercicios-casa-sin-material-para-principiantes', 'web', 'ejercicio', TRUE, '2023-01-10'),
+ 'https://www.vitonica.com/entrenamiento/rutina-entrenamiento-casa-material-nivel-medio', 'web', 'ejercicio', TRUE, '2023-01-10'),
 ('¿Cuánto ejercicio necesitas? – OMS', 'Infografía y guía de la Organización Mundial de la Salud con recomendaciones por edad y nivel.', 
- 'https://www.who.int/es/news-room/fact-sheets/detail/physical-activity', 'web', 'ejercicio', TRUE, '2022-11-03'),
+ 'https://www.who.int/es/news/item/25-11-2020-every-move-counts-towards-better-health-says-who', 'web', 'ejercicio', TRUE, '2022-11-03'),
 ('Guía de entrenamiento de fuerza – EFSA/EuropeActive', 'PDF con pautas científicas para entrenar fuerza muscular de forma segura.', 
- 'https://www.europeactive.eu/sites/europeactive.eu/files/projects/Guidelines_StructuredStrength.pdf', 'pdf', 'ejercicio', TRUE, '2021-09-01'),
+ 'https://ec.europa.eu/assets/eac/sport/library/policy_documents/eu-physical-activity-guidelines-2008_es.pdf', 'pdf', 'ejercicio', TRUE, '2021-09-01'),
 ('HIIT para principiantes en casa – Sergio Peinado', 'Vídeo dinámico en español con ejercicios HIIT guiados para mejorar resistencia y quemar grasa.', 
- 'https://www.youtube.com/watch?v=z5qX2Nb4pmI', 'video', 'ejercicio', TRUE, '2023-02-15'),
+ 'https://www.youtube.com/watch?v=iUrVkJls9y4', 'video', 'ejercicio', TRUE, '2023-02-15'),
  ('Alimentación antes y después del ejercicio – Clínica Mayo', 'Consejos prácticos sobre qué comer antes y después del entrenamiento para mejorar el rendimiento.', 
  'https://www.mayoclinic.org/es/healthy-lifestyle/fitness/in-depth/exercise/art-20045506', 'web', 'nutricion', TRUE, '2022-06-12'),
 ('¿Qué comer antes de entrenar? – Sergio Peinado', 'Vídeo en español con ejemplos reales de comidas pre-entreno según tipo de entrenamiento.', 
- 'https://www.youtube.com/watch?v=Rj7QQoOnrRc', 'video', 'nutricion', TRUE, '2021-03-28'),
+ 'https://youtu.be/Jq7wAcyuGvo?si=t97HZhsvb0x5v92G', 'video', 'nutricion', TRUE, '2021-03-28'),
 ('Nutrición deportiva básica – MedlinePlus', 'Artículo introductorio que explica los fundamentos de la alimentación para deportistas.', 
- 'https://medlineplus.gov/spanish/sportsnutrition.html', 'web', 'nutricion', TRUE, '2023-05-10'),
+ 'https://medlineplus.gov/spanish/nutrition.html', 'web', 'nutricion', TRUE, '2023-05-10'),
 ('Guía sobre proteínas para deportistas – Harvard Health', 'Análisis sobre cuánta proteína se necesita según el tipo de ejercicio y objetivos.', 
- 'https://www.health.harvard.edu/blog/how-much-protein-do-you-need-every-day-201506183418', 'web', 'nutricion', TRUE, '2022-08-04'),
+ 'https://nutritionsource.hsph.harvard.edu/healthy-eating-plate/translations/spanish_spain/', 'web', 'nutricion', TRUE, '2022-08-04'),
 ('Errores comunes al combinar ejercicio y dieta – PowerExplosive', 'Vídeo en español explicando mitos y errores comunes al entrenar y seguir una dieta.', 
- 'https://www.youtube.com/watch?v=FeDQ6Y_OrJQ', 'video', 'nutricion', TRUE, '2022-10-20'),
+ 'https://www.youtube.com/watch?v=8hKp9PvdS-c', 'video', 'nutricion', TRUE, '2022-10-20'),
  ('¿Qué es la creatina y cómo tomarla? – PowerExplosive', 'Vídeo detallado sobre la creatina, su eficacia, seguridad y cómo usarla para mejorar el rendimiento deportivo.', 
- 'https://www.youtube.com/watch?v=Ulwbvf7UVdo', 'video', 'nutricion', TRUE, '2021-07-12'),
+ 'https://youtu.be/1vM_9FCtbvA?si=9vlG4TY2P7p5kBhW', 'video', 'nutricion', TRUE, '2021-07-12'),
 ('Guía de suplementos deportivos – MedlinePlus', 'Artículo informativo sobre los principales suplementos utilizados en el deporte: proteína, creatina, cafeína y más.', 
- 'https://medlineplus.gov/spanish/dietarysupplements.html', 'web', 'nutricion', TRUE, '2023-01-10'),
+ 'https://medlineplus.gov/spanish/druginfo/natural/873.html', 'web', 'nutricion', TRUE, '2023-01-10'),
 ('¿Necesitas proteína en polvo? – Sergio Peinado', 'Vídeo explicativo para entender cuándo y cómo usar proteína en polvo en una dieta equilibrada.', 
- 'https://www.youtube.com/watch?v=c2TPQJ_rMX8', 'video', 'nutricion', TRUE, '2022-05-20'),
+ 'https://youtu.be/Co5oz-o7TY4?si=SjWKbdWbS6XV9brs', 'video', 'nutricion', TRUE, '2022-05-20'),
 ('Suplementación en deportistas – European Food Safety Authority (EFSA)', 'Documento técnico que revisa la evidencia científica sobre suplementos populares en Europa.', 
- 'https://www.efsa.europa.eu/en/topics/topic/nutrition', 'web', 'nutricion', TRUE, '2021-11-05'),
+ 'https://www.efsa.europa.eu/es/topics/topic/food-supplements', 'web', 'nutricion', TRUE, '2021-11-05'),
 ('Cafeína y rendimiento deportivo – G-SE', 'Artículo técnico que analiza los efectos de la cafeína sobre el rendimiento, la concentración y la fatiga.', 
- 'https://g-se.com/la-cafeina-y-su-relacion-con-el-rendimiento-deportivo-bp-c57cfb26e6e29e', 'web', 'nutricion', TRUE, '2020-09-18'),
+ 'https://g-se.com/es/cafeina-y-ejercicio-metabolismo-resistencia-y-rendimiento-344-sa-l57cfb271375f1', 'web', 'nutricion', TRUE, '2020-09-18'),
  ('Cómo llevar una dieta vegana equilibrada – Dietista-Nutricionista Lucía Redondo', 'Vídeo educativo que explica cómo estructurar una dieta 100% vegetal sin carencias.', 
- 'https://www.youtube.com/watch?v=bAYOXIGMiDM', 'video', 'nutricion', TRUE, '2022-06-01'),
+ 'https://www.youtube.com/watch?v=0Kad-FApGTs', 'video', 'nutricion', TRUE, '2022-06-01'),
 ('¿Es posible ganar masa muscular siendo vegano? – Fitónica', 'Vídeo en español sobre estrategias para aumentar músculo con alimentación vegetal.', 
- 'https://www.youtube.com/watch?v=iXQ1ix_XdWU', 'video', 'nutricion', TRUE, '2021-04-10'),
+ 'https://youtu.be/z4Hh0zRSnQM?si=j1aFm-nYSlyIPwBZ', 'video', 'nutricion', TRUE, '2021-04-10'),
 ('Proteína vegetal vs animal – Veganismo en serio', 'Artículo detallado sobre la calidad y combinación de proteínas vegetales en dietas activas.', 
- 'https://veganismo.org/2021/11/proteinas-vegetales-vs-animales/', 'web', 'nutricion', TRUE, '2021-11-05'),
+ 'https://www.elconfidencial.com/bienestar/2022-09-29/proteina-animal-o-vegetal-cual-es-mejor_2863063/', 'web', 'nutricion', TRUE, '2021-11-05'),
 ('Vitamina B12 en dietas veganas – Vegan Society', 'Página oficial que explica la importancia de la suplementación con B12 y cómo tomarla correctamente.', 
- 'https://www.vegansociety.com/resources/nutrition-and-health/vitamin-b12', 'web', 'nutricion', TRUE, '2023-03-20'),
+ 'https://unionvegetariana.org/lo-que-todo-vegano-debe-saber-acerca-de-la-vitamina-b12/', 'web', 'nutricion', TRUE, '2023-03-20'),
 ('Suplementos clave en el deporte vegano – G-SE', 'Artículo técnico que analiza las necesidades especiales en deportistas veganos: B12, hierro, omega 3, creatina.', 
- 'https://g-se.com/suplementos-clave-en-dietas-veganas-para-deportistas-bp-c603c0b3b53b4e', 'web', 'nutricion', TRUE, '2020-12-07'),
+ 'https://g-se.com/es/revisiones-bjsm-a-z-de-los-suplementos-nutricionales-suplementos-dietarios-alimentos-para-la-nutricion-deportiva-y-ayudas-ergogenicas-para-la-salud-y-el-rendimiento-parte-20-2236-sa-h588ac509805c4', 'web', 'nutricion', TRUE, '2020-12-07'),
  ('Mindful Eating: cómo reconectar con la comida – TEDx Talks', 'Charla TEDx que explora cómo practicar la alimentación consciente para mejorar la relación con la comida.', 
- 'https://www.youtube.com/watch?v=8QvWqw2sMHg', 'video', 'mentalidad', TRUE, '2019-11-13'),
+ 'https://youtu.be/CtOU4f3smt4?si=zwyRM8uh1PCumGid', 'video', 'mentalidad', TRUE, '2019-11-13'),
 ('Cómo evitar comer por ansiedad – Psicóloga Miriam Al Adib', 'Vídeo que explica cómo gestionar el hambre emocional y las señales del cuerpo.', 
- 'https://www.youtube.com/watch?v=x3OTOV5vP4M', 'video', 'mentalidad', TRUE, '2021-06-22'),
+ 'https://youtu.be/yRHIFLWX-aM?si=KcvkJi1cJHnABaVg', 'video', 'mentalidad', TRUE, '2021-06-22'),
 ('Hábitos saludables y motivación – El Podcast de Cristina Mitre', 'Episodio donde se abordan los bloqueos mentales más comunes a la hora de cambiar de hábitos.', 
- 'https://cristinamitre.substack.com/p/ep-200-motivacion-y-habitos', 'web', 'mentalidad', TRUE, '2022-09-25'),
+ 'https://cristinamitre.com/buenos-habitos-como-ponertelo-facil-beatriz-crespo-episodio-172/sumarios172-09-2/', 'web', 'mentalidad', TRUE, '2022-09-25'),
 ('Autocompasión y alimentación – Psiquiatra Marian Rojas Estapé', 'Vídeo donde se explora la importancia de tratarse con amabilidad para mantener hábitos duraderos.', 
- 'https://www.youtube.com/watch?v=8YScWkXhL8c', 'video', 'mentalidad', TRUE, '2022-02-10'),
+ 'https://www.youtube.com/watch?v=-x6odshQfkM', 'video', 'mentalidad', TRUE, '2022-02-10'),
 ('Cómo formar hábitos sostenibles – Fundación MAPFRE', 'Artículo con herramientas psicológicas para adoptar hábitos saludables sin frustración.', 
- 'https://www.fundacionmapfre.org/salud/habitos-saludables/como-formar-habitos-saludables/', 'web', 'mentalidad', TRUE, '2023-04-03'),
+ 'https://www.fundacionmapfre.org/educacion-divulgacion/salud-bienestar/', 'web', 'mentalidad', TRUE, '2023-04-03'),
  ('Ejercicio físico y salud mental – Colegio Oficial de Psicología de Madrid', 'Vídeo educativo sobre los beneficios del ejercicio para la ansiedad, la depresión y el bienestar general.', 
- 'https://www.youtube.com/watch?v=Hb7cp3vW4aI', 'video', 'mentalidad', TRUE, '2022-03-15'),
+ 'https://youtu.be/qjviSgJ3lxM?si=w03brEi4k2wiBWB6', 'video', 'mentalidad', TRUE, '2022-03-15'),
 ('El deporte como medicina para la mente – Fundación Española del Corazón', 'Artículo que analiza cómo el deporte reduce el estrés, mejora el sueño y la autoestima.', 
- 'https://fundaciondelcorazon.com/prevencion/ejercicio-fisico/2042-el-deporte-como-medicina-para-la-mente.html', 'web', 'mentalidad', TRUE, '2023-01-17'),
+ 'https://fundaciondelcorazon.com/blog-impulso-vital/2855-deporte-ipor-que-todo-son-beneficios.html', 'web', 'mentalidad', TRUE, '2023-01-17'),
 ('Deporte y salud mental: el impacto psicológico del ejercicio – EFAD', 'Artículo técnico de la Escuela de Formación Abierta Deportiva sobre cómo influye el ejercicio en el cerebro.', 
- 'https://efadeporte.com/deporte-y-salud-mental/', 'web', 'mentalidad', TRUE, '2021-10-05'),
+ 'http://www.scielo.org.co/scielo.php?script=sci_arttext&pid=S0123-885X2004000200008', 'web', 'mentalidad', TRUE, '2021-10-05'),
 ('La importancia del ejercicio en trastornos mentales – Psicóloga Silvia Congost', 'Charla divulgativa sobre cómo el movimiento regula el estado de ánimo y combate la rumiación mental.', 
- 'https://www.youtube.com/watch?v=b8_hvNFOTAc', 'video', 'mentalidad', TRUE, '2022-09-12'),
+ 'https://youtu.be/nGuoqsneK9Q?si=jTjUS0wsVSrtbw6o', 'video', 'mentalidad', TRUE, '2022-09-12'),
 ('Running y salud mental: ¿por qué correr mejora el ánimo? – Runners World España', 'Artículo que explica los mecanismos neurológicos y emocionales tras el “subidón del corredor”.', 
- 'https://www.runnersworld.com/es/salud/a37185732/running-y-salud-mental/', 'web', 'mentalidad', TRUE, '2023-05-09');
+ 'https://www.runnersworld.com/es/training/a62594859/ciencia-explica-correr-hace-feliz-cuanto-mas-en-forma-evitaras-estres/', 'web', 'mentalidad', TRUE, '2023-05-09');
  
 INSERT INTO articulo (titulo, resumen, contenido, imagen_url, categoria, autor, fecha_publicacion, visible, visitas)
 VALUES
 (
   'Los pilares de una dieta equilibrada',
   'Descubre los principios básicos para mantener una alimentación saludable y sostenible en el tiempo.',
-  'Una dieta equilibrada no se trata de contar calorías, sino de aportar al cuerpo todos los nutrientes esenciales: proteínas, grasas saludables, carbohidratos complejos, fibra, vitaminas y minerales. Incorporar variedad de alimentos, respetar las señales de hambre y saciedad, y adaptar las porciones a nuestras necesidades individuales son claves. También es importante evitar el exceso de ultraprocesados, priorizar alimentos frescos, hidratarse adecuadamente y mantener horarios estables de comida.',
-  'https://img1.wsimg.com/isteam/ip/75c73fe6-8e43-4bef-bb34-700f3a8feec5/Foundations%20of%20healthy%20eating-3.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:1280',
+  'Una dieta equilibrada no se trata simplemente de contar calorías, sino de alimentar nuestro cuerpo con inteligencia, conciencia y evidencia científica. Aunque en algunos contextos puede ser útil hacer un seguimiento cuantitativo de la ingesta, lo verdaderamente importante es la calidad de los alimentos, su aporte nutricional y el impacto que tienen en nuestra salud física y mental. Una dieta equilibrada incluye todos los nutrientes esenciales: proteínas completas para reparar tejidos y mantener la masa muscular; grasas saludables, como los ácidos grasos del aceite de oliva o el omega-3 del pescado azul, que cuidan el corazón y el cerebro; carbohidratos complejos que aportan energía sostenida sin provocar picos de azúcar en sangre; fibra para una digestión eficiente y una microbiota saludable; y vitaminas y minerales que regulan miles de funciones metabólicas. Además de cubrir estas bases, es fundamental incorporar variedad de alimentos a lo largo de la semana, lo que garantiza un perfil nutricional completo y previene carencias. También es clave prestar atención a las señales internas de hambre y saciedad: comer con atención, sin pantallas, sin prisas, y conectar con lo que el cuerpo realmente necesita. Otro aspecto esencial es reducir el consumo de ultraprocesados: productos con muchos aditivos, grasas trans, azúcares añadidos y poco valor nutricional. Estos alimentos, por muy atractivos que sean, han demostrado estar relacionados con enfermedades crónicas como la diabetes tipo 2, la obesidad o problemas cardiovasculares. En su lugar, hay que priorizar alimentos frescos y reales: frutas, verduras, legumbres, granos integrales, pescados, huevos, frutos secos y aceites saludables. Beber suficiente agua también forma parte de una alimentación equilibrada. La hidratación permite que los nutrientes circulen, que los órganos funcionen correctamente y que el cuerpo elimine desechos. Es recomendable beber agua de forma constante a lo largo del día, sin esperar a tener sed. Finalmente, los horarios y el entorno también cuentan: mantener un ritmo estable de comidas, evitar saltarse comidas, y hacerlo en un ambiente tranquilo mejora la digestión y la regulación hormonal. Comer bien no solo significa nutrirse, sino también disfrutar del proceso, respetar la cultura gastronómica propia y vivir la alimentación como un hábito saludable, no como una obligación o una restricción. Una dieta equilibrada no juzga, no castiga y no se basa en la perfección: se basa en el equilibrio, la flexibilidad y el respeto por el propio cuerpo.',
+  '/articulos/dietaequilibrada.jpg',
   'nutricion',
   'Laura Martínez, Dietista-Nutricionista',
   '2024-04-12',
@@ -762,8 +822,8 @@ VALUES
 (
   '¿Qué son los ultraprocesados y cómo reducir su consumo?',
   'Aprende a identificar los alimentos ultraprocesados y por qué es recomendable limitarlos en tu dieta diaria.',
-  'Los ultraprocesados son productos industriales con múltiples ingredientes, alto contenido en azúcares, grasas saturadas, aditivos y poca calidad nutricional. Algunos ejemplos comunes son bollería industrial, refrescos, snacks salados, embutidos o cereales azucarados. El consumo frecuente de estos alimentos se asocia con mayor riesgo de obesidad, enfermedades metabólicas y cardiovasculares. Para reducir su consumo, es útil planificar las comidas, cocinar más en casa y leer bien las etiquetas.',
-  'https://www.researchgate.net/publication/355481122/figure/fig1/AS:11431281118619682@1675828561295/Spectrum-of-processing-of-foods-based-on-the-NOVA-classification-The-figure-provides.png',
+  'Los ultraprocesados son productos industriales altamente elaborados que contienen una gran cantidad de ingredientes, muchos de ellos artificiales o poco reconocibles como alimentos. Estos productos suelen estar formulados para tener una larga vida útil, ser extremadamente sabrosos y generar una alta palatabilidad que favorece el consumo excesivo. Entre sus componentes más comunes se encuentran azúcares añadidos, grasas saturadas y trans, harinas refinadas, sal en exceso, colorantes, edulcorantes, potenciadores del sabor, emulsionantes y conservantes. A pesar de su conveniencia y atractivo, su valor nutricional es muy bajo: aportan muchas calorías vacías, pero pocos nutrientes esenciales como vitaminas, minerales o fibra. Algunos ejemplos frecuentes de ultraprocesados incluyen la bollería industrial, los refrescos azucarados, los snacks salados tipo patatas fritas, los cereales de desayuno con azúcar añadido, los embutidos procesados, los precocinados congelados y las salsas comerciales. El consumo habitual de estos productos se ha vinculado, a través de múltiples estudios científicos, a un mayor riesgo de desarrollar obesidad, hipertensión, diabetes tipo 2, enfermedades cardiovasculares, trastornos digestivos, inflamación crónica e incluso ciertas formas de cáncer. Además, su consumo prolongado puede alterar las señales naturales de hambre y saciedad, favorecer la disbiosis intestinal y afectar el estado de ánimo. Reducir el consumo de ultraprocesados no implica una renuncia radical, sino una transición consciente hacia una alimentación basada en productos frescos, naturales y mínimamente procesados. Cocinar más en casa es una de las estrategias más efectivas, ya que permite tener un mayor control sobre los ingredientes y reducir la exposición a aditivos. Planificar las comidas semanales también ayuda a evitar decisiones impulsivas o recurrir a soluciones rápidas poco saludables. Otro hábito recomendable es leer con atención las etiquetas nutricionales, fijándose no solo en las calorías, sino también en la lista de ingredientes y el contenido de azúcares, sal y grasas añadidas. En definitiva, aunque los ultraprocesados forman parte del entorno alimentario moderno, tomar decisiones informadas y priorizar alimentos reales es clave para proteger la salud a corto y largo plazo.',
+  '/articulos/ultraprocesados.png',
   'nutricion',
   'Carlos Gómez, Nutricionista deportivo',
   '2024-05-05',
@@ -773,8 +833,10 @@ VALUES
 (
   'El papel de la fibra en la salud digestiva',
   'Conoce cómo la fibra alimentaria mejora tu tránsito intestinal, regula el azúcar en sangre y favorece la saciedad.',
-  'La fibra es un componente vegetal no digerible que cumple múltiples funciones beneficiosas. La fibra soluble, presente en frutas, legumbres y avena, ayuda a controlar el colesterol y la glucosa. La fibra insoluble, abundante en verduras, cereales integrales y frutos secos, mejora el tránsito intestinal. Su consumo diario favorece la salud digestiva, reduce el riesgo de estreñimiento y promueve una microbiota intestinal equilibrada. Se recomienda consumir entre 25 y 30 g de fibra al día.',
-  'https://www.mdpi.com/nutrients/nutrients-13-03470/article_deploy/html/images/nutrients-13-03470-g001-550.jpg',
+  'La fibra es un componente vegetal no digerible que desempeña un papel fundamental en el mantenimiento de la salud digestiva y metabólica. Aunque el cuerpo humano no puede digerir ni absorber la fibra como otros nutrientes, su paso por el sistema digestivo genera múltiples beneficios. Existen dos tipos principales de fibra: la fibra soluble y la fibra insoluble, y cada una cumple funciones distintas y complementarias. La fibra soluble se disuelve en agua y forma una especie de gel en el intestino, lo que ayuda a ralentizar la digestión y la absorción de los nutrientes. Está presente en alimentos como frutas, legumbres, avena y semillas de lino, y se ha demostrado que contribuye a reducir los niveles de colesterol LDL (colesterol malo), controlar la glucosa en sangre y mejorar la sensibilidad a la insulina. Por otro lado, la fibra insoluble no se disuelve en agua y actúa como un "broom" intestinal, añadiendo volumen a las heces y acelerando el tránsito intestinal, lo cual es clave para prevenir el estreñimiento. Esta forma de fibra se encuentra principalmente en verduras, cereales integrales, salvado y frutos secos.
+Además de sus efectos digestivos, la fibra desempeña un papel vital en el equilibrio de la microbiota intestinal. Al actuar como prebiótico, la fibra sirve de alimento para las bacterias beneficiosas del colon, favoreciendo así una flora intestinal diversa y saludable. Este equilibrio microbiano influye no solo en la digestión, sino también en el sistema inmunológico, la inflamación sistémica, el estado de ánimo y hasta la prevención de enfermedades crónicas. La evidencia científica respalda que una ingesta adecuada de fibra está asociada con un menor riesgo de enfermedades cardiovasculares, diabetes tipo 2, obesidad, diverticulosis e incluso ciertos tipos de cáncer, como el de colon.
+Se recomienda un consumo diario de entre 25 y 30 gramos de fibra, aunque la mayoría de las poblaciones occidentales no alcanza ni la mitad de esta cantidad. Para lograrlo, es recomendable incluir a diario frutas enteras (mejor que en zumo), verduras en cada comida, legumbres al menos tres veces por semana, cereales integrales en lugar de refinados y un puñado de frutos secos naturales. Es importante, además, aumentar la ingesta de fibra de forma gradual y acompañarla de una hidratación adecuada, ya que un consumo alto de fibra sin suficiente agua puede causar molestias intestinales. En definitiva, la fibra es un componente esencial de una alimentación equilibrada, y su presencia regular en la dieta contribuye de forma silenciosa pero poderosa a preservar la salud en todos los niveles.',
+  '/articulos/saluddigestiva.jpg',
   'nutricion',
   'María López, Educadora en salud',
   '2024-06-01',
@@ -784,8 +846,14 @@ VALUES
 (
   'Cómo mejorar la calidad del sueño de forma natural',
   'Dormir bien es esencial para la salud física y mental. Te explicamos hábitos que favorecen un descanso reparador.',
-  'La calidad del sueño impacta directamente en el sistema inmunológico, la concentración, el estado de ánimo y el metabolismo. Para mejorarla, es recomendable mantener horarios regulares, evitar el uso de pantallas antes de dormir, reducir el consumo de cafeína por la tarde, y crear un ambiente oscuro y silencioso. Técnicas como la meditación, respiración profunda o infusiones relajantes también pueden ayudar. Dormir entre 7 y 9 horas diarias es clave para el bienestar general.',
-  'https://toneop.care/_next/image?url=https%3A%2F%2Ftoneopcare-strapi-prod.s3.ap-south-1.amazonaws.com%2FHow_To_Improve_Sleep_Naturally_9_Effective_Ways_and_10_3_2_1_0_Rule_8c3fd415ef_6068bb98d9.avif&w=3840&q=100',
+  'La calidad del sueño es un pilar fundamental para la salud integral del ser humano. Dormir bien no solo permite descansar, sino que tiene un impacto directo y profundo en funciones esenciales como el sistema inmunológico, la memoria, la capacidad de concentración, el estado de ánimo, la regulación emocional y el metabolismo energético. Cuando no se duerme adecuadamente, el cuerpo entra en un estado de estrés fisiológico que altera la producción hormonal, aumenta los niveles de cortisol y puede desencadenar desequilibrios metabólicos, como resistencia a la insulina o aumento del apetito. De hecho, numerosos estudios han relacionado la falta crónica de sueño con un mayor riesgo de obesidad, enfermedades cardiovasculares, diabetes tipo 2 y trastornos del estado de ánimo como la ansiedad y la depresión.
+
+Para mejorar la calidad del sueño, es recomendable establecer horarios regulares, acostándose y levantándose a la misma hora todos los días, incluso los fines de semana. Esta regularidad ayuda a reforzar el ritmo circadiano, el reloj biológico interno que regula los ciclos de sueño y vigilia. También es clave evitar el uso de pantallas electrónicas antes de dormir, ya que la luz azul emitida por móviles, tablets y ordenadores interfiere en la producción de melatonina, la hormona que induce el sueño. Otro hábito útil es reducir o eliminar el consumo de cafeína por la tarde y noche, ya que esta sustancia permanece en el cuerpo varias horas y puede dificultar el descanso. Crear un entorno propicio para dormir también marca la diferencia: un dormitorio oscuro, silencioso, bien ventilado y con una temperatura agradable favorece un descanso profundo y reparador.
+
+Además, incorporar rutinas de relajación antes de dormir puede ayudar a calmar la mente y preparar el cuerpo para el sueño. Actividades como la meditación guiada, la respiración profunda, la lectura tranquila o el consumo de infusiones relajantes como la manzanilla, la valeriana o la melisa pueden ser muy efectivas. Es importante también evitar comidas copiosas justo antes de acostarse y, en lo posible, desconectar del trabajo o las preocupaciones al menos una hora antes de dormir. Dormir entre siete y nueve horas diarias es lo ideal para la mayoría de adultos, aunque la necesidad puede variar ligeramente según la persona y la etapa de la vida. Lo que sí está claro es que el sueño no debe considerarse un lujo ni un tiempo perdido, sino una necesidad biológica imprescindible para el bienestar general y el equilibrio físico y mental.
+
+',
+  '/articulos/calidadsueño.jpg',
   'salud',
   'Sara Aguilar, Psicóloga especialista en salud',
   '2024-03-18',
@@ -795,8 +863,16 @@ VALUES
 (
   'Cómo fortalecer el sistema inmunológico con hábitos diarios',
   'Descubre qué factores fortalecen tus defensas y cómo mejorar tu salud inmunitaria con acciones cotidianas.',
-  'El sistema inmunológico es la defensa natural del cuerpo frente a enfermedades. Para mantenerlo fuerte, es esencial llevar una alimentación rica en frutas, verduras, legumbres y frutos secos, realizar ejercicio físico moderado, dormir bien y reducir el estrés crónico. El contacto social, la exposición moderada al sol (vitamina D) y una buena hidratación también juegan un papel clave. Evitar el tabaco y el alcohol, y realizar chequeos médicos periódicos, cierra el círculo del autocuidado inmunológico.',
-  'https://extension.sdstate.edu/sites/default/files/styles/image_width_1200/public/2023-12/W-00506-02-Healthy-Habits-Immune-Support.jpg?itok=iXRhb8da',
+  'El sistema inmunológico es la compleja y extraordinaria red de defensa que protege al cuerpo frente a agentes patógenos como virus, bacterias, hongos y toxinas. Este sistema, compuesto por células especializadas, órganos como el bazo y el timo, y sustancias químicas como las citoquinas, trabaja incansablemente para detectar amenazas, neutralizarlas y recordar su presencia para futuras respuestas más rápidas y efectivas. Para que el sistema inmunológico funcione correctamente y sea capaz de responder con eficacia ante posibles infecciones, es necesario mantener un estilo de vida saludable que lo fortalezca de manera natural y constante.
+
+Uno de los pilares fundamentales para preservar la salud inmunológica es la alimentación. Una dieta rica en frutas, verduras, legumbres, cereales integrales y frutos secos aporta antioxidantes, vitaminas (como la C, A y E), minerales (como el zinc y el hierro) y compuestos antiinflamatorios que refuerzan la barrera inmunológica del cuerpo. Nutrientes como la vitamina D, que se sintetiza a través de la exposición solar moderada, también desempeñan un papel clave en la regulación de la respuesta inmune. Además, incluir alimentos fermentados o ricos en fibra soluble puede beneficiar la microbiota intestinal, que está estrechamente vinculada al equilibrio inmunológico.
+
+El ejercicio físico regular y moderado también fortalece el sistema inmune, ya que mejora la circulación, reduce la inflamación crónica y contribuye a la eliminación de toxinas. Sin embargo, el exceso de actividad intensa o el sobreentrenamiento pueden tener el efecto contrario, debilitando las defensas. Dormir bien es otro factor determinante: durante el sueño se producen procesos regenerativos y hormonales que estimulan la producción de células inmunes, por lo que descansar entre siete y nueve horas al día es esencial para una inmunidad óptima. Asimismo, el estrés crónico afecta negativamente al sistema inmune, ya que eleva de forma persistente los niveles de cortisol, una hormona que en exceso suprime las funciones inmunológicas.
+
+También hay otros factores de autocuidado que influyen en la inmunidad: el contacto social positivo ayuda a reducir el estrés y mejorar el bienestar emocional, lo que se traduce en una mejor respuesta del sistema inmune. La hidratación constante facilita la función celular y la eliminación de residuos metabólicos. Por el contrario, hábitos perjudiciales como el consumo de tabaco y alcohol debilitan la respuesta inmunitaria y aumentan el riesgo de infecciones y enfermedades crónicas. Por último, realizar chequeos médicos periódicos permite detectar a tiempo posibles deficiencias o alteraciones en el sistema inmune, contribuyendo así a su prevención y cuidado. En conjunto, fortalecer el sistema inmunológico no depende de una única acción, sino de una serie de hábitos diarios que construyen una defensa robusta, resiliente y preparada frente a los desafíos de la vida cotidiana.
+
+',
+  '/articulos/sistemainmunulogico.jpg',
   'salud',
   'Dr. Javier Ruiz, Médico general',
   '2024-04-08',
@@ -806,8 +882,14 @@ VALUES
 (
   'El impacto del estrés crónico en la salud física',
   'El estrés sostenido no solo afecta la mente, también tiene consecuencias reales sobre el cuerpo.',
-  'Cuando el estrés se vuelve crónico, el cuerpo permanece en estado de alerta constante, lo que puede derivar en insomnio, fatiga, hipertensión, problemas digestivos, debilitamiento del sistema inmune e incluso enfermedades cardiovasculares. Es importante aprender a identificar los síntomas del estrés sostenido y aplicar estrategias para gestionarlo: ejercicio regular, técnicas de relajación, establecer límites laborales, y buscar apoyo emocional. Cuidar la salud mental es una inversión en salud global.',
-  'https://activecaregroup.co.uk/wp-content/uploads/2022/05/Physical-effects-of-stress-1536x864.png',
+  'Cuando el estrés se vuelve crónico, el cuerpo entra en un estado de alerta constante que, lejos de ser adaptativo, se convierte en una amenaza silenciosa para la salud física y mental. Este estado de activación sostenida, caracterizado por niveles elevados de cortisol y adrenalina, afecta al equilibrio del sistema nervioso autónomo, altera funciones vitales y desencadena una cascada de consecuencias perjudiciales si no se gestiona a tiempo. A diferencia del estrés agudo, que puede ser útil en situaciones puntuales para reaccionar con rapidez, el estrés crónico se mantiene activo incluso en ausencia de peligro real, generando un desgaste progresivo del organismo.
+
+Entre los efectos más comunes del estrés sostenido se encuentran el insomnio, la dificultad para conciliar el sueño o mantenerlo durante la noche, así como la fatiga persistente, que no mejora con el descanso. También es habitual experimentar tensión muscular, dolores de cabeza, problemas digestivos como gastritis, colon irritable o alteraciones del apetito. A nivel cardiovascular, el estrés crónico puede favorecer el desarrollo de hipertensión arterial, arritmias y aumentar el riesgo de enfermedades coronarias. Además, debilita el sistema inmunológico, lo que deja al cuerpo más vulnerable ante infecciones, inflamaciones y enfermedades autoinmunes. A nivel emocional, puede derivar en ansiedad, irritabilidad, tristeza constante y, en casos más graves, depresión.
+
+Por estas razones, resulta esencial aprender a identificar los síntomas del estrés crónico y actuar con estrategias concretas para mitigarlo. El ejercicio físico regular es una de las herramientas más efectivas: ayuda a liberar tensiones, mejora el estado de ánimo gracias a la liberación de endorfinas y favorece el descanso nocturno. Técnicas de relajación como la meditación, la respiración consciente, el yoga o la práctica de mindfulness también han demostrado ser eficaces para reducir la hiperactivación del sistema nervioso y recuperar la sensación de calma. Establecer límites en el ámbito laboral, gestionar mejor el tiempo, aprender a delegar tareas y respetar momentos de descanso son medidas fundamentales para prevenir la sobrecarga mental. Asimismo, contar con apoyo emocional, ya sea a través de familiares, amistades o profesionales de la salud mental, aporta perspectiva y contención en momentos de alta presión.
+
+Cuidar la salud mental no es un lujo ni una debilidad: es una necesidad y una inversión en la salud global de cada persona. Un estado mental equilibrado permite tomar mejores decisiones, mantener relaciones sanas, rendir mejor en el trabajo o en los estudios, y afrontar los desafíos de la vida con mayor resiliencia. Prevenir y gestionar el estrés es un acto de autocuidado profundo que repercute positivamente en todos los aspectos de la vida diaria.',
+  '/articulos/estrescronica.jpg',
   'salud',
   'Nuria Esteve, Terapeuta ocupacional',
   '2024-05-12',
@@ -817,8 +899,16 @@ VALUES
 (
   '3 desayunos saludables para empezar el día con energía',
   'Ideas de desayunos equilibrados, fáciles y rápidos, ideales para mantener buenos niveles de energía desde la mañana.',
-  'El desayuno es una oportunidad para aportar nutrientes esenciales al cuerpo tras el ayuno nocturno. Aquí te proponemos tres opciones prácticas:\n\n1. **Tostadas de pan integral con aguacate, huevo duro y semillas de chía.** Aporta grasas saludables, proteína y fibra.\n\n2. **Yogur griego natural con frambuesas, copos de avena y nueces.** Ideal para cuidar la microbiota y obtener energía sostenida.\n\n3. **Batido vegetal con plátano, espinacas, bebida de almendras y proteína en polvo.** Muy saciante y completo para quien entrena por la mañana.',
-  'https://www.eatingwell.com/thmb/zDqDw6XaksRYybxDUWtCpN2v7XY=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/instant-pot-steel-cut-oatmeal-1x1-172_1-29bb56bc7dd64f6bbd6b123793b47c1c.jpg',
+  'El desayuno representa una de las comidas más importantes del día, ya que es la primera oportunidad que tiene el cuerpo para recibir energía y nutrientes después del periodo de ayuno nocturno. Un desayuno equilibrado no solo ayuda a activar el metabolismo, sino que también mejora el rendimiento físico e intelectual durante la mañana, regula el apetito y contribuye al control del peso corporal. Es habitual que, por falta de tiempo o costumbre, muchas personas lo pasen por alto o elijan opciones poco nutritivas, como bollería o bebidas azucaradas. Sin embargo, con una buena planificación, es posible disfrutar de desayunos rápidos, saludables y muy completos.
+
+Una opción muy recomendable consiste en unas tostadas de pan integral acompañadas de aguacate, huevo duro y semillas de chía. Este desayuno aporta una combinación excelente de grasas saludables, fibra, proteínas de alta calidad y micronutrientes como potasio, vitamina E y ácidos grasos omega-3. El pan integral proporciona energía de liberación lenta gracias a sus carbohidratos complejos, mientras que el aguacate ofrece saciedad y nutrientes clave para la salud cardiovascular. El huevo, por su parte, es una fuente completa de proteínas, y las semillas de chía añaden fibra y antioxidantes.
+
+Otra alternativa práctica y sabrosa es un bol de yogur griego natural sin azúcar añadido, combinado con frambuesas frescas, copos de avena y nueces. Esta opción es ideal para quienes buscan cuidar su salud digestiva, ya que el yogur aporta probióticos que benefician la microbiota intestinal. Las frambuesas, ricas en fibra y antioxidantes, complementan el perfil vitamínico, mientras que la avena proporciona energía sostenida y las nueces ofrecen grasas saludables, especialmente ácidos grasos omega-3 de origen vegetal, además de magnesio y zinc.
+
+Para quienes entrenan a primera hora o necesitan una opción más rápida y saciante, un batido vegetal con plátano, espinacas, bebida de almendras y proteína en polvo puede ser una solución excelente. Esta combinación aporta carbohidratos naturales de rápida absorción, hierro, potasio, fibra y una buena dosis de proteínas para la recuperación muscular. Las espinacas suman antioxidantes y micronutrientes esenciales, y la bebida vegetal ayuda a mantener el batido ligero y digestivo. Es una elección práctica que se puede preparar en pocos minutos y transportar fácilmente.
+
+En resumen, el desayuno no debe verse como una obligación, sino como una oportunidad diaria para cuidar el cuerpo, mantener la concentración, estabilizar los niveles de glucosa y comenzar el día con energía y equilibrio. Apostar por ingredientes frescos, variados y naturales marca una gran diferencia en el bienestar general.',
+  '/articulos/desayunosaludable.jpg',
   'recetas',
   'Clara Soler, Técnica en Dietética',
   '2024-03-02',
@@ -828,8 +918,16 @@ VALUES
 (
   'Ideas de cenas ligeras y nutritivas para dormir mejor',
   'Comer bien por la noche puede ayudarte a descansar mejor. Estas recetas son saciantes pero suaves para la digestión.',
-  'Las cenas copiosas dificultan el descanso. Aquí van tres ideas ligeras:\n\n1. **Crema de calabacín con picatostes integrales y huevo poché.** Rica en fibra y proteína, ideal para reconfortar el estómago.\n\n2. **Salteado de tofu con verduras y salsa de soja baja en sal.** Aporte vegetal con buena cantidad de proteína.\n\n3. **Tortilla francesa con espinacas y ensalada de tomate cherry.** Fácil, rápida y equilibrada.\n\nLo ideal es cenar al menos 2 horas antes de irse a la cama para favorecer la digestión.',
-  'https://sleep.brightspotcdn.com/dims4/default/bca1b6d/2147483647/strip/true/crop/1200x1200+0+0/resize/800x800!/format/webp/quality/90/?url=http%3A%2F%2Fmattress-firm-brightspot.s3.amazonaws.com%2Fe0%2Fa5%2F6e1135474e1587269c84e792b3f3%2Foats-4-resize-2.jpg',
+  'Las cenas copiosas o demasiado tardías pueden interferir notablemente con la calidad del descanso nocturno. Cuando el sistema digestivo se encuentra trabajando intensamente durante la noche, el cuerpo tiene más dificultad para alcanzar las fases profundas del sueño, lo que puede traducirse en despertares frecuentes, sensación de pesadez o incluso insomnio. Por eso, optar por cenas ligeras, nutritivas y fáciles de digerir es una estrategia inteligente para favorecer un sueño reparador y evitar molestias digestivas. Además, se recomienda cenar al menos dos horas antes de acostarse, para dar tiempo al organismo a iniciar la digestión antes del reposo.
+
+Una opción adecuada y reconfortante para la cena es una crema de calabacín acompañada de picatostes integrales y un huevo poché. Esta combinación ofrece un buen aporte de fibra, vitaminas y proteína de alta calidad. El calabacín es ligero, hidratante y fácil de digerir, mientras que los picatostes integrales añaden textura y saciedad sin excesos calóricos. El huevo poché aporta proteínas completas y resulta suave para el estómago, lo que hace de este plato una elección ideal para finalizar el día con una comida cálida y equilibrada.
+
+Otra alternativa es un salteado de tofu con verduras variadas, como pimientos, zanahorias y brócoli, todo aderezado con salsa de soja baja en sal. Este plato es 100 % vegetal, pero muy nutritivo: el tofu es una fuente excelente de proteínas vegetales y contiene isoflavonas beneficiosas para la salud. Las verduras aportan fibra, vitaminas y antioxidantes que ayudan a regular la digestión y a fortalecer el sistema inmunológico. Además, su preparación rápida lo convierte en una cena práctica y versátil.
+
+Una tercera opción, muy sencilla y efectiva, es una tortilla francesa con espinacas frescas, acompañada de una ensalada de tomate cherry. Esta comida es ligera, fácil de hacer y proporciona una buena combinación de proteínas, fibra y licopeno, un antioxidante presente en el tomate que contribuye a la salud celular. Las espinacas aportan hierro, folato y magnesio, y la tortilla proporciona proteínas completas en una preparación suave y digestiva.
+
+En definitiva, cenar de forma ligera no significa comer poco, sino elegir alimentos que nutran sin sobrecargar el organismo. Las cenas equilibradas, ricas en verduras, proteínas suaves y grasas saludables, contribuyen a mejorar el descanso, regular el metabolismo y favorecer una rutina nocturna más saludable.',
+  '/articulos/cenasligeras.jpg',
   'recetas',
   'Lucía Castaño, Coach en nutrición consciente',
   '2024-04-20',
@@ -839,8 +937,18 @@ VALUES
 (
   'Snacks saludables para media mañana o tarde',
   'Evita los ultraprocesados y opta por estos snacks caseros ricos en fibra, vitaminas y energía.',
-  'Comer entre horas no tiene por qué ser insano. Aquí tienes opciones de snacks saludables:\n\n- **Hummus con palitos de zanahoria y pepino.** Fuente vegetal de proteína y fibra.\n- **Bol de fruta fresca con semillas de lino.** Ideal para aportar energía y micronutrientes.\n- **Tostadas de maíz con crema de cacahuete 100% natural.** Perfecto para media mañana o merienda tras entrenar.\n- **Puñado de frutos secos naturales (nueces, almendras, anacardos).** Rico en grasas saludables y saciante.\n\nElegir snacks reales te ayuda a mantener un patrón saludable sin restricciones.',
-  'https://skinnyms.com/wp-content/uploads/2015/04/Mid-Morning-or-Afternoon-Snack.jpg',
+  'Comer entre horas no tiene por qué ser algo negativo ni incompatible con una alimentación saludable. De hecho, elegir bien los tentempiés a lo largo del día puede ayudar a regular el apetito, mantener estables los niveles de energía y evitar atracones en las comidas principales. Los snacks, cuando están bien diseñados y basados en alimentos reales, cumplen una función importante dentro de un patrón alimentario equilibrado. Lo fundamental es optar por opciones que aporten nutrientes de calidad, sacien sin provocar picos de azúcar y se ajusten a nuestras necesidades personales, ya sea antes de una actividad física, durante una jornada laboral o como parte de una rutina estructurada de comidas.
+
+Una opción muy recomendable es el hummus acompañado de palitos de zanahoria y pepino. Esta combinación ofrece un snack vegetal rico en proteínas, fibra, grasas saludables y micronutrientes. El hummus, elaborado a base de garbanzos, tahini y aceite de oliva, es saciante y favorece el control del apetito. Las verduras crujientes, además de aportar frescor, hidratan y añaden vitaminas sin apenas calorías. Es una elección ligera, fácil de preparar y perfecta para media mañana o media tarde.
+
+Otra alternativa sencilla y nutritiva es un bol de fruta fresca acompañado de semillas de lino. Las frutas como la manzana, la piña, el kiwi o las fresas son fuentes naturales de vitaminas, antioxidantes y azúcares de absorción rápida, que proporcionan un extra de energía. Las semillas de lino, por su parte, son ricas en ácidos grasos omega-3, fibra soluble y lignanos, compuestos con efectos antiinflamatorios y antioxidantes. Esta combinación favorece el tránsito intestinal y contribuye a la salud cardiovascular.
+
+También son muy útiles las tostadas de maíz o arroz inflado con crema de cacahuete 100 % natural. Este snack es ideal para quienes necesitan energía sostenida, como antes o después de entrenar. La crema de cacahuete aporta proteínas, grasas saludables, magnesio y vitamina E, mientras que las tostadas son ligeras y fáciles de digerir. Es una combinación deliciosa, saciante y muy versátil, que puede adaptarse con frutas, semillas o incluso cacao puro.
+
+Por último, un clásico que no falla: un puñado de frutos secos naturales como nueces, almendras o anacardos. Estos alimentos son densos en nutrientes y ofrecen grasas saludables, fibra, proteína vegetal y minerales como el zinc, el selenio o el magnesio. Tomados con moderación, son excelentes aliados para la salud del corazón, el cerebro y el sistema inmunológico. Además, al ser tan saciantes, ayudan a controlar el hambre entre comidas sin necesidad de recurrir a productos ultraprocesados.
+
+En definitiva, elegir snacks reales, basados en alimentos mínimamente procesados y ricos en nutrientes, permite mantener un patrón alimentario saludable sin necesidad de caer en restricciones extremas. Escuchar el cuerpo, anticiparse al hambre y tener opciones saludables a mano es clave para mantener el equilibrio a lo largo del día.',
+  '/articulos/snacksaludable.jpg',
   'recetas',
   'Andrés Romero, Educador nutricional',
   '2024-05-30',
@@ -850,8 +958,16 @@ VALUES
 (
   '¿Cuánto ejercicio necesitas a la semana para estar saludable?',
   'Descubre las recomendaciones oficiales de actividad física y cómo adaptarlas a tu estilo de vida.',
-  'La Organización Mundial de la Salud recomienda un mínimo de 150 minutos semanales de actividad aeróbica moderada o 75 minutos intensa, combinados con ejercicios de fuerza al menos 2 días a la semana. Esto incluye caminar rápido, nadar, bailar, correr, hacer pesas o yoga. Si llevas una vida sedentaria, puedes empezar con 10-15 minutos diarios e ir aumentando progresivamente. Lo importante no es hacer mucho de golpe, sino crear un hábito sostenible.',
-  'https://www.nhsgrampian.org/contentassets/d88d29b965a049a09f8bacf0ee881066/how-much-exercise-do-i-need.jpg',
+  'La Organización Mundial de la Salud establece recomendaciones claras sobre la actividad física necesaria para mantener una buena salud física y mental. Según sus directrices, los adultos deberían realizar como mínimo 150 minutos semanales de actividad aeróbica de intensidad moderada o, alternativamente, 75 minutos de actividad intensa. Además, se aconseja complementar este trabajo cardiovascular con ejercicios de fortalecimiento muscular al menos dos días por semana, enfocando diferentes grupos musculares. Estas pautas están respaldadas por una amplia evidencia científica que demuestra que mantenerse activo reduce el riesgo de enfermedades crónicas como la obesidad, la diabetes tipo 2, la hipertensión arterial, las enfermedades cardiovasculares, algunos tipos de cáncer y trastornos del estado de ánimo.
+
+Dentro de la actividad aeróbica moderada se incluyen ejercicios como caminar a paso rápido, bailar, nadar a ritmo constante o andar en bicicleta en terreno llano. Por su parte, las actividades aeróbicas intensas abarcan acciones como correr, nadar con más intensidad, practicar deportes como fútbol o baloncesto, o participar en clases de alta exigencia física. En cuanto al entrenamiento de fuerza, este puede realizarse mediante pesas, bandas elásticas, ejercicios con el peso corporal como sentadillas o flexiones, e incluso con prácticas como el yoga o el pilates, que también desarrollan el control postural, la resistencia muscular y la flexibilidad.
+
+Para aquellas personas que llevan una vida mayoritariamente sedentaria o que no tienen el hábito de moverse con regularidad, lo más recomendable es comenzar poco a poco, sin presión. Iniciar con sesiones cortas de 10 a 15 minutos diarios de movimiento, como caminar, estirarse o subir escaleras, ya supone una mejora significativa respecto a la inactividad total. Con el tiempo, se puede ir incrementando progresivamente la duración y la intensidad del ejercicio, siempre respetando el ritmo personal y escuchando al cuerpo. Lo fundamental no es hacer mucho de golpe ni buscar resultados inmediatos, sino crear un hábito sostenible que se integre de forma natural en el estilo de vida cotidiano.
+
+Además de los beneficios físicos, el ejercicio regular tiene un potente efecto sobre la salud mental: mejora el estado de ánimo, reduce el estrés, la ansiedad y la depresión, y contribuye a un mejor descanso. También refuerza la autoestima y proporciona una sensación general de bienestar. Por eso, más allá de metas estéticas o deportivas, la actividad física debería entenderse como una herramienta diaria para cuidar la salud integral, prevenir enfermedades y mejorar la calidad de vida en cualquier etapa.
+
+',
+  '/articulos/ejercicio.jpg',
   'deporte',
   'Sonia Navarro, Licenciada en Ciencias del Deporte',
   '2024-04-01',
@@ -861,8 +977,14 @@ VALUES
 (
   'Entrenamiento de fuerza: beneficios más allá de los músculos',
   'Hacer pesas o ejercicios con el propio peso no es solo para quienes quieren ganar volumen. Tiene múltiples beneficios.',
-  'El entrenamiento de fuerza mejora la masa muscular, la densidad ósea, el metabolismo y la salud cardiovascular. Además, es clave para prevenir lesiones, mantener una buena postura y retrasar el envejecimiento físico. No hace falta ir al gimnasio: ejercicios como sentadillas, flexiones, planchas o subir escaleras también cuentan. Incluir al menos 2 sesiones semanales puede marcar una gran diferencia en tu salud a largo plazo.',
-  'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRpJKg9o2MOTr3VfIPs1f12CYoN1_ljMeKL2BSB4DbHYVPCqxIIDWycOOnu4Wi9',
+  'El entrenamiento de fuerza es una de las formas de ejercicio más completas y beneficiosas para el cuerpo humano, tanto a nivel físico como funcional. Lejos de ser exclusivo para atletas o personas que buscan aumentar volumen muscular, el trabajo de fuerza es esencial para mantener y mejorar la salud general en todas las etapas de la vida. Su práctica regular contribuye a aumentar o preservar la masa muscular, fortalecer los huesos, acelerar el metabolismo y proteger la salud cardiovascular. Además, juega un papel fundamental en la prevención de lesiones, la mejora de la postura corporal, el equilibrio y la coordinación, factores que cobran especial importancia con el paso del tiempo.
+
+A medida que envejecemos, la masa muscular tiende a disminuir de forma natural en un proceso llamado sarcopenia. Esta pérdida progresiva de músculo puede afectar a la movilidad, la independencia y la calidad de vida, así como aumentar el riesgo de caídas y fracturas. El entrenamiento de fuerza, al estimular la síntesis de proteínas musculares y mejorar la densidad ósea, actúa como una poderosa herramienta para frenar el deterioro físico asociado al envejecimiento. Además, mejora la sensibilidad a la insulina, regula los niveles de glucosa en sangre y contribuye al control del peso corporal, lo que lo convierte en un aliado clave para la prevención de enfermedades metabólicas como la diabetes tipo 2.
+
+Una de las ventajas más destacadas del entrenamiento de fuerza es su flexibilidad: no es necesario acudir a un gimnasio ni utilizar equipamiento sofisticado para obtener beneficios. Ejercicios con el peso corporal como las sentadillas, las flexiones, las planchas abdominales o subir y bajar escaleras pueden realizarse en casa o al aire libre y son altamente efectivos si se hacen con regularidad. Lo importante es trabajar distintos grupos musculares de forma progresiva, prestando atención a la técnica y al descanso entre sesiones.
+
+Incluir al menos dos sesiones semanales de entrenamiento de fuerza en la rutina es suficiente para empezar a notar mejoras significativas en la fuerza funcional, la resistencia, la postura y el bienestar general. A medida que se gana confianza, se puede aumentar la frecuencia, el volumen o la carga del entrenamiento, siempre adaptándolo al nivel y los objetivos personales. En definitiva, el entrenamiento de fuerza no solo transforma el cuerpo por fuera, sino que refuerza la estructura que lo sostiene, prolonga la autonomía y eleva la calidad de vida a largo plazo.',
+  '/articulos/entrenamientofuerza.jpeg',
   'deporte',
   'Iván Torres, Preparador físico',
   '2024-04-18',
@@ -872,8 +994,16 @@ VALUES
 (
   'Cómo empezar a correr sin lesionarte: guía para principiantes',
   'Si estás pensando en empezar a correr, esta guía te ayudará a hacerlo de forma segura y efectiva.',
-  'Correr es una forma excelente de mejorar la salud cardiovascular, liberar estrés y aumentar la resistencia. Pero empezar demasiado rápido o sin técnica puede provocar lesiones. Para iniciarte correctamente, comienza con caminatas rápidas alternadas con pequeños tramos de trote. Usa calzado adecuado, evita superficies muy duras, y escucha a tu cuerpo. Lo ideal es seguir un plan progresivo como el "Couch to 5K" y mantener la constancia más allá de la motivación inicial.',
-  'https://go.orthoindy.com/hubfs/Cover-Beginners-Guide-to-Running.jpg',
+  'Correr es una de las formas más efectivas y accesibles de mejorar la salud cardiovascular, aumentar la resistencia física, liberar tensiones acumuladas y fortalecer tanto el cuerpo como la mente. Al tratarse de una actividad aeróbica de alto impacto, sus beneficios abarcan desde la mejora del sistema circulatorio y pulmonar hasta el refuerzo del sistema inmunológico y la reducción del riesgo de enfermedades crónicas como la hipertensión, la diabetes tipo 2 o las dislipemias. Además, correr estimula la liberación de endorfinas, conocidas como las hormonas de la felicidad, lo que contribuye a mejorar el estado de ánimo y a combatir el estrés, la ansiedad y la fatiga mental.
+
+Sin embargo, a pesar de todos estos beneficios, empezar a correr sin preparación, de forma brusca o sin técnica adecuada, puede derivar en molestias musculares, sobrecargas e incluso lesiones articulares. Para quienes se inician en este hábito, lo ideal es hacerlo de forma progresiva y consciente. Una buena manera de comenzar consiste en alternar caminatas rápidas con breves tramos de trote suave, lo que permite al cuerpo adaptarse de forma gradual al impacto y al esfuerzo. Con el tiempo, se puede ir ampliando la duración de los tramos de carrera y reduciendo los de caminata, siempre respetando los límites individuales.
+
+El uso de calzado adecuado es otro factor clave. Las zapatillas deben ofrecer buena amortiguación, estabilidad y adaptarse a la forma del pie y al tipo de pisada. Correr sobre superficies muy duras, como el asfalto, puede aumentar la carga sobre las articulaciones, por lo que es recomendable variar los terrenos e incluir superficies más blandas como tierra compacta, parques o pistas diseñadas para correr. También es importante prestar atención a la postura y a la técnica: mantener una zancada natural, relajar los hombros, mirar al frente y evitar impactos innecesarios puede prevenir lesiones y mejorar el rendimiento.
+
+Seguir un plan estructurado, como el popular "Couch to 5K", es una excelente manera de incorporar la carrera a la rutina diaria sin riesgo. Este tipo de programas guía al principiante paso a paso, con sesiones bien distribuidas que combinan caminata y trote, hasta alcanzar la capacidad de correr cinco kilómetros de forma continua. Pero más allá de cualquier plan, lo más importante es cultivar la constancia y convertir la carrera en un hábito sostenible en el tiempo, no en un esfuerzo puntual motivado solo por un impulso inicial. Escuchar al cuerpo, respetar los días de descanso, hidratarse bien y disfrutar del proceso son claves para que correr se convierta en una fuente de bienestar a largo plazo.
+
+',
+  '/articulos/entrenamientocorrer.jpeg',
   'deporte',
   'Nerea Vidal, Entrenadora personal',
   '2024-05-07',
@@ -883,8 +1013,16 @@ VALUES
 (
   '¿Qué es la huella ecológica y cómo reducirla desde tu cocina?',
   'La forma en que comemos impacta en el medio ambiente. Aprende cómo minimizar tu huella ecológica desde casa.',
-  'La huella ecológica mide el impacto ambiental de nuestras acciones. En la alimentación, esta huella se refleja en la cantidad de recursos utilizados para producir, transportar y desechar los alimentos. Reducir el consumo de carne, optar por productos locales y de temporada, evitar el desperdicio alimentario y elegir envases reutilizables son pasos clave. Cocinar con planificación, congelar sobras y apoyar mercados de proximidad también ayuda a construir un sistema alimentario más sostenible.',
-  'https://www.arcticgardens.ca/blog/wp-content/uploads/2019/04/10-trucs-pour-r%C3%A9duire-son-empreinte-%C3%A9cologique-alimentaire-EN.png',
+  'La huella ecológica es un indicador que mide el impacto ambiental que generan nuestras acciones cotidianas sobre el planeta, incluyendo el uso de recursos naturales, la generación de residuos y las emisiones de gases de efecto invernadero. En el ámbito de la alimentación, esta huella adquiere una relevancia especial, ya que el sistema alimentario global es uno de los principales responsables de la presión sobre los ecosistemas. Desde la producción hasta el consumo, cada alimento implica el uso de agua, tierra, energía y otros insumos, así como procesos de transporte, almacenamiento, empaquetado y eliminación de residuos que dejan una marca ambiental significativa.
+
+Una de las formas más eficaces de reducir nuestra huella ecológica alimentaria es disminuir el consumo de carne, especialmente la de origen bovino, que requiere grandes extensiones de tierra, produce altas emisiones de metano y consume ingentes cantidades de agua. Apostar por una dieta más basada en vegetales, legumbres, cereales integrales y frutas contribuye a reducir la presión sobre el medio ambiente sin comprometer la calidad nutricional. Asimismo, elegir productos locales y de temporada reduce la necesidad de transporte de larga distancia y de sistemas de refrigeración intensivos, lo cual disminuye notablemente las emisiones asociadas.
+
+Evitar el desperdicio alimentario es otro factor clave. Se estima que aproximadamente un tercio de los alimentos producidos a nivel mundial se pierden o se desperdician, lo que representa no solo una pérdida económica, sino también un derroche de todos los recursos utilizados en su cadena de producción. Para combatirlo, es fundamental planificar las comidas semanales, comprar solo lo necesario, conservar adecuadamente los alimentos, congelar las sobras antes de que se deterioren y dar un segundo uso a ingredientes que habitualmente se descartan, como tallos, cáscaras o restos de verduras.
+
+El tipo de envase que elegimos también influye en nuestra huella ecológica. Priorizar envases reutilizables, reciclables o biodegradables frente a los plásticos de un solo uso es una forma concreta de reducir residuos y contribuir a una economía circular. Llevar bolsas reutilizables al hacer la compra, adquirir a granel cuando sea posible y apoyar mercados de proximidad no solo ayuda al medioambiente, sino que también fortalece la economía local y promueve una relación más directa y consciente con los alimentos que consumimos.
+
+En definitiva, cada decisión alimentaria que tomamos, por pequeña que parezca, tiene un impacto directo en el equilibrio ecológico del planeta. Construir un sistema alimentario más sostenible requiere de la implicación individual y colectiva, basada en la educación, la responsabilidad y la voluntad de actuar desde el consumo hacia el cambio. Comer no es solo un acto nutricional, también es un acto ambiental, social y ético.',
+  '/articulos/huellaecologica.jpg',
   'otro',
   'Helena Puig, Ambientalista y divulgadora',
   '2024-03-10',
@@ -894,8 +1032,16 @@ VALUES
 (
   'La importancia del descanso en el bienestar integral',
   'Descansar bien no solo es dormir. Te explicamos por qué el descanso físico, mental y emocional es clave para tu salud.',
-  'El descanso integral va más allá del sueño. También incluye momentos de desconexión mental, pausas activas, tiempo libre sin pantallas y espacios de autocuidado. En un mundo acelerado, no descansar correctamente puede afectar la concentración, el estado de ánimo y la salud física. Incorporar microdescansos durante el día, priorizar actividades recreativas, y respetar los ritmos circadianos mejora significativamente la calidad de vida.',
-  'https://www.aucklandphysiotherapy.co.nz/wp-content/uploads/2023/05/Copy-of-Copy-of-Copy-of-Blog-Pictures-6-scaled.jpg',
+  'El descanso integral es un concepto amplio que va mucho más allá de simplemente dormir las horas necesarias. Implica atender todas las dimensiones del bienestar: física, mental, emocional y social. En la actualidad, vivimos en un entorno marcado por la hiperconexión, las exigencias constantes y el ritmo acelerado de la vida diaria, lo que ha llevado a muchas personas a descuidar los espacios de reposo verdadero. No descansar adecuadamente no solo produce cansancio físico, sino que también deteriora la concentración, altera el estado de ánimo, debilita el sistema inmunológico y favorece la aparición de enfermedades relacionadas con el estrés crónico.
+
+El sueño nocturno, si bien es una base fundamental del descanso, no es el único componente necesario para restaurar el cuerpo y la mente. El descanso integral incluye también momentos de desconexión mental, donde se pueda dejar de lado la multitarea, el trabajo o las responsabilidades, y permitir que el cerebro recupere su equilibrio natural. Esto puede lograrse con técnicas de respiración, meditación, paseos tranquilos o simplemente quedándose en silencio. Las pausas activas a lo largo del día, como estiramientos breves, movimientos suaves o levantarse del asiento para caminar, ayudan a reactivar la circulación, prevenir el agotamiento y mejorar la concentración en tareas prolongadas.
+
+También es esencial disponer de tiempo libre sin pantallas, lejos de la sobreestimulación digital que muchas veces sustituye al descanso verdadero por una falsa sensación de ocio. Leer un libro, dibujar, escuchar música o simplemente contemplar el entorno sin distracciones digitales son formas efectivas de recuperar energía mental. Asimismo, el autocuidado juega un papel clave en el descanso integral: dedicar tiempo a uno mismo, cuidar la alimentación, mantener la higiene del sueño, establecer límites saludables y permitirse momentos de placer o creatividad mejora significativamente la calidad de vida.
+
+Respetar los ritmos circadianos, es decir, los ciclos naturales de luz y oscuridad que regulan las funciones biológicas del cuerpo, es otra estrategia poderosa. Irse a dormir y despertar a horas regulares, exponerse a luz natural durante el día y reducir la exposición a luces artificiales por la noche, especialmente la luz azul de pantallas, favorece una mejor regulación del sueño y un mayor equilibrio hormonal. Incorporar microdescansos durante la jornada laboral, priorizar actividades recreativas y entender el descanso como parte activa del bienestar, y no como una pérdida de tiempo, es fundamental para sostener un estilo de vida saludable a largo plazo.
+
+',
+  '/articulos/descanso.jpg',
   'otro',
   'Martina Rey, Psicóloga holística',
   '2024-04-15',
@@ -905,8 +1051,14 @@ VALUES
 (
   'Cómo construir hábitos duraderos: más allá de la motivación',
   'El cambio real no viene de la fuerza de voluntad, sino de construir sistemas sostenibles. Aprende a formar hábitos.',
-  'Muchos inician cambios con entusiasmo pero abandonan al poco tiempo. La clave está en transformar pequeñas acciones en rutinas diarias. Empezar poco a poco, usar recordatorios visuales, crear contextos favorables y recompensar el progreso ayuda a consolidar nuevos hábitos. Además, es importante aceptar retrocesos como parte del proceso y centrarse en la constancia más que en la perfección. No necesitas motivación constante, necesitas estructura y compromiso amable contigo mismo.',
-  'https://madeyousmileback.com/wp-content/uploads/2025/03/Healthy-Habits-Motivation-Simple-Strategies-MYSB.webp',
+  'Muchas personas comienzan cambios de estilo de vida con un gran entusiasmo inicial, ya sea en relación a la alimentación, el ejercicio, el descanso o el bienestar general. Sin embargo, ese impulso suele desvanecerse con el paso de los días o semanas, especialmente cuando no se ven resultados inmediatos o cuando surgen obstáculos inesperados. Esta dinámica es muy común y responde a un error de planteamiento frecuente: pensar que el cambio depende únicamente de la motivación. La realidad es que la motivación es variable, efímera y muchas veces insuficiente. Lo que realmente marca la diferencia a largo plazo es la creación de hábitos sostenibles que se integren con naturalidad en la rutina diaria.
+
+Transformar pequeñas acciones en hábitos sólidos requiere tiempo, paciencia y estrategia. Empezar poco a poco es fundamental: introducir un solo cambio, como beber más agua, caminar unos minutos al día o preparar un desayuno saludable, es más efectivo que intentar modificarlo todo de golpe. A medida que ese pequeño cambio se consolida, se pueden ir sumando otros, generando un efecto acumulativo que fortalece la sensación de avance. Usar recordatorios visuales, como notas adhesivas, alarmas en el móvil o calendarios visibles, ayuda a mantener el foco y a incorporar el nuevo hábito en la conciencia diaria.
+
+Crear contextos favorables también es clave. Por ejemplo, si se quiere leer más, conviene dejar el libro visible y accesible; si se quiere comer más frutas, tenerlas lavadas y listas en la nevera. El entorno tiene un gran poder en la toma de decisiones, y diseñarlo a favor de los nuevos hábitos facilita su repetición. Además, recompensar el progreso —aunque sea con gestos simbólicos o palabras de reconocimiento— refuerza la conducta positiva y alimenta la motivación interna.
+
+Es igualmente importante entender que los retrocesos forman parte natural del proceso de cambio. Tener un mal día, saltarse una rutina o sentir desánimo no significa fracasar, sino ser humano. La clave está en no abandonar, en recuperar el rumbo sin culpa ni autoexigencia excesiva. Cambiar no requiere perfección, sino constancia amable, una actitud compasiva con uno mismo que permita sostener el compromiso incluso cuando no todo sale como se esperaba. En lugar de exigir motivación constante, es más útil construir una estructura: horarios estables, entornos propicios, metas realistas y rutinas claras. Así, el cambio se convierte en un camino estable, no en una lucha intermitente.',
+  '/articulos/habitosduraderos.jpg',
   'otro',
   'Raúl Estrada, Coach de hábitos',
   '2024-05-26',
@@ -919,405 +1071,511 @@ INSERT INTO comida_modelo (
     apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
     apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
     sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
-    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo,
+    vegano, vegetariano, sin_carne, sin_pescado
 ) VALUES
--- Desayuno 1: Avena con bebida de almendra, plátano y semillas de chía
+-- Desayuno 1: Vegano, Vegetariano, Sin carne, Sin pescado
 ('Avena con bebida de almendra, plátano y semillas de chía', 'desayuno', 350,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE),
+ TRUE, TRUE, TRUE, FALSE,
+ TRUE, TRUE, TRUE, TRUE),
 
--- Desayuno 2: Pan sin gluten con hummus y tomate cherry
+-- Desayuno 2: Vegano, Vegetariano, Sin carne, Sin pescado
 ('Pan sin gluten con hummus y tomate cherry', 'desayuno', 300,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, FALSE, FALSE),
+ TRUE, FALSE, FALSE, FALSE,
+ TRUE, TRUE, TRUE, TRUE),
 
--- Desayuno 3: Yogur vegetal con frambuesas y semillas de lino
+-- Desayuno 3: Vegano, Vegetariano, Sin carne, Sin pescado
 ('Yogur vegetal con frambuesas y semillas de lino', 'desayuno', 250,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, FALSE),
- -- Desayuno 4: Tostadas de arroz con aguacate y huevo duro
+ TRUE, FALSE, TRUE, FALSE,
+ TRUE, TRUE, TRUE, TRUE),
+
+-- Desayuno 4: NO vegano (lleva huevo), Vegetariano, Sin carne, Sin pescado
 ('Tostadas de arroz con aguacate y huevo duro', 'desayuno', 330,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ FALSE, TRUE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE),
 
--- Desayuno 5: Smoothie de bebida vegetal con fresa y kiwi
+-- Desayuno 5: Vegano, Vegetariano, Sin carne, Sin pescado
 ('Smoothie de bebida vegetal con fresa y kiwi', 'desayuno', 220,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
 
--- Desayuno 6: Galletas sin gluten con compota de manzana e infusión
+-- Desayuno 6: Vegano, Vegetariano, Sin carne, Sin pescado
 ('Galletas sin gluten con compota de manzana e infusión', 'desayuno', 280,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
 
--- Desayuno 7: Yogur vegetal con plátano y nuez moscada
+-- Desayuno 7: Vegano, Vegetariano, Sin carne, Sin pescado
 ('Yogur vegetal con plátano y nuez moscada', 'desayuno', 260,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
 
--- Desayuno 8: Tostadas sin gluten con aceite de oliva y tomate triturado
+-- Desayuno 8: Vegano, Vegetariano, Sin carne, Sin pescado
 ('Tostadas sin gluten con aceite de oliva y tomate triturado', 'desayuno', 300,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
 
- -- Desayuno 9: Smoothie de plátano, bebida de coco y avena sin gluten
+-- Desayuno 9: Vegano, Vegetariano, Sin carne, Sin pescado
 ('Smoothie de plátano, bebida de coco y avena sin gluten', 'desayuno', 270,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
 
--- Desayuno 10: Tostadas de maíz con aguacate y tomate
+-- Desayuno 10: Vegano, Vegetariano, Sin carne, Sin pescado
 ('Tostadas de maíz con aguacate y tomate', 'desayuno', 320,
  TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
 
 -- Desayuno 11: Galletas sin lactosa con compota de pera
+-- Asumimos que no llevan huevo ni leche (por ser "sin lactosa"), así que es vegano
 ('Galletas sin lactosa con compota de pera', 'desayuno', 280,
  TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
 
 -- Desayuno 12: Yogur vegetal de soja con arándanos y avena sin gluten
+-- Todo vegetal, es vegano
 ('Yogur vegetal de soja con arándanos y avena sin gluten', 'desayuno', 290,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE),
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Desayuno 13: Tostadas de arroz con crema de almendras y plátano
+-- Todo vegetal, es vegano
 ('Tostadas de arroz con crema de almendras y plátano', 'desayuno', 330,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
 
- -- Diabetes tipo 2: Tostadas de centeno integral con aguacate y tomate
+-- Diabetes tipo 2: Tostadas de centeno integral con aguacate y tomate
+-- Todo vegetal, es vegano
 ('Tostadas de centeno integral con aguacate y tomate', 'desayuno', 300,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Hipertensión: Avena cocida en agua con manzana y canela
+-- Todo vegetal, es vegano
 ('Avena cocida en agua con manzana y canela', 'desayuno', 270,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Hipercolesterolemia: Smoothie de frutos rojos y bebida de avena
+-- Todo vegetal, es vegano
 ('Smoothie de frutos rojos y bebida de avena', 'desayuno', 250,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Enfermedad celíaca: Pan sin gluten con hummus y pepino
+-- Todo vegetal, es vegano
 ('Pan sin gluten con hummus y pepino', 'desayuno', 310,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, FALSE, FALSE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, FALSE, FALSE, FALSE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Insuficiencia renal: Tostadas de arroz con mermelada sin azúcar
+-- Todo vegetal, es vegano
 ('Tostadas de arroz con mermelada sin azúcar', 'desayuno', 260,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Anemia: Avena cocida con bebida de almendra y fresas
+-- Todo vegetal, es vegano
 ('Avena con bebida de almendra y fresas', 'desayuno', 290,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Obesidad: Yogur vegetal sin azúcar con kiwi y semillas de lino
+-- Todo vegetal, es vegano
 ('Yogur vegetal sin azúcar con kiwi y semillas de lino', 'desayuno', 230,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Hipotiroidismo: Pan integral con aguacate y tomate triturado
+-- Todo vegetal, es vegano
 ('Pan integral con aguacate y tomate triturado', 'desayuno', 320,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Colon irritable (SII): Tortilla de calabacín con tostadas de arroz
+-- Lleva huevo (tortilla), NO es vegano, SÍ vegetariano, sin carne, sin pescado
 ('Tortilla de calabacín con tostadas de arroz', 'desayuno', 310,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-FALSE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ FALSE, TRUE, TRUE, TRUE,
+ FALSE, TRUE, TRUE, TRUE),
 
 -- Alergia a frutos secos: Yogur vegetal con mango y avena
+-- Todo vegetal, es vegano
 ('Yogur vegetal con mango y avena', 'desayuno', 280,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Alergia al marisco: Pan integral con aguacate y semillas de lino
+-- Todo vegetal, es vegano
 ('Pan integral con aguacate y semillas de lino', 'desayuno', 310,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Alergia a pescado azul: Smoothie de plátano con bebida de avena
+-- Todo vegetal, es vegano
 ('Smoothie de plátano con bebida de avena', 'desayuno', 240,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 
 -- Alergia al huevo: Galletas sin huevo con compota de manzana
+-- Asumimos que no llevan leche ni otros productos animales, así que es vegano
 ('Galletas sin huevo con compota de manzana', 'desayuno', 290,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
-
+ TRUE, TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE), 
+ 
 -- Alergia a la soja: Tostadas de arroz con aceite de oliva y tomate
+-- Todo vegetal, es vegano
 ('Tostadas de arroz con aceite de oliva y tomate', 'desayuno', 300,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 28. Diabetes tipo 2
+-- 28. Diabetes tipo 2: 1 manzana + puñado de nueces
+-- Todo vegetal, es vegano
 ('1 manzana + puñado de nueces', 'almuerzo', 200,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 29. Hipertensión
+-- 29. Hipertensión: 1 plátano + tostadas de arroz
+-- Todo vegetal, es vegano
 ('1 plátano + tostadas de arroz', 'almuerzo', 220,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 30. Hipercolesterolemia
+-- 30. Hipercolesterolemia: Yogur vegetal + semillas de chía
+-- Todo vegetal, es vegano
 ('Yogur vegetal + semillas de chía', 'almuerzo', 180,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, FALSE),
+TRUE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE),
 
--- 31. Celiaquía
+-- 31. Celiaquía: Pan sin gluten con hummus
+-- Todo vegetal, es vegano
 ('Pan sin gluten con hummus', 'almuerzo', 240,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, FALSE, FALSE),
+TRUE, FALSE, FALSE, FALSE,
+TRUE, TRUE, TRUE, TRUE),
 
--- 32. Insuficiencia renal
+-- 32. Insuficiencia renal: 1 pera + bebida vegetal de arroz
+-- Todo vegetal, es vegano
 ('1 pera + bebida vegetal de arroz', 'almuerzo', 190,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 33. Anemia
+-- 33. Anemia: Zumo de naranja natural + puñado de almendras
+-- Todo vegetal, es vegano
 ('Zumo de naranja natural + puñado de almendras', 'almuerzo', 210,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 34. Obesidad
+-- 34. Obesidad: 1 kiwi + yogur vegetal sin azúcar
+-- Todo vegetal, es vegano
 ('1 kiwi + yogur vegetal sin azúcar', 'almuerzo', 170,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 35. Intolerancia a la lactosa
+-- 35. Intolerancia a la lactosa: Smoothie vegetal con fruta
+-- Todo vegetal, es vegano
 ('Smoothie vegetal con fruta', 'almuerzo', 200,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 36. Hipotiroidismo
+-- 36. Hipotiroidismo: Tostadas integrales con aguacate
+-- Todo vegetal, es vegano
 ('Tostadas integrales con aguacate', 'almuerzo', 230,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 37. Colon irritable
+-- 37. Colon irritable: 1 plátano + yogur vegetal sin FODMAP
+-- Todo vegetal, es vegano
 ('1 plátano + yogur vegetal sin FODMAP', 'almuerzo', 210,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 38. Alergia a frutos secos
+-- 38. Alergia a frutos secos: 1 mandarina + pan integral
+-- Todo vegetal, es vegano
 ('1 mandarina + pan integral', 'almuerzo', 190,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 39. Alergia al marisco
+-- 39. Alergia al marisco: 1 manzana + yogur vegetal
+-- Todo vegetal, es vegano
 ('1 manzana + yogur vegetal', 'almuerzo', 180,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 40. Alergia a pescado azul
+-- 40. Alergia a pescado azul: Smoothie vegetal con fresas
+-- Todo vegetal, es vegano
 ('Smoothie vegetal con fresas', 'almuerzo', 200,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 41. Alergia al huevo
+-- 41. Alergia al huevo: 1 manzana + tostadas sin huevo
+-- Todo vegetal, es vegano
 ('1 manzana + tostadas sin huevo', 'almuerzo', 190,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 42. Alergia a la soja
+-- 42. Alergia a la soja: 1 plátano + pan integral
+-- Todo vegetal, es vegano
 ('1 plátano + pan integral', 'almuerzo', 210,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
--- 43. Diabetes tipo 2
+-- 43. Diabetes tipo 2: Arroz integral con pisto y huevo a la plancha
+-- Lleva huevo, NO vegano, SÍ vegetariano, sin carne, sin pescado
 ('Arroz integral con pisto y huevo a la plancha', 'comida', 520,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
--- 44. Hipertensión
+-- 44. Hipertensión: Pollo hervido con patata y judías verdes
+-- Lleva pollo, NO vegano, NO vegetariano, NO sin carne, SÍ sin pescado
 ('Pollo hervido con patata y judías verdes', 'comida', 500,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
--- 45. Hipercolesterolemia
+-- 45. Hipercolesterolemia: Lentejas estofadas con zanahoria y espinacas
+-- Todo vegetal, es vegano
 ('Lentejas estofadas con zanahoria y espinacas', 'comida', 530,
 TRUE, TRUE, TRUE, TRUE, FALSE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
--- 46. Celiaquía
+-- 46. Celiaquía: Pasta sin gluten con brócoli y atún
+-- Lleva atún, NO vegano, NO vegetariano, sin carne, NO sin pescado
 ('Pasta sin gluten con brócoli y atún', 'comida', 510,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, FALSE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE),
 
--- 47. Insuficiencia renal
+-- 47. Insuficiencia renal: Arroz blanco con tortilla francesa y calabacín hervido
+-- Lleva huevo, NO vegano, SÍ vegetariano, sin carne, sin pescado
 ('Arroz blanco con tortilla francesa y calabacín hervido', 'comida', 480,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
--- 48. Anemia
+-- 48. Anemia: Ternera con quinoa, pimiento rojo y espinacas
+-- Lleva ternera, NO vegano, NO vegetariano, NO sin carne, SÍ sin pescado
 ('Ternera con quinoa, pimiento rojo y espinacas', 'comida', 550,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
--- 49. Obesidad
+-- 49. Obesidad: Crema de calabacín con huevo duro y ensalada verde
+-- Lleva huevo, NO vegano, SÍ vegetariano, sin carne, sin pescado
 ('Crema de calabacín con huevo duro y ensalada verde', 'comida', 470,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
--- 50. Intolerancia a la lactosa
+-- 50. Intolerancia a la lactosa: Arroz salteado con tofu y verduras
+-- Todo vegetal, es vegano
 ('Arroz salteado con tofu y verduras', 'comida', 500,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE),
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
--- 51. Hipotiroidismo
+-- 51. Hipotiroidismo: Pollo al horno con calabaza asada y arroz integral
+-- Lleva pollo, NO vegano, NO vegetariano, NO sin carne, SÍ sin pescado
 ('Pollo al horno con calabaza asada y arroz integral', 'comida', 520,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
--- 52. Colon irritable
+-- 52. Colon irritable: Merluza a la plancha con arroz y zanahoria hervida
+-- Lleva merluza, NO vegano, NO vegetariano, sin carne, NO sin pescado
 ('Merluza a la plancha con arroz y zanahoria hervida', 'comida', 510,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, FALSE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE),
 
--- 53. Alergia a frutos secos
+-- 53. Alergia a frutos secos: Tortilla de patata con pisto y ensalada
+-- Lleva huevo, NO vegano, SÍ vegetariano, sin carne, sin pescado
 ('Tortilla de patata con pisto y ensalada', 'comida', 530,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
--- 54. Alergia al marisco
+-- 54. Alergia al marisco: Arroz con pollo al curry suave y calabacín
+-- Lleva pollo, NO vegano, NO vegetariano, NO sin carne, SÍ sin pescado
 ('Arroz con pollo al curry suave y calabacín', 'comida', 500,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
--- 55. Alergia a pescado azul
+-- 55. Alergia a pescado azul: Quinoa con verduras asadas y huevo cocido
+-- Lleva huevo, NO vegano, SÍ vegetariano, sin carne, sin pescado
 ('Quinoa con verduras asadas y huevo cocido', 'comida', 490,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
--- 56. Alergia al huevo
+-- 56. Alergia al huevo: Macarrones integrales con tomate natural y tofu
+-- Todo vegetal, es vegano
 ('Macarrones integrales con tomate natural y tofu', 'comida', 510,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE),
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
--- 57. Alergia a la soja
+-- 57. Alergia a la soja: Arroz integral con pollo y espinacas
+-- Lleva pollo, NO vegano, NO vegetariano, NO sin carne, SÍ sin pescado
 ('Arroz integral con pollo y espinacas', 'comida', 520,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE);
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE);
 
 
 INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
@@ -1512,11 +1770,13 @@ INSERT INTO comida_modelo (
     apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
     apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
     sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
-    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo,
+    vegano, vegetariano, sin_carne, sin_pescado
 ) VALUES
 -- 58. Diabetes tipo 2
 ('Yogur vegetal con plátano en rodajas', 'merienda', 180,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -1526,11 +1786,13 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 60. Hipercolesterolemia
 ('Tostadas de arroz con aguacate', 'merienda', 200,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -1540,11 +1802,13 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 62. Insuficiencia renal
 ('1 plátano con bebida vegetal de arroz', 'merienda', 160,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -1554,11 +1818,13 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 64. Obesidad
 ('Yogur vegetal sin azúcar + kiwi', 'merienda', 170,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -1568,11 +1834,13 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 66. Hipotiroidismo
 ('Tostadas integrales con aguacate y tomate', 'merienda', 210,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -1582,11 +1850,13 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 68. Alergia a frutos secos
 ('Batido de frutas con pan integral', 'merienda', 200,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -1596,11 +1866,13 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 70. Alergia a pescado azul
 ('Smoothie de fresa y bebida vegetal de avena', 'merienda', 180,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -1610,6 +1882,7 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 72. Alergia a la soja
@@ -1617,6 +1890,7 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 73. Diabetes tipo 2
@@ -1624,6 +1898,7 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 74. Hipertensión
@@ -1631,18 +1906,21 @@ FALSE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, FALSE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
 
 -- 75. Hipercolesterolemia
 ('Verduras al vapor + tortilla francesa + pan integral', 'cena', 410,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 76. Celiaquía
 ('Pasta sin gluten con tomate natural y calabacín', 'cena', 420,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -1652,6 +1930,7 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 78. Anemia
@@ -1659,11 +1938,13 @@ FALSE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 79. Obesidad
 ('Sopa de verduras + yogur vegetal sin azúcar', 'cena', 360,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -1673,27 +1954,31 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE),
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 81. Hipotiroidismo
 ('Pollo a la plancha + puré de calabaza', 'cena', 430,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 82. Colon irritable
 ('Merluza al vapor con zanahoria y arroz blanco', 'cena', 390,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, FALSE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 83. Alergia a frutos secos
 ('Huevos revueltos + patata hervida + ensalada verde', 'cena', 400,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 84. Alergia al marisco
@@ -1701,13 +1986,15 @@ FALSE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 85. Alergia a pescado azul
 ('Tortilla francesa + verduras salteadas + pan integral', 'cena', 420,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 86. Alergia al huevo
@@ -1715,15 +2002,16 @@ FALSE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE),
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 87. Alergia a la soja
 ('Crema de verduras + pan integral + plátano', 'cena', 410,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE);
-
 
 INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
 -- 43. Diabetes tipo 2
@@ -1955,18 +2243,21 @@ INSERT INTO comida_modelo (
     apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
     apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
     sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
-    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo,
+    vegano, vegetariano, sin_carne, sin_pescado
 ) VALUES
 -- 88. Ensalada de quinoa y garbanzos
 ('Ensalada de quinoa y garbanzos', 'comida', 390,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, FALSE, TRUE),
+TRUE, FALSE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 89. Crema de calabaza con pan de centeno
 ('Crema de calabaza con pan de centeno', 'cena', 350,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -1976,6 +2267,7 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 91. Hamburguesa vegetal con ensalada verde
@@ -1983,25 +2275,29 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-FALSE, FALSE, FALSE, TRUE),
+FALSE, FALSE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE), -- Asumo que es 100% vegetal, si lleva huevo o queso, cambiar vegano a FALSE
 
 -- 92. Tofu con verduras al vapor y arroz integral
 ('Tofu con verduras al vapor y arroz integral', 'cena', 440,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE),
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 93. Bowl de lentejas beluga con espinacas
 ('Bowl de lentejas beluga con espinacas', 'comida', 410,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 94. Pan sin gluten con aguacate y tomate
 ('Pan sin gluten con aguacate y tomate', 'desayuno', 360,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2011,11 +2307,13 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, FALSE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 96. Batido vegetal con avena y plátano
 ('Batido vegetal con avena y plátano', 'desayuno', 330,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2025,18 +2323,21 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
- -- 98. Bowl de arroz integral con verduras y huevo
+-- 98. Bowl de arroz integral con verduras y huevo
 ('Bowl de arroz integral con verduras y huevo', 'comida', 440,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 99. Pasta sin gluten con hummus y tomate cherry
 ('Pasta sin gluten con hummus y tomate cherry', 'cena', 420,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2046,6 +2347,7 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 101. Crema de zanahoria y lentejas rojas
@@ -2053,18 +2355,21 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 102. Revuelto de tofu con verduras
 ('Revuelto de tofu con verduras', 'cena', 400,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE),
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 103. Pan integral con tomate y aceite de oliva
 ('Pan integral con tomate y aceite de oliva', 'desayuno', 370,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2074,18 +2379,21 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 105. Sopa de verduras con huevo duro
 ('Sopa de verduras con huevo duro', 'cena', 390,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 106. Smoothie de frutas con bebida vegetal de coco
 ('Smoothie de frutas con bebida vegetal de coco', 'desayuno', 330,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2095,18 +2403,21 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-FALSE, TRUE, FALSE, TRUE),
+FALSE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE), -- Si lleva huevo o queso, pon vegano=FALSE, vegetariano=TRUE
 
 -- 108. Tacos de tofu con verduras y maíz
 ('Tacos de tofu con verduras y maíz', 'comida', 430,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE),
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 109. Galletas sin gluten con compota de manzana
 ('Galletas sin gluten con compota de manzana', 'desayuno', 360,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2116,11 +2427,13 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, FALSE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 111. Batido de avena con plátano y fresa
 ('Batido de avena con plátano y fresa', 'desayuno', 320,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2130,6 +2443,7 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 113. Guiso de lentejas verdes con zanahoria
@@ -2137,20 +2451,23 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 114. Bocadillo de pan sin gluten con hummus y espinaca
 ('Bocadillo de pan sin gluten con hummus y espinaca', 'comida', 380,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 115. Yogur vegetal con granada y nuez
 ('Yogur vegetal con granada y nuez', 'desayuno', 350,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
 TRUE, FALSE, TRUE, TRUE,
+TRUE, FALSE, FALSE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 116. Trucha al horno con calabacín y arroz
@@ -2158,11 +2475,13 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, FALSE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 117. Crema de espinacas con pan integral
 ('Crema de espinacas con pan integral', 'comida', 400,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2172,11 +2491,13 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 119. Porridge de avena con manzana y canela
 ('Porridge de avena con manzana y canela', 'desayuno', 360,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2186,18 +2507,21 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 121. Bocadillo de pan integral con aguacate y huevo
 ('Bocadillo de pan integral con aguacate y huevo', 'comida', 420,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 122. Yogur vegetal con frambuesas y sirope de agave
 ('Yogur vegetal con frambuesas y sirope de agave', 'desayuno', 330,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2207,11 +2531,13 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 124. Sopa de fideos de arroz con espinacas
 ('Sopa de fideos de arroz con espinacas', 'cena', 400,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2221,20 +2547,23 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 126. Hamburguesa vegetal con arroz y verduras
 ('Hamburguesa vegetal con arroz y verduras', 'comida', 450,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-FALSE, FALSE, TRUE, TRUE),
+FALSE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE), -- Si lleva huevo o queso, pon vegano=FALSE, vegetariano=TRUE
 
 -- 127. Pisto de verduras con huevo y pan integral
 ('Pisto de verduras con huevo y pan integral', 'cena', 440,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE);
 
 INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
@@ -2443,55 +2772,63 @@ INSERT INTO comida_modelo (
     apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
     apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
     sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
-    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo,
+    vegano, vegetariano, sin_carne, sin_pescado
 ) VALUES
 -- 128. Tostadas de pan de centeno con queso fresco y miel
 ('Tostadas de pan de centeno con queso fresco y miel', 'desayuno', 380,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 129. Salmón a la plancha con espárragos y patata
 ('Salmón a la plancha con espárragos y patata', 'comida', 450,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, FALSE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 130. Crema de calabacín y puerro
 ('Crema de calabacín y puerro', 'cena', 300,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 131. Batido de fresa y plátano con leche
 ('Batido de fresa y plátano con leche', 'desayuno', 320,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 132. Arroz con pollo y verduras
 ('Arroz con pollo y verduras', 'comida', 480,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 133. Ensalada de lentejas con aguacate y tomate
 ('Ensalada de lentejas con aguacate y tomate', 'cena', 400,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 134. Porridge de avena con nueces y manzana
 ('Porridge de avena con nueces y manzana', 'desayuno', 390,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
 TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 135. Lomo de cerdo a la plancha con pimientos
@@ -2499,18 +2836,21 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 136. Sopa de miso con tofu y algas
 ('Sopa de miso con tofu y algas', 'cena', 250,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE),
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 137. Tostadas con aguacate y semillas de chía
 ('Tostadas con aguacate y semillas de chía', 'desayuno', 350,
 TRUE, TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2520,32 +2860,37 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 139. Revuelto de champiñones y espinacas
 ('Revuelto de champiñones y espinacas', 'cena', 320,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 140. Yogur natural con arándanos y almendras
 ('Yogur natural con arándanos y almendras', 'desayuno', 310,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, FALSE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 141. Quinoa con verduras y garbanzos
 ('Quinoa con verduras y garbanzos', 'comida', 420,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 142. Brócoli al vapor con aceite de oliva y limón
 ('Brócoli al vapor con aceite de oliva y limón', 'cena', 280,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2555,25 +2900,29 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, FALSE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 144. Ternera guisada con patatas y zanahorias
 ('Ternera guisada con patatas y zanahorias', 'comida', 500,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 145. Ensalada caprese
 ('Ensalada caprese', 'cena', 350,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 146. Smoothie de mango y coco
 ('Smoothie de mango y coco', 'desayuno', 300,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2583,19 +2932,22 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 148. Puré de calabaza con picatostes
 ('Puré de calabaza con picatostes', 'cena', 330,
 TRUE, TRUE, TRUE, FALSE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 149. Tostada francesa con sirope de arce
 ('Tostada francesa con sirope de arce', 'desayuno', 400,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
@@ -2604,11 +2956,13 @@ FALSE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 151. Gazpacho andaluz
 ('Gazpacho andaluz', 'cena', 200,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
@@ -2618,47 +2972,55 @@ TRUE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 153. Pollo al curry con arroz basmati
 ('Pollo al curry con arroz basmati', 'comida', 480,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 154. Ensalada César con pollo
 ('Ensalada César con pollo', 'cena', 420,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
 
 -- 155. Café con leche y tostada con mermelada
 ('Café con leche y tostada con mermelada', 'desayuno', 320,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 
 -- 156. Fabada asturiana
 ('Fabada asturiana', 'comida', 600,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, FALSE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+TRUE, TRUE, FALSE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
 
 -- 157. Crema de champiñones
 ('Crema de champiñones', 'cena', 300,
 TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 158. Tortitas americanas con nata y sirope
 ('Tortitas americanas con nata y sirope', 'desayuno', 450,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
@@ -2667,292 +3029,333 @@ FALSE, TRUE, TRUE, TRUE),
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, FALSE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 160. Sándwich mixto
 ('Sándwich mixto', 'cena', 380,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
 
 -- 161. Zumo de naranja natural y galletas María
 ('Zumo de naranja natural y galletas María', 'desayuno', 290,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 162. Bacalao a la vizcaína
 ('Bacalao a la vizcaína', 'comida', 490,
-TRUE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, TRUE, FALSE),
 
 -- 163. Sopa juliana
 ('Sopa juliana', 'cena', 250,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 164. Croissant a la plancha con mantequilla y mermelada
 ('Croissant a la plancha con mantequilla y mermelada', 'desayuno', 420,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 165. Albóndigas con tomate
 ('Albóndigas con tomate', 'comida', 510,
-TRUE, TRUE, TRUE, FALSE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-FALSE, TRUE, TRUE, TRUE),
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
 
 -- 166. Yogur griego con miel y nueces
 ('Yogur griego con miel y nueces', 'cena', 370,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, FALSE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 167. Chocolate caliente con churros
 ('Chocolate caliente con churros', 'desayuno', 500,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 168. Lasaña de carne
 ('Lasaña de carne', 'comida', 580,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
 
 -- 169. Ensalada mixta
 ('Ensalada mixta', 'cena', 300,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 170. Cereal con leche y cacao en polvo
 ('Cereal con leche y cacao en polvo', 'desayuno', 340,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 171. Cocido madrileño
 ('Cocido madrileño', 'comida', 650,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, FALSE, TRUE),
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
 
 -- 172. Dorada a la sal
 ('Dorada a la sal', 'cena', 390,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 173. Bizcocho de yogur
 ('Bizcocho de yogur', 'desayuno', 380,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 174. Risotto de setas
 ('Risotto de setas', 'comida', 520,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 175. Tortilla francesa
 ('Tortilla francesa', 'cena', 310,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 176. Muesli con yogur y frutas
 ('Muesli con yogur y frutas', 'desayuno', 360,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, FALSE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 177. Canelones de atún
 ('Canelones de atún', 'comida', 540,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
 FALSE, TRUE, TRUE, FALSE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 178. Espinacas a la crema
 ('Espinacas a la crema', 'cena', 340,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 179. Gofre con chocolate
 ('Gofre con chocolate', 'desayuno', 430,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 180. Entrecot a la plancha con patatas fritas
 ('Entrecot a la plancha con patatas fritas', 'comida', 620,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
 
 -- 181. Pescado al horno con verduras
 ('Pescado al horno con verduras', 'cena', 400,
 TRUE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 182. Avena cocida con leche y canela
 ('Avena cocida con leche y canela', 'desayuno', 350,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 183. Macarrones con tomate y queso rallado
 ('Macarrones con tomate y queso rallado', 'comida', 500,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 184. Sandwich vegetal con atún
 ('Sandwich vegetal con atún', 'cena', 410,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 TRUE, TRUE, TRUE, FALSE,
-FALSE, TRUE, TRUE, TRUE),
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 185. Tazón de leche con galletas de chocolate
 ('Tazón de leche con galletas de chocolate', 'desayuno', 370,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 186. Cordero asado con patatas panadera
 ('Cordero asado con patatas panadera', 'comida', 630,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
 
 -- 187. Judías verdes con patata
 ('Judías verdes con patata', 'cena', 320,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE),
 
 -- 188. Magdalenas caseras
 ('Magdalenas caseras', 'desayuno', 390,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 189. Solomillo de cerdo a la pimienta
 ('Solomillo de cerdo a la pimienta', 'comida', 560,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
 
 -- 190. Revuelto de ajetes y gambas
 ('Revuelto de ajetes y gambas', 'cena', 360,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 TRUE, TRUE, FALSE, TRUE,
-FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE),
 
 -- 191. Cereales de arroz inflado con yogur
 ('Cereales de arroz inflado con yogur', 'desayuno', 330,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 192. Cachopo de ternera
 ('Cachopo de ternera', 'comida', 700,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-FALSE, TRUE, TRUE, TRUE),
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
 
 -- 193. Calamares a la romana
 ('Calamares a la romana', 'cena', 450,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 TRUE, TRUE, FALSE, TRUE,
-FALSE, TRUE, TRUE, TRUE),
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 194. Pan con chocolate
 ('Pan con chocolate', 'desayuno', 410,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
 
 -- 195. Potaje de garbanzos
 ('Potaje de garbanzos', 'comida', 570,
 TRUE, TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
 TRUE, TRUE, TRUE, TRUE,
-FALSE, TRUE, FALSE, TRUE),
+FALSE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
 
 -- 196. Berenjenas rellenas de carne
 ('Berenjenas rellenas de carne', 'cena', 480,
-TRUE, TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 FALSE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
 
--- 197. Bollería industrial
 ('Bollería industrial', 'desayuno', 470,
 FALSE, FALSE, FALSE, FALSE, FALSE,
+FALSE, FALSE, FALSE, FALSE,
 FALSE, FALSE, FALSE, FALSE,
 FALSE, FALSE, FALSE, FALSE,
 FALSE, FALSE, FALSE, FALSE),
 
 -- 198. Fideuá
 ('Fideuá', 'comida', 590,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE),
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
 
 -- 199. Salmorejo cordobés
 ('Salmorejo cordobés', 'cena', 350,
-TRUE, TRUE, TRUE, FALSE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
 TRUE, TRUE, TRUE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE),
 
 -- 200. Tarta de queso
 ('Tarta de queso', 'desayuno', 440,
-TRUE, TRUE, TRUE, FALSE, TRUE,
-TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE,
 FALSE, TRUE, TRUE, TRUE);
 
@@ -3327,608 +3730,808 @@ INSERT INTO comida_modelo (
     apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
     apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
     sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
-    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo,
+    vegano, vegetariano, sin_carne, sin_pescado
 ) VALUES
-    -- 201. Wok de verduras con fideos de arroz
+-- 201. Wok de verduras con fideos de arroz
 ('Wok de verduras con fideos de arroz', 'comida', 420,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 202. Ensalada de quinoa con aguacate y mango
 ('Ensalada de quinoa con aguacate y mango', 'comida', 450,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 203. Sopa fría de pepino y yogur
 ('Sopa fría de pepino y yogur', 'cena', 250,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 204. Tostadas de boniato con hummus
 ('Tostadas de boniato con hummus', 'desayuno', 350,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 205. Brochetas de pavo y pimiento
 ('Brochetas de pavo y pimiento', 'comida', 400,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE,
+ FALSE, FALSE, FALSE, TRUE),
+
 -- 206. Revuelto de tofu ahumado con champiñones
 ('Revuelto de tofu ahumado con champiñones', 'cena', 380,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE),
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 207. Pudding de chía con leche de coco y frambuesas
 ('Pudding de chía con leche de coco y frambuesas', 'desayuno', 320,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 208. Lentejas beluga con arroz integral y verduras
 ('Lentejas beluga con arroz integral y verduras', 'comida', 480,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 209. Crema de remolacha y manzana
 ('Crema de remolacha y manzana', 'cena', 280,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 210. Batido verde de espinaca, kale y piña
 ('Batido verde de espinaca, kale y piña', 'desayuno', 300,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 211. Salteado de garbanzos con espinacas y pimentón
 ('Salteado de garbanzos con espinacas y pimentón', 'comida', 430,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 212. Tabulé de cuscús integral
 ('Tabulé de cuscús integral', 'cena', 350,
  TRUE, TRUE, TRUE, FALSE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 213. Yogur de soja con granola casera y kiwi
 ('Yogur de soja con granola casera y kiwi', 'desayuno', 390,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, FALSE, TRUE, TRUE,
+FALSE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 214. Curry de verduras con leche de coco
 ('Curry de verduras con leche de coco', 'comida', 460,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 215. Trucha al horno con almendras
 ('Trucha al horno con almendras', 'cena', 410,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, FALSE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
+
 -- 216. Tostada integral con crema de anacardos y plátano
 ('Tostada integral con crema de anacardos y plátano', 'desayuno', 380,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 217. Poke bowl de salmón y edamame
 ('Poke bowl de salmón y edamame', 'comida', 500,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE,
- TRUE, FALSE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, FALSE,
+FALSE, FALSE, FALSE, FALSE,
+FALSE, FALSE, FALSE, FALSE),
+
 -- 218. Ensalada de pepino y rábano con vinagreta de eneldo
 ('Ensalada de pepino y rábano con vinagreta de eneldo', 'cena', 200,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 219. Avena nocturna con cacao y mantequilla de cacahuete
 ('Avena nocturna con cacao y mantequilla de cacahuete', 'desayuno', 400,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 220. Guiso de alubias blancas con verduras
 ('Guiso de alubias blancas con verduras', 'comida', 470,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 221. Carpaccio de calabacín con parmesano y piñones
 ('Carpaccio de calabacín con parmesano y piñones', 'cena', 310,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 222. Tortitas de trigo sarraceno con compota de arándanos
 ('Tortitas de trigo sarraceno con compota de arándanos', 'desayuno', 360,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 223. Berenjenas rellenas de mijo y verduras
 ('Berenjenas rellenas de mijo y verduras', 'comida', 440,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 224. Crema de espárragos verdes
 ('Crema de espárragos verdes', 'cena', 260,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 225. Kéfir con melocotón y nueces pecanas
 ('Kéfir con melocotón y nueces pecanas', 'desayuno', 340,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 226. Pollo a la naranja con cuscús
 ('Pollo a la naranja con cuscús', 'comida', 490,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
+
 -- 227. Ensalada de canónigos con queso de cabra y pera
 ('Ensalada de canónigos con queso de cabra y pera', 'cena', 370,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 228. Muesli sin gluten con bebida de arroz y pasas
 ('Muesli sin gluten con bebida de arroz y pasas', 'desayuno', 370,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 229. Hamburguesa de remolacha y alubias rojas
 ('Hamburguesa de remolacha y alubias rojas', 'comida', 430,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 230. Sopa de pescado ligera
 ('Sopa de pescado ligera', 'cena', 320,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
+
 -- 231. Smoothie bowl de acai con granola y plátano
 ('Smoothie bowl de acai con granola y plátano', 'desayuno', 410,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 232. Lasaña de verduras con placas de calabacín
 ('Lasaña de verduras con placas de calabacín', 'comida', 480,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 233. Revuelto de huevos con salmón ahumado y aguacate
 ('Revuelto de huevos con salmón ahumado y aguacate', 'cena', 400,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE),
+
 -- 234. Pan de espelta con tomate rallado y jamón serrano
 ('Pan de espelta con tomate rallado y jamón serrano', 'desayuno', 390,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
+
 -- 235. Albóndigas de pavo en salsa de zanahoria
 ('Albóndigas de pavo en salsa de zanahoria', 'comida', 450,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
+
 -- 236. Coliflor asada con cúrcuma y comino
 ('Coliflor asada con cúrcuma y comino', 'cena', 290,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 237. Yogur griego con higos y miel
 ('Yogur griego con higos y miel', 'desayuno', 330,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 238. Chili vegetariano con soja texturizada
 ('Chili vegetariano con soja texturizada', 'comida', 460,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, FALSE, TRUE),
+ TRUE, FALSE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 239. Crema de puerros y patata (Vichyssoise)
 ('Crema de puerros y patata (Vichyssoise)', 'cena', 300,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 240. Tostada sin gluten con aguacate y huevo poché
 ('Tostada sin gluten con aguacate y huevo poché', 'desayuno', 380,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 241. Rape a la americana
 ('Rape a la americana', 'comida', 470,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
+
 -- 242. Ensalada de espinacas, fresas y nueces
 ('Ensalada de espinacas, fresas y nueces', 'cena', 360,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 243. Batido de avena, dátil y canela
 ('Batido de avena, dátil y canela', 'desayuno', 350,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 244. Arroz negro con calamares (simulados)
 ('Arroz negro con calamares (simulados)', 'comida', 510,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 245. Sopa de cebolla gratinada
 ('Sopa de cebolla gratinada', 'cena', 380,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 246. Requesón con arándanos y semillas de girasol
 ('Requesón con arándanos y semillas de girasol', 'desayuno', 310,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 247. Pisto manchego con huevo frito
 ('Pisto manchego con huevo frito', 'comida', 420,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 248. Ensalada de judías verdes, patata y atún
 ('Ensalada de judías verdes, patata y atún', 'cena', 390,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, FALSE,
+FALSE, FALSE, FALSE, FALSE,
+FALSE, FALSE, FALSE, FALSE),
+
 -- 249. Porridge de quinoa con leche de almendras y canela
 ('Porridge de quinoa con leche de almendras y canela', 'desayuno', 370,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 250. Pechuga de pollo villaroy
 ('Pechuga de pollo villaroy', 'comida', 530,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
+
 -- 251. Tataki de atún con sésamo
 ('Tataki de atún con sésamo', 'cena', 410,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE,
- TRUE, TRUE, TRUE, FALSE),
+FALSE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
+
 -- 252. Tostadas francesas con pan integral y fruta
 ('Tostadas francesas con pan integral y fruta', 'desayuno', 400,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 253. Lentejas a la jardinera
 ('Lentejas a la jardinera', 'comida', 450,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 254. Cogollos a la plancha con anchoas (simuladas) y ajos
 ('Cogollos a la plancha con anchoas (simuladas) y ajos', 'cena', 280,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 255. Mousse de aguacate y cacao
 ('Mousse de aguacate y cacao', 'desayuno', 360,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 256. Falso risotto de coliflor y champiñones
 ('Falso risotto de coliflor y champiñones', 'comida', 380,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 257. Ensalada de garbanzos, atún y huevo duro
 ('Ensalada de garbanzos, atún y huevo duro', 'cena', 420,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE,
- FALSE, TRUE, FALSE, TRUE),
+FALSE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, FALSE, FALSE,
+FALSE, FALSE, FALSE, FALSE),
+
 -- 258. Batido de kéfir con fresa y avena
 ('Batido de kéfir con fresa y avena', 'desayuno', 340,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 259. Salmón en papillote con verduras
 ('Salmón en papillote con verduras', 'comida', 470,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE,
- TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
+
 -- 260. Alcachofas al horno con jamón
 ('Alcachofas al horno con jamón', 'cena', 350,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
+
 -- 261. Tostadas de centeno con requesón y mermelada sin azúcar
 ('Tostadas de centeno con requesón y mermelada sin azúcar', 'desayuno', 370,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 262. Ternera a la plancha con puré de manzana
 ('Ternera a la plancha con puré de manzana', 'comida', 500,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
+
 -- 263. Endivias rellenas de ensaladilla de cangrejo (simulado)
 ('Endivias rellenas de ensaladilla de cangrejo (simulado)', 'cena', 330,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, FALSE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 264. Bizcocho de avena y plátano
 ('Bizcocho de avena y plátano', 'desayuno', 390,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 265. Judiones de la granja estofados
 ('Judiones de la granja estofados', 'comida', 520,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 266. Sopa de tomate y albahaca
 ('Sopa de tomate y albahaca', 'cena', 270,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 267. Tazón de yogur con melocotón y almendras laminadas
 ('Tazón de yogur con melocotón y almendras laminadas', 'desayuno', 350,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 268. Pollo al chilindrón
 ('Pollo al chilindrón', 'comida', 480,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
+
 -- 269. Ensalada de pasta integral con pesto y tomates secos
 ('Ensalada de pasta integral con pesto y tomates secos', 'cena', 430,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 270. Gachas de amaranto con pera y cardamomo
 ('Gachas de amaranto con pera y cardamomo', 'desayuno', 360,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 271. Bacalao confitado con puré de pimientos
 ('Bacalao confitado con puré de pimientos', 'comida', 490,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+TRUE, FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE),
+
 -- 272. Crema de calabaza asada y jengibre
 ('Crema de calabaza asada y jengibre', 'cena', 290,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 273. Pan integral con aceite y chocolate negro
 ('Pan integral con aceite y chocolate negro', 'desayuno', 410,
  TRUE, TRUE, TRUE, FALSE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 274. Conejo al ajillo con patatas
 ('Conejo al ajillo con patatas', 'comida', 510,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, TRUE),
+
 -- 275. Brocheta de champiñones y pimientos con salsa romesco
 ('Brocheta de champiñones y pimientos con salsa romesco', 'cena', 340,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 276. Galletas de avena y zanahoria caseras
 ('Galletas de avena y zanahoria caseras', 'desayuno', 370,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 277. Marmita de merluza y patatas
 ('Marmita de merluza y patatas', 'comida', 460,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
+
 -- 278. Ensalada de remolacha, manzana y apio
 ('Ensalada de remolacha, manzana y apio', 'cena', 300,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+TRUE, TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 279. Yogur natural con compota de pera y canela
 ('Yogur natural con compota de pera y canela', 'desayuno', 320,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 280. Rollitos de primavera de verduras al horno
 ('Rollitos de primavera de verduras al horno', 'comida', 400,
  TRUE, TRUE, TRUE, FALSE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 281. Crema de champiñones y castañas
 ('Crema de champiñones y castañas', 'cena', 360,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 282. Tostada con sobrasada vegana y miel de caña
 ('Tostada con sobrasada vegana y miel de caña', 'desayuno', 380,
  TRUE, TRUE, TRUE, FALSE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 283. Paella de verduras de temporada
 ('Paella de verduras de temporada', 'comida', 500,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 284. Hummus de lenteja roja con crudités
 ('Hummus de lenteja roja con crudités', 'cena', 310,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 285. Arroz con leche de coco y mango
 ('Arroz con leche de coco y mango', 'desayuno', 420,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 286. Albóndigas de berenjena en salsa de tomate
 ('Albóndigas de berenjena en salsa de tomate', 'comida', 440,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 287. Ensalada templada de lentejas con verduras asadas
 ('Ensalada templada de lentejas con verduras asadas', 'cena', 400,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 288. Bizcocho de limón y semillas de amapola
 ('Bizcocho de limón y semillas de amapola', 'desayuno', 390,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, FALSE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 289. Fabes con almejas (simuladas)
 ('Fabes con almejas (simuladas)', 'comida', 530,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 290. Sopa de ajo con huevo escalfado
 ('Sopa de ajo con huevo escalfado', 'cena', 330,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 291. Tostada de pan de semillas con aguacate y germinados
 ('Tostada de pan de semillas con aguacate y germinados', 'desayuno', 370,
  TRUE, TRUE, TRUE, FALSE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 292. Pollo en pepitoria
 ('Pollo en pepitoria', 'comida', 490,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, FALSE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
+
 -- 293. Tartar de salmón y aguacate con quinoa
 ('Tartar de salmón y aguacate con quinoa', 'cena', 420,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
+
 -- 294. Muesli bircher
 ('Muesli bircher', 'desayuno', 360,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 295. Caldereta de cordero
 ('Caldereta de cordero', 'comida', 550,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, FALSE, FALSE, TRUE,
+FALSE, FALSE, FALSE, FALSE),
+
 -- 296. Crema de nécoras (simulada)
 ('Crema de nécoras (simulada)', 'cena', 310,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, FALSE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 297. Tarta de Santiago (versión saludable)
 ('Tarta de Santiago (versión saludable)', 'desayuno', 400,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 298. Garbanzos con bacalao y espinacas
 ('Garbanzos con bacalao y espinacas', 'comida', 510,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, FALSE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE,
+FALSE, TRUE, FALSE, FALSE),
+
 -- 299. Pimientos del piquillo rellenos de brandada de bacalao
 ('Pimientos del piquillo rellenos de brandada de bacalao', 'cena', 390,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, FALSE, TRUE, FALSE,
+FALSE, FALSE, TRUE, FALSE),
+
 -- 300. Roscón de Reyes (versión saludable)
 ('Roscón de Reyes (versión saludable)', 'desayuno', 430,
- TRUE, TRUE, TRUE, FALSE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, FALSE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE);
+FALSE, TRUE, FALSE, FALSE, TRUE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE);
 
 INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
 -- 201. Wok de verduras con fideos de arroz
@@ -4340,616 +4943,813 @@ INSERT INTO comida_modelo (
     apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
     apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
     sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
-    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo,
+    vegano, vegetariano, sin_carne, sin_pescado
 ) VALUES
 -- 301. Bowl de quinoa arcoíris con verduras y huevo
 ('Bowl de quinoa arcoíris con verduras y huevo', 'comida', 480,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 302. Tostadas integrales con aguacate, tomate y semillas de sésamo
 ('Tostadas integrales con aguacate, tomate y semillas de sésamo', 'desayuno', 350,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE),
+ TRUE, TRUE, TRUE, FALSE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 303. Ensalada fresca de garbanzos, pepino y pimiento rojo
 ('Ensalada fresca de garbanzos, pepino y pimiento rojo', 'almuerzo', 320,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 304. Smoothie tropical de mango, plátano y bebida de coco
 ('Smoothie tropical de mango, plátano y bebida de coco', 'merienda', 210,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 305. Pasta integral con brócoli, tomate cherry y queso fresco
 ('Pasta integral con brócoli, tomate cherry y queso fresco', 'comida', 510,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 306. Tortilla de espinacas, cebolla y champiñón
 ('Tortilla de espinacas, cebolla y champiñón', 'cena', 390,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 307. Porridge de avena con manzana, nueces y canela
 ('Porridge de avena con manzana, nueces y canela', 'desayuno', 340,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+TRUE, FALSE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE,
+TRUE, TRUE, TRUE, TRUE),
+
 -- 308. Ensalada templada de lenteja beluga, zanahoria y huevo duro
 ('Ensalada templada de lenteja beluga, zanahoria y huevo duro', 'comida', 430,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, FALSE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE,
+FALSE, TRUE, FALSE, TRUE),
+
 -- 309. Crema suave de calabaza, puerro y patata
 ('Crema suave de calabaza, puerro y patata', 'cena', 280,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 310. Yogur natural con frutos rojos y semillas de lino
 ('Yogur natural con frutos rojos y semillas de lino', 'merienda', 220,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 311. Ensalada de espelta, tomate seco y rúcula
 ('Ensalada de espelta, tomate seco y rúcula', 'comida', 410,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 312. Tostadas de pan de centeno con aguacate y huevo poché
 ('Tostadas de pan de centeno con aguacate y huevo poché', 'desayuno', 370,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, FALSE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 313. Buddha bowl de arroz integral, edamame y zanahoria
 ('Buddha bowl de arroz integral, edamame y zanahoria', 'comida', 450,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 314. Smoothie verde de kiwi, espinaca y bebida de avena
 ('Smoothie verde de kiwi, espinaca y bebida de avena', 'merienda', 200,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 315. Pasta de trigo sarraceno con calabacín y tomate cherry
 ('Pasta de trigo sarraceno con calabacín y tomate cherry', 'comida', 480,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
 -- 316. Tortilla de berenjena, cebolla y pimiento verde
 ('Tortilla de berenjena, cebolla y pimiento verde', 'cena', 350,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 317. Porridge de mijo con pera y semillas de calabaza
 ('Porridge de mijo con pera y semillas de calabaza', 'desayuno', 320,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 318. Ensalada de garbanzos, tomate, pepino y cebolla morada
 ('Ensalada de garbanzos, tomate, pepino y cebolla morada', 'almuerzo', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 319. Crema de coliflor, puerro y zanahoria
 ('Crema de coliflor, puerro y zanahoria', 'cena', 270,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 320. Yogur vegetal con mango y semillas de chía
 ('Yogur vegetal con mango y semillas de chía', 'merienda', 210,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, FALSE),
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 321. Ensalada de bulgur, remolacha y queso de cabra
 ('Ensalada de bulgur, remolacha y queso de cabra', 'comida', 420,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, FALSE, TRUE),
+FALSE, TRUE, FALSE, FALSE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, FALSE, TRUE,
+FALSE, TRUE, FALSE, TRUE),
+
 -- 322. Tostadas de pan integral con hummus y zanahoria rallada
 ('Tostadas de pan integral con hummus y zanahoria rallada', 'desayuno', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, FALSE, TRUE),
+ TRUE, FALSE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 323. Buddha bowl de arroz blanco, edamame y aguacate
 ('Buddha bowl de arroz blanco, edamame y aguacate', 'comida', 460,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 324. Smoothie de piña, espinaca y bebida de soja
 ('Smoothie de piña, espinaca y bebida de soja', 'merienda', 210,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE),
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 325. Pasta de espelta con calabaza y nueces
 ('Pasta de espelta con calabaza y nueces', 'comida', 500,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, FALSE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, FALSE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 326. Tortilla de calabacín, cebolla y pimiento rojo
 ('Tortilla de calabacín, cebolla y pimiento rojo', 'cena', 370,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 327. Porridge de avena con pera y semillas de amapola
 ('Porridge de avena con pera y semillas de amapola', 'desayuno', 330,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 328. Ensalada de judía blanca, tomate y cebolla
 ('Ensalada de judía blanca, tomate y cebolla', 'almuerzo', 350,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 329. Crema de zanahoria, puerro y patata
 ('Crema de zanahoria, puerro y patata', 'cena', 260,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 330. Yogur vegetal con kiwi y semillas de lino
 ('Yogur vegetal con kiwi y semillas de lino', 'merienda', 210,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE),
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
 -- 331. Ensalada de quinoa, pepino y tomate cherry
 ('Ensalada de quinoa, pepino y tomate cherry', 'comida', 410,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 332. Tostadas de pan de centeno con aguacate y tomate
 ('Tostadas de pan de centeno con aguacate y tomate', 'desayuno', 350,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 333. Buddha bowl de arroz integral, garbanzos y zanahoria
 ('Buddha bowl de arroz integral, garbanzos y zanahoria', 'comida', 440,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 334. Smoothie de mango, espinaca y bebida de avena
 ('Smoothie de mango, espinaca y bebida de avena', 'merienda', 200,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 335. Pasta de trigo sarraceno con calabaza y nueces
 ('Pasta de trigo sarraceno con calabaza y nueces', 'comida', 480,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, FALSE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 336. Tortilla de berenjena, cebolla y pimiento rojo
 ('Tortilla de berenjena, cebolla y pimiento rojo', 'cena', 350,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 337. Porridge de mijo con manzana y semillas de calabaza
 ('Porridge de mijo con manzana y semillas de calabaza', 'desayuno', 320,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 338. Ensalada de judía roja, tomate y cebolla morada
 ('Ensalada de judía roja, tomate y cebolla morada', 'almuerzo', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 339. Crema de col lombarda, puerro y zanahoria
 ('Crema de col lombarda, puerro y zanahoria', 'cena', 270,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 340. Yogur natural con pera y semillas de chía
 ('Yogur natural con pera y semillas de chía', 'merienda', 210,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 341. Ensalada de amaranto, tomate cherry y pepino
 ('Ensalada de amaranto, tomate cherry y pepino', 'comida', 400,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 342. Tostadas de pan sin gluten con hummus y pimiento asado
 ('Tostadas de pan sin gluten con hummus y pimiento asado', 'desayuno', 320,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, FALSE, TRUE),
+ TRUE, FALSE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 343. Buddha bowl de arroz inflado, edamame y zanahoria
 ('Buddha bowl de arroz inflado, edamame y zanahoria', 'comida', 430,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 344. Smoothie de frambuesa, espinaca y bebida de almendra
 ('Smoothie de frambuesa, espinaca y bebida de almendra', 'merienda', 200,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 345. Pasta de maíz con calabaza y pistacho
 ('Pasta de maíz con calabaza y pistacho', 'comida', 480,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, FALSE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, FALSE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 346. Tortilla de col rizada, cebolla y pimiento verde
 ('Tortilla de col rizada, cebolla y pimiento verde', 'cena', 360,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+FALSE, TRUE, FALSE, TRUE, FALSE,
+FALSE, TRUE, TRUE, FALSE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE,
+FALSE, TRUE, TRUE, TRUE),
+
 -- 347. Porridge de copos de trigo integral con pera y semillas de girasol
 ('Porridge de copos de trigo integral con pera y semillas de girasol', 'desayuno', 330,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 348. Ensalada de judión, tomate y cebolla
 ('Ensalada de judión, tomate y cebolla', 'almuerzo', 350,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 349. Crema de brócoli, puerro y patata
 ('Crema de brócoli, puerro y patata', 'cena', 270,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 350. Yogur vegetal con manzana y semillas de lino
 ('Yogur vegetal con manzana y semillas de lino', 'merienda', 210,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE),
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 351. Ensalada de mijo, pepino y tomate cherry
 ('Ensalada de mijo, pepino y tomate cherry', 'comida', 410,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 352. Tostadas de pan integral con hummus y remolacha
 ('Tostadas de pan integral con hummus y remolacha', 'desayuno', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, FALSE, TRUE),
+ TRUE, FALSE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 353. Buddha bowl de arroz blanco, garbanzos y zanahoria
 ('Buddha bowl de arroz blanco, garbanzos y zanahoria', 'comida', 440,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 354. Smoothie de arándano, espinaca y bebida de avena
 ('Smoothie de arándano, espinaca y bebida de avena', 'merienda', 200,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
--- 355. Pasta de bulgur con calabaza y nuez pecana
+
+-- 355. Pasta de bulgur con calabaza y nuez pecana (corrigiendo)
 ('Pasta de bulgur con calabaza y nuez pecana', 'comida', 480,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  FALSE, FALSE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
--- 356. Tortilla de coliflor, cebolla y pimiento rojo
+ FALSE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),  -- <--- campos 18 a 21 añadidos
+
+-- 356. Tortilla de coliflor, cebolla y pimiento rojo (corrigiendo)
 ('Tortilla de coliflor, cebolla y pimiento rojo', 'cena', 350,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+ FALSE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),  -- <--- campos 18 a 21 añadidos
+
 -- 357. Porridge de copos de maíz con pera y semillas de calabaza
 ('Porridge de copos de maíz con pera y semillas de calabaza', 'desayuno', 320,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 358. Ensalada de alubia pinta, tomate y cebolla morada
 ('Ensalada de alubia pinta, tomate y cebolla morada', 'almuerzo', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 359. Crema de col rizada, puerro y zanahoria
 ('Crema de col rizada, puerro y zanahoria', 'cena', 270,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE),
--- 360. Yogur natural con manzana y semillas de chía
-('Yogur natural con manzana y semillas de chía', 'merienda', 210,
- TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE),
+ TRUE, TRUE, TRUE, TRUE),
+
+('Yogur natural con manzana y semillas de chía', 'merienda', 210,
+ TRUE, TRUE, TRUE, TRUE, TRUE,         -- 1-5: enfermedades
+ TRUE, TRUE, TRUE, TRUE,               -- 6-9: enfermedades
+ FALSE, TRUE, TRUE, TRUE,              -- 10-13: restricciones
+ FALSE, TRUE, TRUE, TRUE,              -- 14-17: restricciones
+ FALSE, TRUE, TRUE, TRUE),             -- 18-21: preferencias
+
 -- 361. Ensalada de espelta, zanahoria y tomate cherry
 ('Ensalada de espelta, zanahoria y tomate cherry', 'comida', 410,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 362. Tostadas de pan de centeno con hummus y pepino
 ('Tostadas de pan de centeno con hummus y pepino', 'desayuno', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, FALSE, TRUE),
+ TRUE, FALSE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 363. Buddha bowl de arroz integral, judía verde y zanahoria
 ('Buddha bowl de arroz integral, judía verde y zanahoria', 'comida', 430,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 364. Smoothie de fresa, espinaca y bebida de avena
 ('Smoothie de fresa, espinaca y bebida de avena', 'merienda', 200,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 365. Pasta de trigo sarraceno con calabaza y almendra cruda
 ('Pasta de trigo sarraceno con calabaza y almendra cruda', 'comida', 480,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, FALSE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,         -- 1-5
+ TRUE, TRUE, TRUE, TRUE,               -- 6-9
+ FALSE, FALSE, TRUE, TRUE,             -- 10-13
+ FALSE, TRUE, TRUE, TRUE,              -- 14-17
+ TRUE, TRUE, TRUE, TRUE),              -- 18-21
+
 -- 366. Tortilla de coles de Bruselas, cebolla y pimiento rojo
 ('Tortilla de coles de Bruselas, cebolla y pimiento rojo', 'cena', 350,
- TRUE, TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+ TRUE, TRUE, TRUE, TRUE, TRUE,         -- 1-5
+ TRUE, TRUE, TRUE, TRUE,               -- 6-9
+ FALSE, TRUE, TRUE, TRUE,              -- 10-13
+ FALSE, TRUE, TRUE, TRUE,              -- 14-17
+ FALSE, TRUE, TRUE, TRUE),             -- 18-21
+
 -- 367. Porridge de avena con manzana y semillas de sésamo
 ('Porridge de avena con manzana y semillas de sésamo', 'desayuno', 330,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, FALSE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE),
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 368. Ensalada de judía negra, tomate y cebolla morada
 ('Ensalada de judía negra, tomate y cebolla morada', 'almuerzo', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 369. Crema de coliflor, puerro y zanahoria
 ('Crema de coliflor, puerro y zanahoria', 'cena', 270,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 370. Yogur vegetal con mango y semillas de lino
 ('Yogur vegetal con mango y semillas de lino', 'merienda', 210,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE),
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 371. Ensalada de bulgur, pepino y tomate cherry
 ('Ensalada de bulgur, pepino y tomate cherry', 'comida', 410,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 372. Tostadas de pan integral con hummus y calabacín
 ('Tostadas de pan integral con hummus y calabacín', 'desayuno', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, FALSE, TRUE),
+ TRUE, FALSE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 373. Buddha bowl de arroz blanco, judía roja y zanahoria
 ('Buddha bowl de arroz blanco, judía roja y zanahoria', 'comida', 440,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 374. Smoothie de frambuesa, espinaca y bebida de soja
 ('Smoothie de frambuesa, espinaca y bebida de soja', 'merienda', 200,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE),
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 375. Pasta de espelta con calabaza y nuez
 ('Pasta de espelta con calabaza y nuez', 'comida', 480,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  FALSE, FALSE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+ FALSE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 376. Tortilla de col lombarda, cebolla y pimiento rojo
 ('Tortilla de col lombarda, cebolla y pimiento rojo', 'cena', 350,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE,
+ FALSE, TRUE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE),
+
 -- 377. Porridge de copos de trigo integral con pera y semillas de calabaza
 ('Porridge de copos de trigo integral con pera y semillas de calabaza', 'desayuno', 330,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 378. Ensalada de alubia pinta, tomate y cebolla
 ('Ensalada de alubia pinta, tomate y cebolla', 'almuerzo', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 379. Crema de col rizada, puerro y zanahoria
 ('Crema de col rizada, puerro y zanahoria', 'cena', 270,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 380. Yogur natural con pera y semillas de chía
 ('Yogur natural con pera y semillas de chía', 'merienda', 210,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE),
+ FALSE, TRUE, TRUE, TRUE,
+ FALSE, TRUE, TRUE, TRUE),
+
 -- 381. Ensalada de quinoa, zanahoria y tomate cherry
 ('Ensalada de quinoa, zanahoria y tomate cherry', 'comida', 410,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 382. Tostadas de pan de centeno con hummus y remolacha
 ('Tostadas de pan de centeno con hummus y remolacha', 'desayuno', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, FALSE, TRUE),
+ TRUE, FALSE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 383. Buddha bowl de arroz integral, judía blanca y zanahoria
 ('Buddha bowl de arroz integral, judía blanca y zanahoria', 'comida', 430,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE);
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE);
  
  INSERT INTO comida_modelo (
     nombre, tipo_comida, calorias_totales,
     apta_diabetes, apta_hipertension, apta_hipercolesterolemia, apta_celiacos, apta_renal,
     apta_anemia, apta_obesidad, apta_hipotiroidismo, apta_colon_irritable,
     sin_lactosa, sin_frutos_secos, sin_marisco, sin_pescado_azul,
-    sin_huevo, sin_soja, sin_legumbres, sin_sesamo
+    sin_huevo, sin_soja, sin_legumbres, sin_sesamo,
+    vegano, vegetariano, sin_carne, sin_pescado
 ) VALUES
 -- 384. Smoothie de kiwi, espinaca y bebida de avena
 ('Smoothie de kiwi, espinaca y bebida de avena', 'merienda', 200,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 385. Pasta de bulgur con calabaza y nuez
 ('Pasta de bulgur con calabaza y nuez', 'comida', 480,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  FALSE, FALSE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+ FALSE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 386. Tortilla de coliflor, cebolla y pimiento verde
 ('Tortilla de coliflor, cebolla y pimiento verde', 'cena', 350,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE,
+ FALSE, TRUE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE),
+
 -- 387. Porridge de copos de maíz con manzana y semillas de sésamo
 ('Porridge de copos de maíz con manzana y semillas de sésamo', 'desayuno', 330,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, FALSE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE),
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 388. Ensalada de judía roja, tomate y cebolla
 ('Ensalada de judía roja, tomate y cebolla', 'almuerzo', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 389. Crema de col lombarda, puerro y zanahoria
 ('Crema de col lombarda, puerro y zanahoria', 'cena', 270,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 390. Yogur vegetal con pera y semillas de lino
 ('Yogur vegetal con pera y semillas de lino', 'merienda', 210,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE),
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 391. Ensalada de espelta, pepino y tomate cherry
 ('Ensalada de espelta, pepino y tomate cherry', 'comida', 410,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 392. Tostadas de pan integral con hummus y zanahoria
 ('Tostadas de pan integral con hummus y zanahoria', 'desayuno', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, FALSE, TRUE),
+ TRUE, FALSE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 393. Buddha bowl de arroz blanco, edamame y zanahoria
 ('Buddha bowl de arroz blanco, edamame y zanahoria', 'comida', 430,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 394. Smoothie de mango, espinaca y bebida de soja
 ('Smoothie de mango, espinaca y bebida de soja', 'merienda', 200,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, FALSE, TRUE, TRUE),
+ TRUE, FALSE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 395. Pasta de trigo sarraceno con calabaza y nuez pecana
 ('Pasta de trigo sarraceno con calabaza y nuez pecana', 'comida', 480,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  FALSE, FALSE, TRUE, TRUE,
- FALSE, TRUE, TRUE, TRUE),
+ FALSE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 396. Tortilla de col rizada, cebolla y pimiento rojo
 ('Tortilla de col rizada, cebolla y pimiento rojo', 'cena', 350,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE,
+ FALSE, TRUE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE),
+
 -- 397. Porridge de avena con manzana y semillas de calabaza
 ('Porridge de avena con manzana y semillas de calabaza', 'desayuno', 330,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 398. Ensalada de judía blanca, tomate y cebolla morada
 ('Ensalada de judía blanca, tomate y cebolla morada', 'almuerzo', 340,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
- TRUE, TRUE, FALSE, TRUE),
+ TRUE, TRUE, FALSE, TRUE,
+ TRUE, TRUE, TRUE, TRUE),
+
 -- 399. Crema de coliflor, puerro y zanahoria
 ('Crema de coliflor, puerro y zanahoria', 'cena', 270,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
+ TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE),
+
 -- 400. Yogur natural con mango y semillas de chía
 ('Yogur natural con mango y semillas de chía', 'merienda', 210,
  TRUE, TRUE, TRUE, TRUE, TRUE,
  TRUE, TRUE, TRUE, TRUE,
  FALSE, TRUE, TRUE, TRUE,
- TRUE, TRUE, TRUE, FALSE);
+ FALSE, TRUE, TRUE, TRUE,
+ FALSE, TRUE, TRUE, TRUE);
 
 INSERT INTO comida_ingrediente (comida_modelo_id, ingrediente_id, cantidad, unidad) VALUES
 -- 301. Bowl de quinoa arcoíris con verduras y huevo
@@ -5380,8 +6180,8 @@ INSERT INTO receta (
     visible
 ) VALUES (
     'Bizcocho de avena y plátano',
-    'Un bizcocho saludable y esponjoso, ideal para desayuno o merienda.',
-    '1. Precalienta el horno a 180 °C.\n2. Machaca 2 plátanos maduros.\n3. Mezcla los plátanos con 150 g de copos de avena, 2 huevos, 50 ml de aceite de oliva y 1 cucharadita de levadura.\n4. Vierte en molde y hornea 40 min.\n5. Deja enfriar y sirve.',
+    'Este bizcocho de avena y plátano es una opción saludable, húmeda y naturalmente dulce, perfecta para el desayuno o una merienda energética. Sin azúcares refinados, rico en fibra y con grasas saludables, combina sabor y nutrición en cada porción.',
+    '1. Precalienta el horno a 180 °C (arriba y abajo) y prepara un molde rectangular o redondo con papel vegetal o un poco de aceite.\n\n2. Pela y machaca 2 plátanos maduros en un bol grande hasta obtener un puré homogéneo.\n\n3. Añade 2 huevos y bate bien hasta que se integren con el plátano.\n\n4. Incorpora 150 g de copos de avena, 50 ml de aceite de oliva virgen extra y 1 cucharadita (5 g) de levadura química. Mezcla todo con una espátula o varillas hasta que quede una masa uniforme.\n\n5. Si deseas, puedes añadir canela, nueces troceadas o chips de chocolate al gusto.\n\n6. Vierte la mezcla en el molde y alísala con una espátula.\n\n7. Hornea durante 35-40 minutos o hasta que al pinchar con un palillo salga limpio.\n\n8. Saca del horno, deja templar en el molde unos minutos y luego enfría sobre una rejilla. Sirve frío o templado, solo o con un poco de yogur o fruta fresca.',
     50,
     'fácil',
     8,
@@ -5410,8 +6210,8 @@ INSERT INTO receta (
     visible
 ) VALUES (
     'Tarta de avena y manzana',
-    'Tarta saludable con avena y trozos de manzana, perfecta para merendar.',
-    '1. Precalienta el horno a 180 °C.\n2. Ralla 2 manzanas y mézclalas con 150 g de copos de avena, 2 huevos, 50 ml de leche vegetal, 1 cdita de levadura y canela al gusto.\n3. Vierte en molde, espolvorea avena encima y hornea 45 min.\n4. Deja enfriar antes de cortar.',
+    'Esta tarta de avena y manzana es una opción deliciosa y nutritiva para la merienda o el desayuno. Elaborada sin azúcares refinados ni harinas procesadas, combina la suavidad de la manzana con la textura rústica de la avena. Una receta sencilla, saciante y perfecta para toda la familia.',
+    '1. Precalienta el horno a 180 °C con calor arriba y abajo. Engrasa ligeramente un molde redondo o rectangular, o cúbrelo con papel vegetal.\n\n2. Lava, pela (opcional) y ralla 2 manzanas grandes. Colócalas en un bol grande.\n\n3. Añade 150 g de copos de avena, 2 huevos, 50 ml de leche vegetal (como avena o almendra), 1 cucharadita de levadura química y una pizca de canela al gusto. Mezcla todo bien hasta obtener una masa húmeda y homogénea.\n\n4. Si deseas, puedes incorporar pasas, nueces o un toque de vainilla para darle un extra de sabor.\n\n5. Vierte la mezcla en el molde preparado y alisa la superficie. Espolvorea unos copos de avena por encima para decorar.\n\n6. Hornea durante 45-50 minutos, o hasta que al insertar un palillo salga limpio y la superficie esté dorada.\n\n7. Retira del horno y deja enfriar a temperatura ambiente. Puedes servirla templada o fría, sola o acompañada de yogur o fruta fresca.',
     60,
     'fácil',
     6,
@@ -5440,8 +6240,8 @@ INSERT INTO receta (
     visible
 ) VALUES (
     'Pastel de plátano, avena y arándanos',
-    'Un bizcocho esponjoso con plátano, avena y arándanos frescos o congelados.',
-    '1. Precalienta el horno a 180 °C.\n2. Machaca 3 plátanos maduros.\n3. Mezcla con 150 g de avena en copos, 2 huevos, 50 ml de aceite de oliva, 1 cdita de levadura y 100 g de arándanos.\n4. Hornea 45 min y deja enfriar antes de servir.',
+    'Este pastel de plátano, avena y arándanos es ideal para disfrutar en desayunos o meriendas saludables. Su textura esponjosa y húmeda se combina con el dulzor natural del plátano y el toque ácido de los arándanos, sin necesidad de azúcar añadida. Perfecto para quienes buscan sabor y nutrición en un solo bocado.',
+    '1. Precalienta el horno a 180 °C (calor arriba y abajo) y prepara un molde con papel vegetal o engrásalo ligeramente.\n\n2. Pela y machaca 3 plátanos maduros en un bol grande hasta obtener un puré fino.\n\n3. Añade 2 huevos y bátelos junto con el plátano hasta integrarlos completamente.\n\n4. Incorpora 150 g de copos de avena, 50 ml de aceite de oliva virgen extra y 1 cucharadita (5 g) de levadura química. Mezcla bien hasta obtener una masa uniforme.\n\n5. Agrega 100 g de arándanos (frescos o congelados) y mezcla suavemente con movimientos envolventes para no romperlos.\n\n6. Vierte la mezcla en el molde preparado y alisa la superficie con una espátula.\n\n7. Hornea durante 40-45 minutos, o hasta que el pastel esté dorado y al insertar un palillo salga limpio.\n\n8. Deja enfriar a temperatura ambiente antes de desmoldar. Puedes servirlo solo o acompañado de yogur natural o un toque de crema de frutos secos.',
     55,
     'fácil',
     8,
@@ -5471,8 +6271,8 @@ INSERT INTO receta (
     visible
 ) VALUES (
     'Pastel de plátano y coco',
-    'Un pastel húmedo y tropical, ideal para merienda o desayuno divertido.',
-    '1. Precalienta el horno a 180 °C.\n2. Machaca 3 plátanos maduros.\n3. Mezcla con 150 g de avena en copos, 2 huevos, 100 ml de leche de coco, 1 cucharadita de levadura, 50 ml de aceite de oliva.\n4. Vierte en molde y hornea 45 min.\n5. Espolvorea coco rallado por encima y sirve una vez templado.',
+    'Este pastel de plátano y coco es una delicia tropical, perfecta para quienes buscan una merienda saludable, esponjosa y naturalmente dulce. Su combinación de plátano maduro, leche de coco y copos de avena aporta una textura húmeda y un sabor suave que encanta a grandes y pequeños.',
+    '1. Precalienta el horno a 180 °C (con calor arriba y abajo). Engrasa un molde mediano o cúbrelo con papel vegetal.\n\n2. Pela y machaca 3 plátanos maduros en un bol grande hasta obtener un puré uniforme.\n\n3. Añade 2 huevos y bátelos junto al plátano hasta que la mezcla sea homogénea.\n\n4. Incorpora 150 g de copos de avena, 100 ml de leche de coco, 50 ml de aceite de oliva virgen extra y 1 cucharadita de levadura química. Mezcla bien con espátula o varillas.\n\n5. Vierte la masa en el molde preparado y alisa la superficie.\n\n6. Hornea durante 40-45 minutos o hasta que esté dorado y al insertar un palillo, este salga limpio.\n\n7. Una vez templado, espolvorea coco rallado por encima para decorar y potenciar el sabor.\n\n8. Sirve frío o a temperatura ambiente. Ideal acompañado de un té o un café con bebida vegetal.',
     60,
     'fácil',
     8,
@@ -5503,8 +6303,8 @@ INSERT INTO receta (
     visible
 ) VALUES (
     'Torta de avena y zanahoria',
-    'Deliciosa torta sin gluten con avena y zanahoria, ideal para todo el día.',
-    '1. Precalienta el horno a 180 °C.\n2. Ralla 3 zanahorias medianas.\n3. Mezcla 150 g de avena en copos, 2 huevos, 50 ml de leche vegetal, 1 cucharadita de levadura y canela al gusto con las zanahorias.\n4. Vierte en molde y hornea 40 min.\n5. Deja enfriar y sirve.',
+    'Una torta húmeda, aromática y sin gluten, perfecta para cualquier momento del día. La combinación de avena y zanahoria aporta fibra, dulzor natural y una textura suave. Ideal para acompañar con una bebida caliente o como snack nutritivo.',
+    '1. Precalienta el horno a 180 °C (calor arriba y abajo) y prepara un molde con papel vegetal o ligeramente engrasado.\n\n2. Lava, pela y ralla finamente 3 zanahorias medianas. Colócalas en un bol grande.\n\n3. Añade 2 huevos, 150 g de copos de avena, 50 ml de leche vegetal (como almendra o avena), 1 cucharadita (5 g) de levadura química y canela al gusto (opcionalmente puedes añadir nuez moscada o vainilla).\n\n4. Mezcla bien todos los ingredientes hasta que la masa quede homogénea y húmeda.\n\n5. Vierte la mezcla en el molde preparado y nivela la superficie con una espátula.\n\n6. Hornea durante 40-45 minutos o hasta que al pinchar con un palillo este salga limpio.\n\n7. Deja enfriar a temperatura ambiente antes de desmoldar. Sirve sola o con una cucharada de yogur natural por encima.',
     55,
     'fácil',
     8,
@@ -5533,8 +6333,8 @@ INSERT INTO receta (
     visible
 ) VALUES (
     'Banana flapjack con avena y linaza',
-    'Galletas-cake saludables con plátano, avena y semillas de linaza.',
-    '1. Precalienta a 180 °C.\n2. Machaca 3 plátanos.\n3. Mezcla con 200 g de avena en copos, 2 huevos, 2 cucharadas de semillas de linaza troceadas, 1 cdita de levadura y 50 ml de aceite.\n4. Extiende en bandeja formando galletas gruesas.\n5. Hornea 20‑25 min y enfría.',
+    'Estas flapjacks de plátano, avena y linaza son una opción saludable, energética y perfecta para llevar. Con una textura entre galleta y pastelito, aportan fibra, grasas saludables y dulzor natural. Ideales para desayunos rápidos, snacks o preentrenos.',
+    '1. Precalienta el horno a 180 °C (calor arriba y abajo) y prepara una bandeja de horno con papel vegetal.\n\n2. Pela y machaca 3 plátanos maduros en un bol grande hasta obtener un puré homogéneo.\n\n3. Añade 2 huevos, 200 g de copos de avena, 2 cucharadas de semillas de linaza trituradas, 1 cucharadita de levadura química y 50 ml de aceite de oliva suave o de coco. Mezcla bien hasta integrar todos los ingredientes.\n\n4. Con ayuda de una cuchara, forma porciones gruesas sobre la bandeja, dándoles forma de galleta o mini torta.\n\n5. Hornea durante 20-25 minutos, hasta que estén doradas y ligeramente firmes al tacto.\n\n6. Deja enfriar completamente antes de manipularlas. Puedes conservarlas en un recipiente hermético durante 3-4 días.',
     40,
     'fácil',
     12,
@@ -5564,8 +6364,8 @@ INSERT INTO receta (
     visible
 ) VALUES (
     'Pastel de avena con dátiles y pasas',
-    'Bizcocho sin gluten con balón natural de dátiles y pasas.',
-    '1. Precalienta a 180 °C.\n2. Pica 100 g de dátiles y 50 g de pasas.\n3. Mezcla 150 g de avena, 2 huevos, 50 ml de leche vegetal, 1 cdita de levadura, dátiles y pasas.\n4. Hornea 45 min, enfría.',
+    'Este pastel de avena con dátiles y pasas es una opción sin gluten, naturalmente dulce y rica en fibra. Ideal para desayunos o meriendas energéticas, aprovecha el dulzor natural de los frutos secos sin necesidad de añadir azúcar. Su textura suave y húmeda lo convierte en un favorito saludable para grandes y pequeños.',
+    '1. Precalienta el horno a 180 °C (calor arriba y abajo) y forra un molde con papel vegetal o engrásalo ligeramente.\n\n2. Pica finamente 100 g de dátiles (sin hueso) y 50 g de pasas. Puedes dejarlos en remojo 10 minutos en agua tibia si están muy secos, luego escúrrelos bien.\n\n3. En un bol grande, mezcla 150 g de copos de avena, 2 huevos, 50 ml de leche vegetal (como avena o almendra) y 1 cucharadita de levadura química. Añade los dátiles y las pasas picadas.\n\n4. Remueve bien hasta obtener una masa densa y homogénea. Si lo deseas, puedes agregar canela o nuez moscada para potenciar el sabor.\n\n5. Vierte la mezcla en el molde, alisa la superficie y hornea durante 40-45 minutos, o hasta que esté dorado y firme al tacto.\n\n6. Deja enfriar a temperatura ambiente antes de desmoldar. Sirve solo o acompañado de yogur natural o una bebida vegetal.',
     60,
     'fácil',
     8,
@@ -5595,8 +6395,8 @@ INSERT INTO receta (
     visible
 ) VALUES (
     'Banana oat snack cake con chips',
-    'Pequeño pastel esponjoso con plátano, avena y chocolate.',
-    '1. Precalienta a 180 °C.\n2. Machaca 2 plátanos.\n3. Mezcla con 120 g avena, 2 huevos, 50 g azúcar, 50 ml aceite, 1 cdita de levadura y 80 g de chips de chocolate.\n4. Hornea 30‑35 min y deja enfriar.',
+    'Este pequeño pastel esponjoso combina plátano maduro, copos de avena y chips de chocolate para crear un snack delicioso, energético y fácil de preparar. Perfecto para desayunos rápidos, meriendas o como un dulce saludable entre horas.',
+    '1. Precalienta el horno a 180 °C (calor arriba y abajo) y prepara un molde pequeño (cuadrado o rectangular) con papel vegetal o ligeramente engrasado.\n\n2. Pela y machaca 2 plátanos maduros en un bol grande hasta formar un puré homogéneo.\n\n3. Añade 2 huevos, 50 g de azúcar (opcional o ajustable), 50 ml de aceite (de oliva suave o coco), 120 g de copos de avena y 1 cucharadita de levadura química. Mezcla bien todos los ingredientes hasta obtener una masa uniforme.\n\n4. Incorpora 80 g de chips de chocolate y mezcla suavemente con una espátula.\n\n5. Vierte la masa en el molde, alisa la superficie y, si deseas, añade unos chips extra por encima.\n\n6. Hornea durante 30-35 minutos, o hasta que al insertar un palillo salga limpio y la superficie esté dorada.\n\n7. Deja enfriar antes de desmoldar y cortar en porciones. Ideal para disfrutar solo o con un poco de yogur natural.',
     50,
     'fácil',
     6,
@@ -5627,8 +6427,8 @@ INSERT INTO receta (
     visible
 ) VALUES (
     'Pastel de avena y pasas con glaseado',
-    'Pastel de avena con pasas y un ligero glaseado de queso crema.',
-    '1. Remoja 100 g pasas en 1 taza de agua hirviendo 20 min.\n2. Mezcla 150 g avena, 100 g azúcar, 2 huevos, 1 cdita levadura, pasas + agua.\n3. Hornea 45 min. Enfría y añade glaseado de queso crema opcional.',
+    'Este pastel de avena y pasas es jugoso, dulce de forma natural y perfecto para una merienda o celebración saludable. Las pasas aportan dulzor y textura, y el glaseado de queso crema (opcional) añade un toque cremoso y festivo sin excesos.',
+    '1. Calienta 1 taza de agua hasta hervir y viértela sobre 100 g de pasas en un bol pequeño. Deja reposar durante 20 minutos para que se hidraten bien.\n\n2. Precalienta el horno a 180 °C (calor arriba y abajo) y prepara un molde mediano con papel vegetal o ligeramente engrasado.\n\n3. En un bol grande, mezcla 150 g de copos de avena, 100 g de azúcar, 2 huevos y 1 cucharadita de levadura química.\n\n4. Añade las pasas remojadas junto con el agua en la que se hidrataron (aportará más sabor y humedad). Remueve bien hasta obtener una masa homogénea.\n\n5. Vierte la mezcla en el molde y hornea durante 40-45 minutos, o hasta que al insertar un palillo salga limpio.\n\n6. Deja enfriar completamente antes de desmoldar. Si lo deseas, puedes preparar un glaseado suave mezclando queso crema ligero con unas gotas de esencia de vainilla y una cucharadita de miel o yogur. Unta por encima antes de servir.',
     75,
     'media',
     12,
@@ -5658,8 +6458,8 @@ INSERT INTO receta (
     visible
 ) VALUES (
     'Date squares (pastel de dátiles y avena)',
-    'Bocados dulces con base y cobertura de avena y relleno cremoso de dátiles.',
-    '1. Precalienta a 180 °C.\n2. Prepara masa con 200 g avena, 50 g azúcar, 100 g mantequilla* y 1 cdita levadura.\n3. Extiende mitad en molde.\n4. Calienta 150 g dátiles picados con un poco de agua hasta puré.\n5. Vierte encima y cubre con el resto de masa.\n6. Hornea 30‑35 min. Deja enfriar y corta.',
+    'Estos pastelitos de dátiles y avena, también conocidos como "date squares", son unos bocados dulces de inspiración canadiense con una deliciosa base y cobertura crujiente de avena, y un centro suave y caramelizado de dátiles. Perfectos para una merienda energética o un postre saludable sin azúcares añadidos.',
+    '1. Precalienta el horno a 180 °C (calor arriba y abajo) y prepara un molde cuadrado con papel vegetal o ligeramente engrasado.\n\n2. En un bol, mezcla 200 g de copos de avena, 50 g de azúcar, 100 g de mantequilla blanda y 1 cucharadita de levadura química. Trabaja la mezcla con las manos o un tenedor hasta obtener una masa arenosa y maleable.\n\n3. Vierte la mitad de la masa en el molde y presiona ligeramente para formar la base.\n\n4. En un cazo pequeño, calienta 150 g de dátiles picados con 3-4 cucharadas de agua. Cocina a fuego medio durante unos minutos, removiendo, hasta que se forme un puré espeso.\n\n5. Vierte el puré de dátiles sobre la base y extiéndelo uniformemente con una espátula.\n\n6. Cubre con el resto de la masa, presionando suavemente sin compactar demasiado.\n\n7. Hornea durante 30-35 minutos, hasta que la superficie esté dorada y crujiente.\n\n8. Deja enfriar por completo antes de cortar en cuadrados. Se pueden conservar en la nevera durante varios días.',
     70,
     'media',
     16,
@@ -5679,19 +6479,21 @@ INSERT INTO receta_ingrediente VALUES
 -----------------------------------------------------------------------
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Ensalada mediterránea de espinaca',
-  'Espinacas frescas con tomate, pepino y aderezo ligero.',
-  '1. Lava 100 g espinaca, 100 g tomate, 50 g pepino.\n2. Aliña con 1 cda aceite oliva y vinagre.\n3. Mezcla y sirve.',
-  15, 'fácil', 2,
+  'Una ensalada fresca, ligera y nutritiva, perfecta como entrante o comida ligera. Las espinacas combinan a la perfección con el frescor del tomate y el pepino, y se realzan con un aderezo sencillo de aceite de oliva y vinagre. Lista en minutos, saludable todo el día.',
+  '1. Lava bien 100 g de espinacas frescas, 100 g de tomates (pueden ser cherry o cortados en cubos) y 50 g de pepino (en rodajas finas o en dados).\n\n2. Coloca todos los ingredientes en un bol amplio y añade 1 cucharada de aceite de oliva virgen extra y un chorrito de vinagre al gusto (puede ser de manzana, balsámico o de vino blanco).\n\n3. Mezcla bien con cuidado para no dañar las hojas de espinaca. Si deseas, añade una pizca de sal, orégano o unas semillas de sésamo para decorar.\n\n4. Sirve inmediatamente como entrante fresco, acompañamiento o comida ligera.',
+  15,
+  'fácil',
+  2,
   'https://kalynskitchen.com/wp-content/uploads/2013/03/650-med-spinach-salad.jpg',
   TRUE
 );
@@ -5704,19 +6506,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 244, 5.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Crema ligera de calabacín y puerro',
-  'Suave crema saludable, ideal entrada.',
-  '1. Sofríe 50 g puerro y 150 g calabacín en 1 cda aceite.\n2. Añade 300 ml agua o caldo y cocina 15 min.\n3. Tritura y sirve.',
-  25, 'media', 4,
+  'Esta crema ligera de calabacín y puerro es una opción reconfortante, nutritiva y muy fácil de preparar. Con un sabor suave y textura cremosa, es ideal como entrante saludable o cena ligera, perfecta para cualquier época del año.',
+  '1. Lava y corta en rodajas 150 g de calabacín y 50 g de puerro (solo la parte blanca). En una olla mediana, calienta 1 cucharada de aceite de oliva y sofríe el puerro durante 2-3 minutos hasta que esté ligeramente dorado.\n\n2. Añade el calabacín troceado y cocina 2-3 minutos más removiendo ocasionalmente.\n\n3. Incorpora 300 ml de agua o caldo de verduras bajo en sal. Tapa y cocina a fuego medio durante 12-15 minutos o hasta que las verduras estén tiernas.\n\n4. Retira del fuego y tritura con batidora hasta obtener una crema fina y homogénea. Si lo deseas, ajusta la textura con un poco más de caldo o agua.\n\n5. Sirve caliente, con un chorrito de aceite de oliva por encima o unas semillas para decorar.',
+  25,
+  'media',
+  4,
   'https://res.cloudinary.com/unaderecetas/image/upload/crema-calabacin-y-puerro/crema_calabacin_puerro_base_1.jpg',
   TRUE
 );
@@ -5727,19 +6531,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Salteado de brócoli, zanahoria y champiñón',
-  'Verduras salteadas en aceite de oliva.',
-  '1. Trocea 100 g brócoli, 100 g zanahoria y 50 g champiñón.\n2. Sofríe todo en 1 cda aceite.\n3. Salpimenta y sirve.',
-  20, 'fácil', 3,
+  'Este salteado de brócoli, zanahoria y champiñón es una guarnición saludable, sabrosa y rápida de preparar. Conserva el crujiente natural de las verduras y realza sus sabores con un toque de aceite de oliva. Ideal como acompañamiento o plato principal ligero.',
+  '1. Lava y corta en trozos pequeños 100 g de brócoli (en ramilletes), 100 g de zanahoria (en bastones o rodajas finas) y 50 g de champiñones (en láminas).\n\n2. En una sartén grande o wok, calienta 1 cucharada de aceite de oliva a fuego medio-alto.\n\n3. Añade las zanahorias y sofríe durante 2 minutos. Luego incorpora el brócoli y, tras otros 2-3 minutos, los champiñones. Saltea todo junto durante unos 5-6 minutos, removiendo constantemente para evitar que se quemen.\n\n4. Ajusta con sal y pimienta al gusto. Puedes añadir un toque de salsa de soja baja en sal si lo deseas.\n\n5. Sirve caliente como plato principal vegetal o acompañamiento de legumbres, arroz o tofu.',
+  20,
+  'fácil',
+  3,
   'https://tse3.mm.bing.net/th/id/OIP.BtpgIxVSgw0pju_pdzp-RQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3',
   TRUE
 );
@@ -5752,19 +6558,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 246, 1.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Berenjena asada con pimiento y cebolla',
-  'Vegetales asados al horno.',
-  '1. Corta 150 g berenjena, 100 g pimiento rojo y 1 cebolla.\n2. Aliña con aceite y hierbas.\n3. Hornea 25 min a 200 °C.',
-  40, 'media', 4,
+  'Una combinación de vegetales asados al horno que potencia su sabor natural. La berenjena, el pimiento rojo y la cebolla se caramelizan ligeramente, dando lugar a un plato saludable, colorido y lleno de aroma. Perfecto como guarnición o plato vegetal principal.',
+  '1. Lava y corta en cubos 150 g de berenjena, 100 g de pimiento rojo (sin semillas) y 1 cebolla mediana (en juliana o trozos grandes).\n\n2. Coloca las verduras en una bandeja para horno. Aliña con 1-2 cucharadas de aceite de oliva virgen extra, sal, pimienta y hierbas aromáticas al gusto (como tomillo, orégano o romero).\n\n3. Mezcla bien para que las verduras se impregnen del aliño.\n\n4. Hornea a 200 °C durante 25-30 minutos, removiendo a mitad de cocción para que se doren de forma uniforme.\n\n5. Sirve caliente como plato principal vegetal o como acompañamiento de legumbres, cereales o proteína vegetal.',
+  40,
+  'media',
+  4,
   'https://tse2.mm.bing.net/th/id/OIP.-cyDt94sKUoiZ-tHhbWBzgHaFj?rs=1&pid=ImgDetMain&o=7&rm=3',
   TRUE
 );
@@ -5776,19 +6584,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 15.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Bowl de quinoa con judías verdes y tomate',
-  'Combinación completa de proteínas y vegetales.',
-  '1. Cocina 150 g quinoa y 100 g judía verde.\n2. Trocea 100 g tomate.\n3. Mezcla y aliña con aceite de oliva.',
-  30, 'media', 3,
+  'Este bowl de quinoa con judías verdes y tomate es una opción equilibrada, rica en proteínas vegetales, fibra y antioxidantes. Perfecto como comida principal ligera o cena nutritiva. Fácil de preparar, saciante y lleno de color y sabor.',
+  '1. Enjuaga bien 150 g de quinoa bajo el grifo con ayuda de un colador fino. Cocina en 300 ml de agua durante 12-15 minutos, hasta que los granos estén tiernos y el agua se haya absorbido. Reserva.\n\n2. Cuece al vapor o hierve 100 g de judías verdes durante 6-8 minutos, hasta que estén tiernas pero aún crujientes. Luego córtalas en trozos.\n\n3. Lava y trocea 100 g de tomate en cubos pequeños.\n\n4. En un bol grande, mezcla la quinoa cocida, las judías verdes y el tomate. Aliña con 1 cucharada de aceite de oliva virgen extra, sal y pimienta al gusto. Puedes añadir también unas gotas de limón o hierbas frescas como albahaca o perejil si lo deseas.\n\n5. Sirve templado o frío como plato único o guarnición saludable.',
+  30,
+  'media',
+  3,
   'https://images.squarespace-cdn.com/content/5313b7c3e4b08cb68817cf91/1466780516667-ZWRSUV0BTMSJ8859FGX0/?content-type=image%2Fjpeg',
   TRUE
 );
@@ -5800,19 +6610,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Ensalada de kale, manzana y nueces',
-  'Hoja verde con fruta y grasa saludable.',
-  '1. Pica 100 g kale y 1 manzana.\n2. Añade 30 g nueces y adereza.',
-  15, 'fácil', 2,
+  'Una ensalada fresca y crujiente que combina el poder antioxidante del kale con el dulzor natural de la manzana y las grasas saludables de las nueces. Una opción rápida, equilibrada y perfecta para cualquier momento del día.',
+  '1. Lava y pica finamente 100 g de kale (col rizada). Si es muy fibroso, masajea las hojas con una pizca de sal y unas gotas de aceite durante 1-2 minutos para ablandarlas.\n\n2. Lava y corta 1 manzana en cubos pequeños o en láminas finas, sin pelar si lo prefieres.\n\n3. Añade 30 g de nueces troceadas (puedes tostarlas ligeramente en sartén si deseas un extra de sabor).\n\n4. Coloca todos los ingredientes en un bol grande. Adereza con 1 cucharada de aceite de oliva virgen extra, unas gotas de zumo de limón o vinagre de manzana, sal y pimienta al gusto.\n\n5. Mezcla suavemente y sirve inmediatamente como entrante fresco o comida ligera.',
+  15,
+  'fácil',
+  2,
   'https://th.bing.com/th/id/R.aff72ef343d3101df30f2f6208ba70d3?rik=QiSlgnyAQ6DU8g&riu=http%3a%2f%2fschonefrau.com%2ffiles%2f2015%2f03%2fensalada-kale-manzana-aderezo-nuez-02.jpg&ehk=%2bISU0rM%2fQcodChDLBVl2E%2b1IVq%2bN1%2b6SpfG1MP40ieo%3d&risl=&pid=ImgRaw&r=0',
   TRUE
 );
@@ -5824,19 +6636,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Pasta integral con tomate y atún',
-  'Plato equilibrado con proteína y cereales integrales.',
-  '1. Cocina 150 g pasta integral.\n2. Mezcla con 100 g tomate triturado y 100 g atún.\n3. Aliña con aceite.',
-  25, 'media', 4,
+  'Un plato completo, equilibrado y fácil de preparar que combina carbohidratos complejos con proteína magra. Ideal como comida principal, aporta energía sostenida y nutrientes esenciales gracias a la pasta integral, el tomate natural y el atún.',
+  '1. Cocina 150 g de pasta integral en abundante agua con una pizca de sal, siguiendo las indicaciones del paquete (normalmente entre 8 y 10 minutos). Escurre y reserva.\n\n2. En una sartén, calienta 1 cucharada de aceite de oliva y añade 100 g de tomate triturado. Cocina a fuego medio durante 5-7 minutos, removiendo ocasionalmente, hasta que espese ligeramente.\n\n3. Añade 100 g de atún al natural (escurrido) y mezcla con la salsa. Cocina 2 minutos más.\n\n4. Incorpora la pasta cocida a la sartén, remueve bien para que se impregne del sabor, y ajusta con sal, pimienta o hierbas al gusto (como orégano o albahaca).\n\n5. Sirve caliente. Puedes añadir un poco de queso rallado o levadura nutricional si lo deseas.',
+  25,
+  'media',
+  4,
   'https://www.eljardindelasrecetas.com/wp-content/uploads/2024/06/pasta-integral-con-atun-y-tomate-750x938.jpg',
   TRUE
 );
@@ -5848,19 +6662,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Sopa de coliflor y puerro',
-  'Sopa cremosa y ligera.',
-  '1. Sofríe 50 g puerro, añade 200 g coliflor y 300 ml agua.\n2. Cocina 20 min y tritura.',
-  30, 'media', 4,
+  'Una sopa suave, cremosa y reconfortante, elaborada con ingredientes sencillos y naturales. La coliflor aporta una textura sedosa sin necesidad de nata, y el puerro añade un toque aromático. Ideal como entrante ligero o cena saludable.',
+  '1. Lava y corta en rodajas finas 50 g de puerro (solo la parte blanca) y trocea 200 g de coliflor en pequeños ramilletes.\n\n2. En una cacerola mediana, calienta 1 cucharada de aceite de oliva y sofríe el puerro durante 3-4 minutos hasta que esté tierno y fragante.\n\n3. Añade la coliflor y vierte 300 ml de agua o caldo de verduras bajo en sal. Lleva a ebullición, luego reduce el fuego y cocina a fuego medio durante unos 15-20 minutos, hasta que la coliflor esté completamente blanda.\n\n4. Retira del fuego y tritura la mezcla con una batidora hasta obtener una textura cremosa y homogénea. Si lo deseas más líquido, añade un poco más de agua caliente.\n\n5. Sirve caliente, decorando con un chorrito de aceite de oliva o pimienta recién molida.',
+  30,
+  'media',
+  4,
   'https://i.pinimg.com/originals/b9/a8/97/b9a8973d123b8ac4de1aa0e48b2684c2.jpg',
   TRUE
 );
@@ -5871,19 +6687,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Salteado de berenjena y garbanzos',
-  'Rico en fibra y proteína vegetal.',
-  '1. Corta 150 g berenjena y 200 g garbanzos cocidos.\n2. Sofríe todo con ajo y aceite.',
-  25, 'media', 4,
+  'Este salteado combina la suavidad de la berenjena con la firmeza de los garbanzos, creando un plato rico en fibra, proteínas vegetales y sabor. Ideal como plato principal vegano o como guarnición completa y nutritiva.',
+  '1. Lava y corta 150 g de berenjena en cubos medianos. Si lo deseas, puedes espolvorearla con sal y dejar reposar unos minutos para reducir su amargor, luego enjuágala y sécala.\n\n2. Pela y pica 1 diente de ajo.\n\n3. En una sartén grande, calienta 1 cucharada de aceite de oliva a fuego medio. Sofríe el ajo durante 1 minuto hasta que esté dorado.\n\n4. Añade la berenjena y cocina durante 6-8 minutos, removiendo con frecuencia, hasta que esté dorada y tierna.\n\n5. Incorpora 200 g de garbanzos cocidos (enjuagados si son de bote) y saltea todo junto durante 3-4 minutos más. Ajusta de sal, pimienta y añade especias al gusto (como comino, pimentón o cúrcuma).\n\n6. Sirve caliente, con hierbas frescas por encima si lo deseas.',
+  25,
+  'media',
+  4,
   'https://mejorconsalud.as.com/wp-content/uploads/2019/04/ensalada-garbanzos-berenjena-768x513.jpg?auto=webp&quality=45&width=1920&crop=16:9,smart,safe',
   TRUE
 );
@@ -5894,19 +6712,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Ensalada de lentejas, zanahoria y hinojo',
-  'Equilibrada y fresca, ideal para almuerzo.',
-  '1. Cocina 150 g lenteja cocida.\n2. Ralla 100 g zanahoria y pica 50 g hinojo.\n3. Mezcla con aceite.',
-  20, 'fácil', 3,
+  'Una ensalada nutritiva, fresca y saciante que combina el aporte proteico de las lentejas con la textura crujiente de la zanahoria y el sabor anisado del hinojo. Ideal para un almuerzo equilibrado o como acompañamiento vegetal.',
+  '1. Cocina 150 g de lentejas si son secas (previamente remojadas) o utiliza lentejas cocidas ya listas (enjuagadas si son de bote).\n\n2. Lava y ralla 100 g de zanahoria. Lava y pica 50 g de hinojo en tiras finas.\n\n3. En un bol grande, mezcla las lentejas cocidas, la zanahoria rallada y el hinojo picado.\n\n4. Aliña con 1 cucharada de aceite de oliva virgen extra, una pizca de sal y, si lo deseas, un chorrito de zumo de limón o vinagre de manzana para dar frescor.\n\n5. Mezcla bien y sirve fría o a temperatura ambiente. Puedes añadir hierbas frescas como perejil o cilantro para potenciar el sabor.',
+  20,
+  'fácil',
+  3,
   'https://www.confiesoquecocino.com/wp-content/uploads/2013/02/Ensalada-de-Hinojo-+-Zanahoria-02.jpg',
   TRUE
 );
@@ -5918,19 +6738,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Tabulé de quinoa y pepino',
-  'Fresco y lleno de fibra, ideal en verano.',
-  '1. Cocina 150 g quinoa y deja enfriar.\n2. Pica 100 g pepino, 50 g tomate, 20 g cebolla morada.\n3. Mezcla con quinoa y aliña con aceite, limón y hierbas.',
-  25, 'media', 4,
+  'Este tabulé de quinoa es una versión sin gluten del clásico oriental, fresca, ligera y rica en fibra. Ideal para los días calurosos, combina ingredientes naturales que aportan hidratación, saciedad y sabor. Perfecto como plato principal frío o acompañamiento.',
+  '1. Enjuaga 150 g de quinoa bajo el grifo y cuécela en 300 ml de agua durante 12-15 minutos hasta que esté tierna y haya absorbido el líquido. Deja enfriar completamente.\n\n2. Lava y pica 100 g de pepino (con o sin piel), 50 g de tomate y 20 g de cebolla morada en cubos muy pequeños.\n\n3. En un bol grande, mezcla la quinoa fría con las verduras picadas. Añade 1 cucharada de aceite de oliva virgen extra, el zumo de medio limón y hierbas frescas al gusto (como menta, perejil o cilantro).\n\n4. Remueve bien, ajusta de sal y pimienta si lo deseas, y deja reposar en la nevera unos minutos antes de servir para intensificar el sabor.\n\n5. Sirve frío como entrante o acompañamiento saludable.',
+  25,
+  'media',
+  4,
   'https://cocina-casera.com/wp-content/uploads/2018/09/tabule-quinoa-pepino.jpg',
   TRUE
 );
@@ -5943,19 +6765,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Crema de zanahoria, jengibre y naranja',
-  'Suave y con un toque cítrico y picante.',
-  '1. Sofríe 150 g zanahoria con 1 cdita jengibre.\n2. Añade 300 ml caldo y cocina 15 min.\n3. Incorpora 100 ml zumo de naranja, tritura y sirve.',
-  30, 'media', 4,
+  'Una crema suave y reconfortante con el dulzor natural de la zanahoria, el toque cítrico de la naranja y un ligero picor del jengibre. Ideal para días frescos, aporta vitamina C, antioxidantes y un sabor exótico que sorprende.',
+  '1. Pela y trocea 150 g de zanahoria. En una olla mediana, sofríela con 1 cucharadita de jengibre rallado (fresco o en polvo) en una cucharada de aceite de oliva durante 3-4 minutos, removiendo para que no se queme.\n\n2. Añade 300 ml de caldo de verduras y cocina a fuego medio durante 15 minutos, hasta que la zanahoria esté tierna.\n\n3. Incorpora 100 ml de zumo de naranja natural y cocina 2 minutos más sin que llegue a hervir.\n\n4. Tritura la mezcla con una batidora hasta obtener una textura cremosa y homogénea. Si es necesario, ajusta con más caldo o zumo según la consistencia deseada.\n\n5. Sirve caliente, decorando con ralladura de naranja o unas gotas de aceite de oliva. Ideal como entrante ligero o cena reconfortante.',
+  30,
+  'media',
+  4,
   'https://3.bp.blogspot.com/-fpUbB-SxzLs/UOmtAQOW7JI/AAAAAAAAFxM/1D2M1InDlPo/s1600/triturar.jpg',
   TRUE
 );
@@ -5966,19 +6790,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Ensalada tibia de coliflor y garbanzos',
-  'Crujiente por fuera y sabrosa.',
-  '1. Asar 200 g coliflor y 150 g garbanzos cocidos con especias 20 min.\n2. Servir tibio con hojas verdes y limón.',
-  35, 'media', 3,
+  'Una ensalada templada con coliflor asada y garbanzos crujientes, aliñados con especias y acompañados de hojas verdes y un toque de limón. Rica en fibra, saciante y perfecta como plato principal vegetal o acompañamiento sabroso.',
+  '1. Precalienta el horno a 200 °C. Corta 200 g de coliflor en ramilletes pequeños y mezcla con 150 g de garbanzos cocidos (enjuagados si son de bote).\n\n2. Aliña con 1 cucharada de aceite de oliva, sal, pimienta y especias al gusto (como comino, pimentón dulce o cúrcuma). Mezcla bien y coloca en una bandeja de horno forrada con papel vegetal.\n\n3. Asa durante 20-25 minutos, removiendo a mitad de cocción, hasta que la coliflor esté dorada y los garbanzos ligeramente crujientes.\n\n4. Sirve tibio sobre una base de hojas verdes (como espinaca, rúcula o canónigos) y adereza con zumo de limón al gusto.\n\n5. Puedes añadir semillas de sésamo o un toque de yogur natural para completar el plato.',
+  35,
+  'media',
+  3,
   'https://adelgazarencasa.co/wp-content/uploads/2021/10/ensalada-de-garbanzos-y-coliflor.jpg',
   TRUE
 );
@@ -5990,19 +6816,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Salteado oriental de pimiento, brócoli y setas',
-  'Ligero y lleno de sabor asiático.',
-  '1. Trocea 100 g pimiento, 100 g brócoli y 50 g setas ostra.\n2. Saltea 5 min con salsa soja ligera.',
-  20, 'fácil', 3,
+  'Un plato ligero, rápido y lleno de sabor inspirado en la cocina asiática. La combinación de verduras frescas salteadas en salsa de soja aporta textura crujiente, umami y una opción saludable para una comida o cena equilibrada.',
+  '1. Lava y corta en tiras 100 g de pimiento (puede ser rojo o amarillo), separa 100 g de brócoli en ramilletes pequeños y limpia 50 g de setas ostra, cortándolas si son grandes.\n\n2. Calienta una sartén grande o wok con una cucharadita de aceite de sésamo o de oliva. Añade las verduras y saltea a fuego medio-alto durante unos 4-5 minutos, removiendo constantemente.\n\n3. Agrega 1-2 cucharadas de salsa de soja ligera (baja en sal si lo prefieres) y saltea 1 minuto más para que se impregnen bien los sabores.\n\n4. Sirve caliente como plato principal vegetal o como guarnición de arroz integral, tofu o legumbres.\n\n5. Puedes añadir semillas de sésamo tostado o unas gotas de lima para potenciar aún más el sabor oriental.',
+  20,
+  'fácil',
+  3,
   'https://lh3.googleusercontent.com/-PGY7aPIUgBU/UxzF7FeqX4I/AAAAAAAAGU8/S4dN_s1ltFQ/s800/Brocoli-salteado-con-setas-y-pimiento.JPG',
   TRUE
 );
@@ -6014,20 +6842,22 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Budín salado de espinaca y queso fresco',
-  'Textura esponjosa y saludable.',
-  '1. Bate 3 huevos, mezcla 150 g espinaca cocida y 100 g queso fresco.\n2. Vierte en molde y hornea 30 min a 180 °C.',
-  45, 'media', 4,
-  'https://www.bing.com/images/search?view=detailV2&ccid=%2bzLheRhh&id=0B4E280080B83C854D7C883C67BA49124C98818B&thid=OIP.-zLheRhhfCboXkVDzdTUDwHaFS&mediaurl=https%3a%2f%2fstatic.americadigital.com%2fwp-content%2fuploads%2f2020%2f10%2famerica_digital_budin_sin_harina_saludables_2020-2-750x536.jpg&cdnurl=https%3a%2f%2fth.bing.com%2fth%2fid%2fR.fb32e17918617c26e85e4543cdd4d40f%3frik%3di4GYTBJJumc8iA%26pid%3dImgRaw%26r%3d0&exph=536&expw=750&q=budin+salado+de+espinaca+y+queso+fresco&simid=608017505973723908&FORM=IRPRST&ck=31CBD928D363F9EC4A944FF54EA55D7B&selectedIndex=0&itb=0&ajaxhist=0&ajaxserp=0',
+  'Este budín salado combina la suavidad del queso fresco con el sabor vegetal de la espinaca en una textura esponjosa y ligera. Una receta sin harinas, rica en proteínas y perfecta como cena ligera o snack saludable.',
+  '1. Cocina 150 g de espinaca fresca al vapor o en sartén sin agua, solo hasta que se marchite. Escurre bien y pica finamente.\n\n2. En un bol grande, bate 3 huevos hasta que estén bien integrados.\n\n3. Añade la espinaca cocida y 100 g de queso fresco desmenuzado (tipo ricotta, burgos o requesón). Mezcla todo con una espátula hasta obtener una preparación uniforme. Puedes añadir sal, pimienta y nuez moscada al gusto.\n\n4. Vierte la mezcla en un molde pequeño previamente engrasado o forrado con papel vegetal.\n\n5. Hornea en horno precalentado a 180 °C durante 30-35 minutos, hasta que el budín esté firme y dorado por encima.\n\n6. Deja enfriar ligeramente antes de desmoldar. Se puede servir caliente o frío, acompañado de una ensalada fresca.',
+  45,
+  'media',
+  4,
+  'https://static.americadigital.com/wp-content/uploads/2020/10/america_digital_budin_sin_harina_saludables_2020-2-750x536.jpg',
   TRUE
 );
 SET @receta_id = LAST_INSERT_ID();
@@ -6038,19 +6868,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Mini pizzas sobre berenjena',
-  'Versión ligera con verduras y queso.',
-  '1. Corta berenjena en rodajas y hornea 10 min.\n2. Añade tomate triturado, queso curado y orégano.\n3. Gratina 5 min más.',
-  25, 'media', 2,
+  'Una alternativa saludable y baja en carbohidratos a las pizzas tradicionales. Estas mini pizzas utilizan rodajas de berenjena como base y se gratinan con tomate, queso curado y orégano para obtener un bocado sabroso y ligero.',
+  '1. Lava una berenjena grande y córtala en rodajas de aproximadamente 1 cm de grosor. Coloca las rodajas sobre papel de cocina, espolvorea con sal y deja reposar 10 minutos para que suelten el amargor. Luego sécalas con papel absorbente.\n\n2. Precalienta el horno a 200 °C. Coloca las rodajas en una bandeja con papel vegetal, pincélalas con un poco de aceite de oliva y hornéalas durante 10 minutos.\n\n3. Saca la bandeja del horno y añade sobre cada rodaja una cucharada de tomate triturado, un poco de queso curado rallado (unos 40-50 g en total para 2 raciones) y una pizca de orégano seco.\n\n4. Gratina durante 5-7 minutos más, hasta que el queso esté derretido y dorado.\n\n5. Sirve caliente como entrante, cena ligera o snack saludable.',
+  25,
+  'media',
+  2,
   'https://cecotec.es/recetas/wp-content/uploads/2022/06/Cecofry_advance_5000_black_mini_pizzas_de_berenjena_RRSS-1024x1024.jpg',
   TRUE
 );
@@ -6062,19 +6894,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 246, 1.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Ensalada fría de lentejas, remolacha y pepino',
-  'Colores y nutrientes en un bowl.',
-  '1. Mezcla 150 g lenteja cocida, 100 g remolacha cocida y 100 g pepino.\n2. Raspa limón, aceíte y mezcla.',
-  20, 'fácil', 3,
+  'Una ensalada colorida, fresca y nutritiva que combina el dulzor de la remolacha con la frescura del pepino y la proteína vegetal de las lentejas. Ideal para los días calurosos, aporta fibra, hierro y antioxidantes en un plato ligero y sabroso.',
+  '1. En un bol grande, mezcla 150 g de lentejas cocidas (enjuagadas si son de bote), 100 g de remolacha cocida (cortada en cubos pequeños) y 100 g de pepino troceado (puedes dejar o quitar la piel según tu preferencia).\n\n2. Ralla la piel de medio limón (lavado) y exprime su zumo. Añádelo a la ensalada junto con 1 cucharada de aceite de oliva virgen extra.\n\n3. Mezcla todo con suavidad hasta que los ingredientes estén bien integrados y los sabores se distribuyan de forma uniforme.\n\n4. Sirve fría o a temperatura ambiente. Puedes decorar con hojas de menta o perejil fresco para dar un toque aromático.',
+  20,
+  'fácil',
+  3,
   'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhYHaqdn4Pq5glGlqLdxY_X9I79ejF8jX6wEOv-YZSOgV8wpVZdml-eIf-T-nkPI4cJWNbF5OAWLvseLaW0LWb1bgXp1nI7NT6idPnkyuEVQ7mYBisCZ-VKKv_DENfn1-2hjj54_UQIbsTK/s1600/Ensalada+de+remolacha+y+pepino.jpg',
   TRUE
 );
@@ -6086,19 +6920,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Crema de col lombarda y manzana',
-  'Sabor dulce-salado y color vibrante.',
-  '1. Sofríe 50 g cebolla, añade 200 g col lombarda y 1 manzana troceada.\n2. Agrega 300 ml caldo, cocina 15 min y tritura.',
-  35, 'media', 4,
+  'Una crema con un sorprendente contraste dulce-salado, gracias a la combinación de col lombarda y manzana. Su color vibrante y su alto contenido en antioxidantes la convierten en una opción original, nutritiva y reconfortante para tus comidas.',
+  '1. Pela y pica 50 g de cebolla. En una cacerola, sofríela con una cucharadita de aceite de oliva durante 3-4 minutos a fuego medio, hasta que esté transparente.\n\n2. Añade 200 g de col lombarda cortada en tiras finas y una manzana mediana pelada y troceada. Cocina 2-3 minutos removiendo.\n\n3. Incorpora 300 ml de caldo de verduras. Tapa y cocina durante 15 minutos, o hasta que todos los ingredientes estén tiernos.\n\n4. Retira del fuego y tritura con batidora hasta obtener una crema homogénea. Ajusta la textura con más caldo si lo deseas.\n\n5. Sirve caliente, decorando con semillas, yogur natural o un chorrito de aceite de oliva. Ideal como entrante ligero y llamativo.',
+  35,
+  'media',
+  4,
   'https://2.bp.blogspot.com/-YhLI43Trqww/VLZg6LjiJ3I/AAAAAAAA94w/HHBIdO37Ev8/s1600/1%2Bcrema%2Bde%2Blombarda%2B0.JPG',
   TRUE
 );
@@ -6110,19 +6946,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Salteado de judía verde, zanahoria y puerro',
-  'Texturas crujientes y nutritivas.',
-  '1. Corta 150 g judía, 100 g zanahoria y 50 g puerro.\n2. Saltea 8 min con aceite y ajo.',
-  20, 'fácil', 3,
+  'Un salteado lleno de color, con texturas crujientes y sabor suave. La combinación de judía verde, zanahoria y puerro proporciona fibra, vitaminas y antioxidantes. Ideal como guarnición o plato principal vegetal ligero.',
+  '1. Lava y corta 150 g de judías verdes en trozos medianos, 100 g de zanahoria en bastones o rodajas finas, y 50 g de puerro (solo la parte blanca) en juliana.\n\n2. Pela y pica 1 diente de ajo.\n\n3. En una sartén amplia, calienta 1 cucharada de aceite de oliva a fuego medio. Añade el ajo picado y sofríe 1 minuto sin que se queme.\n\n4. Incorpora las verduras y saltea durante unos 8 minutos, removiendo frecuentemente. Las verduras deben quedar al dente, ligeramente crujientes.\n\n5. Ajusta con sal, pimienta y, si deseas, una pizca de comino o pimentón para dar un toque especial. Sirve caliente.',
+  20,
+  'fácil',
+  3,
   'https://tse3.mm.bing.net/th/id/OIP.2TKXqq39T1M13WV34-RBbQHaD4?rs=1&pid=ImgDetMain&o=7&rm=3',
   TRUE
 );
@@ -6134,19 +6972,21 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 242, 10.00);
 
 INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
+  nombre,
+  descripcion,
+  instrucciones,
+  tiempo_preparacion,
+  dificultad,
+  raciones,
+  imagen_url,
+  visible
 ) VALUES (
   'Ensalada de romana, pera y queso de cabra',
-  'Delicada y con contraste dulce-salado.',
-  '1. Trocea 100 g lechuga romana, 1 pera y 50 g queso de cabra.\n2. Mezcla con nueces y aliña.',
-  15, 'fácil', 2,
+  'Una ensalada fresca y delicada que equilibra a la perfección el dulzor de la pera con la intensidad cremosa del queso de cabra. Acompañada de nueces crujientes y un aliño suave, es ideal como entrante elegante o cena ligera.',
+  '1. Lava y trocea 100 g de lechuga romana en tiras finas. Lava 1 pera y córtala en láminas delgadas o cubos pequeños (puedes dejar la piel si es fina).\n\n2. Desmenuza o corta en dados 50 g de queso de cabra suave.\n\n3. En un bol grande, mezcla la lechuga, la pera y el queso. Añade un puñado de nueces troceadas (opcionalmente tostadas para más sabor).\n\n4. Aliña con 1 cucharada de aceite de oliva virgen extra, unas gotas de vinagre balsámico y una pizca de sal si es necesario.\n\n5. Mezcla con suavidad y sirve de inmediato. Puedes decorar con semillas o granada si deseas una presentación más vistosa.',
+  15,
+  'fácil',
+  2,
   'https://d36fw6y2wq3bat.cloudfront.net/recipes/ensalada-de-pera-queso-de-cabra-y-granada/900/ensalada-de-pera-queso-de-cabra-y-granada_version_1652875858.jpg',
   TRUE
 );
@@ -6158,1217 +6998,3 @@ INSERT INTO receta_ingrediente VALUES
 (@receta_id, 156, 20.00),
 (@receta_id, 242, 10.00);
 
--- 1. Ensalada de garbanzos mediterránea
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Ensalada de garbanzos mediterránea',
-  'Refrescante y rica en proteínas vegetales.',
-  '1. Mezcla 200 g de garbanzos cocidos, 100 g de tomate cherry en mitades, 50 g de pepino en cubos, 30 g de cebolla morada picada y 30 g de aceitunas negras.\n2. Añade 20 g de queso feta desmenuzado y aliña con aceite de oliva, limón y orégano.',
-  10, 'fácil', 2,
-  'https://www.paellapal.com/wp-content/uploads/2025/01/Ensalada-de-Garbanzos-Mediterranea-1024x574.webp',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 61, 200.00),   -- garbanzos cocidos
-(@receta_id, 39, 100.00),   -- tomate cherry
-(@receta_id, 44, 50.00),    -- pepino
-(@receta_id, 49, 30.00),    -- cebolla morada
-(@receta_id, 156, 30.00),   -- aceitunas negras
-(@receta_id, 83, 20.00),    -- queso feta
-(@receta_id, 242, 10.00);   -- aceite de oliva
-
--- 2. Salmón al horno con verduras
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Salmón al horno con verduras',
-  'Plato principal equilibrado y rico en omega-3.',
-  '1. Coloca 2 lomos de salmón (150 g cada uno) en una bandeja.\n2. Añade 100 g de brócoli, 100 g de zanahoria en rodajas y 50 g de calabacín.\n3. Rocía con aceite de oliva, sal y pimienta.\n4. Hornea a 180 °C durante 20 minutos.',
-  25, 'fácil', 2,
-  'https://www.demoslavueltaaldia.com/sites/default/files/salmon-horno-verduritas.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 201, 300.00),  -- salmón fresco
-(@receta_id, 13, 100.00),   -- brócoli
-(@receta_id, 3, 100.00),    -- zanahoria
-(@receta_id, 15, 50.00),    -- calabacín
-(@receta_id, 242, 10.00);   -- aceite de oliva
-
--- 3. Porridge de avena y frutos rojos
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Porridge de avena y frutos rojos',
-  'Desayuno energético y antioxidante.',
-  '1. Calienta 250 ml de leche vegetal en un cazo.\n2. Añade 50 g de copos de avena y cocina 5 minutos removiendo.\n3. Sirve con 60 g de frutos rojos y 10 g de semillas de chía.',
-  10, 'fácil', 1,
-  'https://comeryrascar.com/wp-content/uploads/2022/02/gachas-avena-frutos-rojos-frambuesas-arandanos_120872-11343.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 127, 50.00),   -- copos de avena
-(@receta_id, 296, 250.00),  -- leche vegetal
-(@receta_id, 58, 60.00),    -- frutos rojos
-(@receta_id, 227, 10.00);   -- semillas de chía
-
--- 4. Sopa de brócoli y puerro
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Sopa de brócoli y puerro',
-  'Sopa cremosa y ligera, rica en fibra y vitaminas.',
-  '1. Lava y trocea 200 g de brócoli y 100 g de puerro.\n2. Sofríe el puerro en 10 g de aceite de oliva.\n3. Añade el brócoli y 500 ml de agua mineral, cocina 15 minutos.\n4. Tritura, añade sal y pimienta al gusto.',
-  25, 'fácil', 2,
-  'https://recetasparathermomix.com/wp-content/uploads/Sopa-de-brocoli-y-puerro-con-thermomix.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 8, 200.00),    -- brócoli
-(@receta_id, 14, 100.00),   -- puerro
-(@receta_id, 165, 500.00),  -- agua mineral
-(@receta_id, 242, 10.00),   -- aceite de oliva
-(@receta_id, 245, 2.00),    -- sal
-(@receta_id, 246, 1.00);    -- pimienta negra
-
--- 5. Snack: Tostada de pan integral con aguacate y tomate
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Tostada de pan integral con aguacate y tomate',
-  'Snack saludable y saciante, ideal para media mañana o merienda.',
-  '1. Tuesta 2 rebanadas de pan integral.\n2. Machaca 100 g de aguacate y reparte sobre el pan.\n3. Añade 50 g de tomate en rodajas y una pizca de sal y pimienta.',
-  5, 'fácil', 2,
-  'https://www.calidadpascual.com/wp-content/uploads/2022/10/e6ee1910080c635c4f888bf8f02dbfc1-1296x600.jpeg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 130, 60.00),   -- pan integral
-(@receta_id, 261, 100.00),  -- aguacate
-(@receta_id, 7, 50.00),     -- tomate
-(@receta_id, 245, 1.00),    -- sal
-(@receta_id, 246, 0.50);    -- pimienta negra
-
--- 6. Ensalada de espinaca, manzana y nuez
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Ensalada de espinaca, manzana y nuez',
-  'Ensalada fresca, crujiente y antioxidante.',
-  '1. Lava 80 g de espinaca y 1 manzana.\n2. Corta la manzana en cubos.\n3. Mezcla con 20 g de nuez y aliña con 10 g de aceite de oliva y unas gotas de limón.',
-  7, 'fácil', 2,
-  'https://blog.pizcadesabor.com/wp-content/uploads/2023/11/Ensalada-de-espinaca-con-manzana-2.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 1, 80.00),     -- espinaca
-(@receta_id, 36, 120.00),   -- manzana
-(@receta_id, 156, 20.00),   -- nuez
-(@receta_id, 242, 10.00);   -- aceite de oliva
-
--- 7. Muffins integrales de zanahoria y nuez
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Muffins integrales de zanahoria y nuez',
-  'Muffins saludables, ricos en fibra y sin azúcares refinados.',
-  '1. Ralla 100 g de zanahoria.\n2. Mezcla con 100 g de harina de trigo, 1 huevo, 40 g de nuez picada, 50 ml de leche vegetal y 10 g de miel.\n3. Añade 5 g de levadura química.\n4. Reparte en moldes y hornea 20 min a 180 °C.',
-  30, 'fácil', 6,
-  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYHVRikDWK1dfjpxy1-lSEhD7iqvZrdwWGJW9WfqUwvdetDbWa_u1ETbSQHjx_',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 3, 100.00),    -- zanahoria
-(@receta_id, 139, 100.00),  -- harina de trigo
-(@receta_id, 276, 1.00),    -- huevo
-(@receta_id, 156, 40.00),   -- nuez
-(@receta_id, 296, 50.00),   -- leche vegetal
-(@receta_id, 239, 10.00),   -- miel
-(@receta_id, 295, 5.00);    -- levadura química
-
--- 8. Bizcocho de manzana y avena
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Bizcocho de manzana y avena',
-  'Bizcocho esponjoso y saludable, ideal para desayunos.',
-  '1. Pela y ralla 2 manzanas (200 g).\n2. Mezcla con 120 g de avena en copos, 2 huevos, 50 ml de leche vegetal y 10 g de miel.\n3. Añade 5 g de levadura química.\n4. Hornea en molde 35 min a 180 °C.',
-  45, 'fácil', 8,
-  'https://www.gastronomiaycia.com/wp-content/photos/bizcocho_manza_avena4.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 36, 200.00),   -- manzana
-(@receta_id, 127, 120.00),  -- avena en copos
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 296, 50.00),   -- leche vegetal
-(@receta_id, 239, 10.00),   -- miel
-(@receta_id, 295, 5.00);    -- levadura química
-
--- 9. Galletas de plátano y almendra
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Galletas de plátano y almendra',
-  'Galletas blanditas, sin azúcar añadido, perfectas para niños.',
-  '1. Machaca 2 plátanos maduros (200 g).\n2. Mezcla con 100 g de almendra cruda molida y 1 huevo.\n3. Forma bolitas y aplasta en bandeja.\n4. Hornea 15 min a 180 °C.',
-  25, 'fácil', 10,
-  'https://i0.wp.com/www.conharinaenmiszapatos.com/wp-content/uploads/2017/06/GalletasPl%C3%A1tano_8.jpg?fit=750%2C1128',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 37, 200.00),   -- plátano
-(@receta_id, 155, 100.00),  -- almendra cruda
-(@receta_id, 276, 1.00);    -- huevo
-
--- 10. Galletas de avena, plátano y nuez
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Galletas de avena, plátano y nuez',
-  'Galletas blanditas, sin azúcar añadido, perfectas para desayunos o snacks.',
-  '1. Machaca 2 plátanos maduros (200 g).\n2. Mezcla con 100 g de avena en copos y 30 g de nuez picada.\n3. Forma bolitas y aplasta en bandeja.\n4. Hornea 15 min a 180 °C.',
-  25, 'fácil', 10,
-  'https://cdn3.myrealfood.app/recipes%2Fo2IULQyGyIGqJCVHK66w%2Fmain.jpg?alt=media&token=b72fd4dd-9904-4b14-aab9-c600b2f33033',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 37, 200.00),   -- plátano
-(@receta_id, 127, 100.00),  -- avena en copos
-(@receta_id, 156, 30.00);   -- nuez
-
--- 11. Galletas de manzana y almendra
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Galletas de manzana y almendra',
-  'Galletas suaves y jugosas, sin azúcar añadido.',
-  '1. Pela y ralla 1 manzana (100 g).\n2. Mezcla con 80 g de almendra cruda molida y 1 huevo.\n3. Forma bolitas y aplasta en bandeja.\n4. Hornea 15 min a 180 °C.',
-  25, 'fácil', 8,
-  'https://www.recetasparamibebe.com/wp-content/uploads/2021/03/receta-galletas-almendras-manzana-bebes.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 36, 100.00),   -- manzana
-(@receta_id, 155, 80.00),   -- almendra cruda
-(@receta_id, 276, 1.00);    -- huevo
-
--- 12. Pastel de pera y almendra
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Pastel de pera y almendra',
-  'Pastel jugoso, sin gluten y con fruta natural.',
-  '1. Pela y corta 2 peras (200 g).\n2. Mezcla con 100 g de almendra cruda molida, 2 huevos y 10 g de miel.\n3. Añade 5 g de levadura química.\n4. Hornea en molde 30 min a 180 °C.',
-  40, 'fácil', 8,
-  'https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480_1_5x/img/recipe/ras/Assets/9650EB40-74A8-41C1-A892-C08F7DEFCCF4/Derivates/129E0502-A75A-4118-A088-0CE4884C0109.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 39, 200.00),   -- pera
-(@receta_id, 155, 100.00),  -- almendra cruda
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 239, 10.00),   -- miel
-(@receta_id, 295, 5.00);    -- levadura química
-
--- 13. Pastel de yogur y frambuesa
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Pastel de yogur y frambuesa',
-  'Pastel suave y fresco, ideal para el verano.',
-  '1. Mezcla 2 huevos, 100 g de yogur natural, 100 g de harina de trigo y 10 g de miel.\n2. Añade 60 g de frambuesa y 5 g de levadura química.\n3. Hornea en molde 30 min a 180 °C.',
-  40, 'fácil', 8,
-  'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQMItKmYyCcJeq5Zi4KmO_k3wDzwmcFqiT_ztzO134e8rEmhLhjXr18TVLxCiDT',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 79, 100.00),   -- yogur natural
-(@receta_id, 139, 100.00),  -- harina de trigo
-(@receta_id, 239, 10.00),   -- miel
-(@receta_id, 56, 60.00),    -- frambuesa
-(@receta_id, 295, 5.00);    -- levadura química
-
--- 14. Pastel de plátano y manzana
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Pastel de plátano y manzana',
-  'Pastel húmedo y dulce solo con fruta.',
-  '1. Machaca 2 plátanos (200 g) y ralla 1 manzana (100 g).\n2. Mezcla con 100 g de harina de trigo, 2 huevos y 5 g de levadura química.\n3. Hornea en molde 30 min a 180 °C.',
-  40, 'fácil', 8,
-  'https://www.eladerezo.com/wp-content/uploads/2021/12/bizcocho-de-platano-y-manzana-1.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 37, 200.00),   -- plátano
-(@receta_id, 36, 100.00),   -- manzana
-(@receta_id, 139, 100.00),  -- harina de trigo
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 295, 5.00);    -- levadura química
-
--- 15. Pastel de zanahoria y yogur
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Pastel de zanahoria y yogur',
-  'Pastel esponjoso y saludable, sin azúcar añadido.',
-  '1. Ralla 150 g de zanahoria.\n2. Mezcla con 100 g de yogur natural, 2 huevos, 100 g de harina de trigo y 5 g de levadura química.\n3. Hornea en molde 30 min a 180 °C.',
-  40, 'fácil', 8,
-  'https://www.danone.es/wp-content/uploads/2022/03/COMI20-2048x1365.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 3, 150.00),    -- zanahoria
-(@receta_id, 79, 100.00),   -- yogur natural
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 139, 100.00),  -- harina de trigo
-(@receta_id, 295, 5.00);    -- levadura química
-
--- 16. Pastel de pera y nuez
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Pastel de pera y nuez',
-  'Pastel jugoso y crujiente, sin azúcar añadido.',
-  '1. Pela y corta 2 peras (200 g).\n2. Mezcla con 40 g de nuez picada, 2 huevos, 100 g de harina de trigo y 5 g de levadura química.\n3. Hornea en molde 30 min a 180 °C.',
-  40, 'fácil', 8,
-  'https://cocinarconmilagros.com/wp-content/uploads/2021/10/4-10-2021-11.10.35-1.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 39, 200.00),   -- pera
-(@receta_id, 156, 40.00),   -- nuez
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 139, 100.00),  -- harina de trigo
-(@receta_id, 295, 5.00);    -- levadura química
-
--- 20. Chips de zanahoria al horno
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Chips de zanahoria al horno',
-  'Snack crujiente y saludable, perfecto para picar entre horas.',
-  '1. Pela y corta 200 g de zanahoria en rodajas finas.\n2. Mezcla con 10 g de aceite de oliva y una pizca de sal.\n3. Extiende en bandeja y hornea 20 minutos a 180 °C, dándoles la vuelta a mitad de tiempo.',
-  25, 'fácil', 2,
-  'https://www.paulinacocina.net/wp-content/uploads/2014/09/P1110749-001.jpg.webp',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 3, 200.00),    -- zanahoria
-(@receta_id, 242, 10.00),   -- aceite de oliva
-(@receta_id, 245, 1.00);    -- sal
-
--- 21. Palitos de pepino y zanahoria con hummus
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Palitos de pepino y zanahoria con hummus',
-  'Snack fresco y saciante, ideal para picar de forma saludable.',
-  '1. Pela y corta 100 g de zanahoria y 100 g de pepino en bastones.\n2. Sirve con 60 g de hummus para mojar.',
-  7, 'fácil', 2,
-  'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQR3aP-Nr93NOI8cWVPc48MbGGhG2bH5vgoGW2mC4CxHW7vQx_J2NevI9S_27pg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 3, 100.00),    -- zanahoria
-(@receta_id, 25, 100.00),   -- pepino
-(@receta_id, 257, 60.00);   -- hummus
-
--- 22. Ensalada de col lombarda, manzana y nuez
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Ensalada de col lombarda, manzana y nuez',
-  'Ensalada colorida, crujiente y antioxidante.',
-  '1. Corta 100 g de col lombarda en tiras finas y 1 manzana en cubos.\n2. Mezcla con 20 g de nuez y aliña con 10 g de aceite de oliva y unas gotas de limón.',
-  8, 'fácil', 2,
-  'https://comeviveviaja.com/wp-content/uploads/2018/12/ensalada-de-col-lombarda-manzana-y-frutos-secos-con-alin%CC%83o-ma%CC%81gico.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 18, 100.00),   -- col lombarda
-(@receta_id, 36, 120.00),   -- manzana
-(@receta_id, 156, 20.00),   -- nuez
-(@receta_id, 242, 10.00);   -- aceite de oliva
-
--- 23. Bowl de quinoa, brócoli y zanahoria
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Bowl de quinoa, brócoli y zanahoria',
-  'Plato completo, rico en fibra y proteínas vegetales.',
-  '1. Cocina 100 g de quinoa cocida.\n2. Cuece 100 g de brócoli y 100 g de zanahoria en trozos.\n3. Mezcla todo y aliña con 10 g de aceite de oliva y una pizca de sal.',
-  20, 'fácil', 2,
-  'https://d36fw6y2wq3bat.cloudfront.net/recipes/bowl-de-quinua-con-garbanzos-coliflor-y-zanahoria/900/bowl-de-quinua-con-garbanzos-coliflor-y-zanahoria_version_1652875035.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 128, 100.00),  -- quinoa cocida
-(@receta_id, 8, 100.00),    -- brócoli
-(@receta_id, 3, 100.00),    -- zanahoria
-(@receta_id, 242, 10.00),   -- aceite de oliva
-(@receta_id, 245, 1.00);    -- sal
-
--- 24. Crema fría de pepino y yogur
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Crema fría de pepino y yogur',
-  'Entrante refrescante y ligero, ideal para el verano.',
-  '1. Pela y trocea 200 g de pepino.\n2. Tritura con 100 g de yogur natural, 10 g de aceite de oliva, sal y pimienta.\n3. Sirve frío.',
-  7, 'fácil', 2,
-  'https://www.divinacocina.es/wp-content/uploads/sopa-fria-de-yogur-y-pepino.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 25, 200.00),   -- pepino
-(@receta_id, 79, 100.00),   -- yogur natural
-(@receta_id, 242, 10.00),   -- aceite de oliva
-(@receta_id, 245, 1.00),    -- sal
-(@receta_id, 246, 0.50);    -- pimienta negra
-
--- 25. Salteado de judía verde, champiñón y zanahoria
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Salteado de judía verde, champiñón y zanahoria',
-  'Plato vegetal bajo en calorías y rico en fibra.',
-  '1. Trocea 100 g de judía verde, 100 g de zanahoria y 100 g de champiñón.\n2. Saltea en 10 g de aceite de oliva 5 minutos.\n3. Añade sal y pimienta al gusto.',
-  12, 'fácil', 2,
-  'https://i.pinimg.com/originals/c3/81/2b/c3812b48d417742f359e9a8e0b089493.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 24, 100.00),   -- judía verde
-(@receta_id, 3, 100.00),    -- zanahoria
-(@receta_id, 32, 100.00),   -- champiñón
-(@receta_id, 242, 10.00),   -- aceite de oliva
-(@receta_id, 245, 1.00),    -- sal
-(@receta_id, 246, 0.50);    -- pimienta negra
-
--- 26. Macedonia de frutas frescas
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Macedonia de frutas frescas',
-  'Postre refrescante y natural, ideal para cualquier momento.',
-  '1. Corta en cubos 50 g de manzana, 50 g de plátano, 50 g de pera, 50 g de fresa y 50 g de kiwi.\n2. Mezcla y sirve frío.',
-  5, 'fácil', 2,
-  'https://danzadefogones.com/wp-content/uploads/2024/05/macedonia-de-frutas.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 36, 50.00),    -- manzana
-(@receta_id, 37, 50.00),    -- plátano
-(@receta_id, 39, 50.00),    -- pera
-(@receta_id, 43, 50.00),    -- fresa
-(@receta_id, 44, 50.00);    -- kiwi
-
--- 27. Tortilla de espinaca y cebolla
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Tortilla de espinaca y cebolla',
-  'Clásica tortilla jugosa y saludable.',
-  '1. Bate 2 huevos. Sofríe 80 g de espinaca y 50 g de cebolla en 10 g de aceite de oliva. Añade los huevos y cuaja la tortilla.',
-  15, 'fácil', 2,
-  'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTivdNFUyGpdJJDAYW932LtbW09ctgSNFGYBp84VvCvkxy8D5dAO6tOjSzPylHO',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 1, 80.00),     -- espinaca
-(@receta_id, 10, 50.00),    -- cebolla
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 242, 10.00);   -- aceite de oliva
-
--- 28. Crema de calabacín y puerro
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Crema de calabacín y puerro',
-  'Sopa suave y reconfortante, ideal para cenas ligeras.',
-  '1. Trocea 200 g de calabacín y 50 g de puerro. Sofríe el puerro en 10 g de aceite de oliva, añade el calabacín y 400 ml de agua. Cocina 15 minutos y tritura.',
-  20, 'fácil', 2,
-  'https://www.pequerecetas.com/wp-content/uploads/2022/01/crema-de-calabacin-y-puerros-receta.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 4, 200.00),    -- calabacín
-(@receta_id, 14, 50.00),    -- puerro
-(@receta_id, 242, 10.00),   -- aceite de oliva
-(@receta_id, 165, 400.00);  -- agua mineral
-
--- 29. Ensalada de tomate, pepino y queso fresco
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Ensalada de tomate, pepino y queso fresco',
-  'Ensalada fresca y ligera, ideal para el verano.',
-  '1. Corta 100 g de tomate, 80 g de pepino y 40 g de queso fresco en cubos. Mezcla y aliña con 10 g de aceite de oliva y sal.',
-  7, 'fácil', 2,
-  'https://d36fw6y2wq3bat.cloudfront.net/recipes/ensalada-ligera-de-pepino-con-tomate-y-mozzarella/900/ensalada-ligera-de-pepino-con-tomate-y-mozzarella.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 7, 100.00),    -- tomate
-(@receta_id, 25, 80.00),    -- pepino
-(@receta_id, 81, 40.00),    -- queso fresco
-(@receta_id, 242, 10.00),   -- aceite de oliva
-(@receta_id, 245, 1.00);    -- sal
-
--- 30. Salteado de berenjena, pimiento y cebolla
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Salteado de berenjena, pimiento y cebolla',
-  'Plato vegetal colorido y sabroso.',
-  '1. Trocea 100 g de berenjena, 50 g de pimiento rojo y 50 g de cebolla. Saltea en 10 g de aceite de oliva 8 minutos. Añade sal y pimienta.',
-  12, 'fácil', 2,
-  'https://www.divinacocina.es/wp-content/uploads/berenjenas-salteadas.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 5, 100.00),    -- berenjena
-(@receta_id, 6, 50.00),     -- pimiento rojo
-(@receta_id, 10, 50.00),    -- cebolla
-(@receta_id, 242, 10.00),   -- aceite de oliva
-(@receta_id, 245, 1.00),    -- sal
-(@receta_id, 246, 0.50);    -- pimienta negra
-
--- 31. Bowl de arroz integral, pollo y brócoli
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Bowl de arroz integral, pollo y brócoli',
-  'Plato completo y equilibrado, ideal para comida principal.',
-  '1. Cocina 100 g de arroz integral. Saltea 100 g de pollo en 10 g de aceite de oliva. Añade 80 g de brócoli cocido. Mezcla todo y sirve.',
-  25, 'fácil', 2,
-  'https://d36fw6y2wq3bat.cloudfront.net/recipes/bowl-de-arroz-con-pollo-y-brocoli/900/bowl-de-arroz-con-pollo-y-brocoli_version_1652879220.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 126, 100.00),  -- arroz integral cocido
-(@receta_id, 281, 100.00),  -- pollo
-(@receta_id, 8, 80.00),     -- brócoli
-(@receta_id, 242, 10.00);   -- aceite de oliva
-
--- 32. Crema de calabaza y zanahoria
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Crema de calabaza y zanahoria',
-  'Sopa cremosa y dulce, perfecta para el otoño.',
-  '1. Trocea 200 g de calabaza y 100 g de zanahoria. Cocina con 400 ml de agua y 10 g de aceite de oliva 20 minutos. Tritura y sirve.',
-  25, 'fácil', 2,
-  'https://d36fw6y2wq3bat.cloudfront.net/recipes/crema-de-zanahoria-y-calabaza/900/crema-de-zanahoria-y-calabaza_version_1646280366.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 287, 200.00),  -- calabaza
-(@receta_id, 3, 100.00),    -- zanahoria
-(@receta_id, 165, 400.00),  -- agua mineral
-(@receta_id, 242, 10.00);   -- aceite de oliva
-
--- 33. Ensalada de lechuga, manzana y queso de cabra
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Ensalada de lechuga, manzana y queso de cabra',
-  'Ensalada fresca y con contraste dulce-salado.',
-  '1. Trocea 80 g de lechuga romana y 1 manzana. Añade 30 g de queso de cabra y 10 g de nuez. Aliña con aceite de oliva.',
-  7, 'fácil', 2,
-  'https://borges1896.com/app/uploads/2013/10/ensalada-de-queso-de-cabra.jpg.webp',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 11, 80.00),    -- lechuga romana
-(@receta_id, 36, 120.00),   -- manzana
-(@receta_id, 83, 30.00),    -- queso de cabra
-(@receta_id, 156, 10.00),   -- nuez
-(@receta_id, 242, 10.00);   -- aceite de oliva
-
--- 34. Pasta integral con brócoli y tomate
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Pasta integral con brócoli y tomate',
-  'Plato vegetariano equilibrado y saciante.',
-  '1. Cocina 100 g de pasta integral. Añade 80 g de brócoli y 80 g de tomate en cubos. Aliña con aceite de oliva y pimienta.',
-  20, 'fácil', 2,
-  'https://d36fw6y2wq3bat.cloudfront.net/recipes/macarrones-con-brocoli-y-tomates-cherry/900/macarrones-con-brocoli-y-tomates-cherry_version_1670645324.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 289, 100.00),  -- pasta integral
-(@receta_id, 8, 80.00),     -- brócoli
-(@receta_id, 7, 80.00),     -- tomate
-(@receta_id, 242, 10.00),   -- aceite de oliva
-(@receta_id, 246, 0.50);    -- pimienta negra
-
--- 35. Salteado de setas y espinaca
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Salteado de setas y espinaca',
-  'Plato ligero y sabroso, ideal como acompañamiento.',
-  '1. Saltea 100 g de seta ostra y 80 g de espinaca en 10 g de aceite de oliva. Añade sal y pimienta.',
-  10, 'fácil', 2,
-  'https://1080recetas.com/wp-content/uploads/2013/02/2013Fotos_02-Primeros_04-Verduras-Legumbres_01-Noticia_not-salteado-espinacas.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 33, 100.00),   -- seta ostra
-(@receta_id, 1, 80.00),     -- espinaca
-(@receta_id, 242, 10.00),   -- aceite de oliva
-(@receta_id, 245, 1.00),    -- sal
-(@receta_id, 246, 0.50);    -- pimienta negra
-
--- 36. Macedonia de frutas con yogur
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Macedonia de frutas con yogur',
-  'Postre fresco y saludable.',
-  '1. Corta en cubos 50 g de manzana, 50 g de plátano, 50 g de pera y 50 g de fresa. Mezcla con 80 g de yogur natural.',
-  5, 'fácil', 2,
-  'https://www.chefcaprabo.com/export/shared/.galleries/recetas/3500023_682x433.png_908605617.png',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 36, 50.00),    -- manzana
-(@receta_id, 37, 50.00),    -- plátano
-(@receta_id, 39, 50.00),    -- pera
-(@receta_id, 43, 50.00),    -- fresa
-(@receta_id, 79, 80.00);    -- yogur natural
-
--- 37. Guiso de lentejas con zanahoria y puerro
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Guiso de lentejas con zanahoria y puerro',
-  'Plato de cuchara tradicional, rico en fibra y proteínas vegetales.',
-  '1. Sofríe 50 g de puerro y 100 g de zanahoria en 10 g de aceite de oliva. Añade 150 g de lenteja cocida y 400 ml de agua. Cocina 20 minutos.',
-  30, 'fácil', 2,
-  'https://www.verdurastabuenca.com/images/recetas/shutterstock_119080897_web.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 14, 50.00),    -- puerro
-(@receta_id, 3, 100.00),    -- zanahoria
-(@receta_id, 96, 150.00),   -- lenteja cocida
-(@receta_id, 165, 400.00),  -- agua mineral
-(@receta_id, 242, 10.00);   -- aceite de oliva
-
--- 38. Tostada integral con aguacate y huevo
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Tostada integral con aguacate y huevo',
-  'Desayuno saciante y saludable.',
-  '1. Tuesta 2 rebanadas de pan integral. Machaca 100 g de aguacate y reparte sobre el pan. Añade 1 huevo cocido en rodajas.',
-  7, 'fácil', 2,
-  'https://cuisinart.com.co/cdn/shop/articles/Tostadas_integrales_con_aguacate_y_huevo_pochado.jpg?v=1738268176&width=1000',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 130, 60.00),   -- pan integral
-(@receta_id, 261, 100.00),  -- aguacate
-(@receta_id, 276, 1.00);    -- huevo
-
--- 39. Ensalada de escarola, pera y nuez
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Ensalada de escarola, pera y nuez',
-  'Ensalada fresca y crujiente, ideal para acompañar.',
-  '1. Trocea 80 g de escarola y 1 pera. Añade 20 g de nuez y aliña con aceite de oliva.',
-  7, 'fácil', 2,
-  'https://elfogonilustrado.com/wp-content/uploads/2016/11/Ensalada-de-escarola-peras-y-nueces-con-salsa-de-caramelo-2.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 26, 80.00),    -- escarola
-(@receta_id, 39, 120.00),   -- pera
-(@receta_id, 156, 20.00),   -- nuez
-(@receta_id, 242, 10.00);   -- aceite de oliva
-
--- 40. Rollitos de berenjena rellenos de queso y nuez
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Rollitos de berenjena rellenos de queso y nuez',
-  'Entrante vistoso y sabroso, ideal para picar en ocasiones especiales.',
-  '1. Corta 2 berenjenas en láminas finas y ásalas. Mezcla 80 g de queso de cabra con 30 g de nuez picada y 20 g de manzana rallada. Rellena las láminas, enrolla y hornea 10 minutos.',
-  40, 'difícil', 4,
-  'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQJnISdTCClEoMNinrQ-ura125Ji2Zu-dYeSOFmZy_6RYjKdnB_nh4CrdxE3MHR',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 5, 400.00),    -- berenjena
-(@receta_id, 83, 80.00),    -- queso de cabra
-(@receta_id, 156, 30.00),   -- nuez
-(@receta_id, 36, 20.00);    -- manzana
-
--- 41. Tarta salada de espinaca, puerro y queso
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Tarta salada de espinaca, puerro y queso',
-  'Plato principal elaborado, perfecto para compartir.',
-  '1. Prepara una base con 150 g de harina, 50 g de aceite y 50 ml de agua. Sofríe 100 g de espinaca y 50 g de puerro. Mezcla con 2 huevos y 60 g de queso fresco. Vierte sobre la base y hornea 35 minutos.',
-  60, 'difícil', 6,
-  'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTu7bnhh3Ckw2ujNqLrWZOvLnnaWjWCrMJuTzTLfdILGsqRigzZarmRnodT1i4K',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 139, 150.00),  -- harina de trigo
-(@receta_id, 242, 50.00),   -- aceite de oliva
-(@receta_id, 165, 50.00),   -- agua mineral
-(@receta_id, 1, 100.00),    -- espinaca
-(@receta_id, 14, 50.00),    -- puerro
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 81, 60.00);    -- queso fresco
-
--- 42. Ensalada templada de quinoa, brócoli y pollo
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Ensalada templada de quinoa, brócoli y pollo',
-  'Ensalada completa y saciante, ideal como plato único.',
-  '1. Cocina 100 g de quinoa y 100 g de brócoli al vapor. Saltea 100 g de pollo en 10 g de aceite. Mezcla todo con 30 g de nuez y aliña con aceite y limón.',
-  35, 'difícil', 2,
-  'https://www.disfrutandosingluten.es/wp-content/uploads/2014/11/brocoli-con-quinoa.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 128, 100.00),  -- quinoa cocida
-(@receta_id, 8, 100.00),    -- brócoli
-(@receta_id, 281, 100.00),  -- pollo
-(@receta_id, 156, 30.00),   -- nuez
-(@receta_id, 242, 10.00);   -- aceite de oliva
-
--- 43. Pastel de verduras y queso de cabra
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Pastel de verduras y queso de cabra',
-  'Plato vistoso y sabroso, ideal para ocasiones especiales.',
-  '1. Ralla 100 g de zanahoria, 100 g de calabacín y 100 g de berenjena. Mezcla con 2 huevos, 80 g de queso de cabra y 50 g de harina. Hornea en molde 35 minutos.',
-  50, 'difícil', 4,
-  'https://www.lekue.com/cdn-cgi/image/format=auto,onerror=redirect/media/recipe/foto153_1.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 3, 100.00),    -- zanahoria
-(@receta_id, 4, 100.00),    -- calabacín
-(@receta_id, 5, 100.00),    -- berenjena
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 83, 80.00),    -- queso de cabra
-(@receta_id, 139, 50.00);   -- harina de trigo
-
--- 44. Croquetas de brócoli y queso
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Croquetas de brócoli y queso',
-  'Aperitivo elaborado y saludable, perfecto para picar.',
-  '1. Cuece 200 g de brócoli y tritúralo. Mezcla con 80 g de queso rallado, 1 huevo y 40 g de pan integral rallado. Forma croquetas y hornea 20 minutos.',
-  40, 'difícil', 4,
-  'https://www.divinacocina.es/wp-content/uploads/2017/07/croquetas-de-brocoli-v.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 8, 200.00),    -- brócoli
-(@receta_id, 92, 80.00),    -- queso rallado
-(@receta_id, 276, 1.00),    -- huevo
-(@receta_id, 130, 40.00);   -- pan integral
-
--- 45. Empanadillas de espinaca y queso fresco
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Empanadillas de espinaca y queso fresco',
-  'Aperitivo casero, ideal para compartir.',
-  '1. Prepara una masa con 150 g de harina, 50 ml de agua y 30 g de aceite. Rellena con 100 g de espinaca salteada y 60 g de queso fresco. Forma empanadillas y hornea 20 minutos.',
-  50, 'difícil', 6,
-  'https://img.juanideanasevilla.com/archivos/recetas/fee27f61754de8954e5ab1e60ca32553ee98f369.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 139, 150.00),  -- harina de trigo
-(@receta_id, 165, 50.00),   -- agua mineral
-(@receta_id, 242, 30.00),   -- aceite de oliva
-(@receta_id, 1, 100.00),    -- espinaca
-(@receta_id, 81, 60.00);    -- queso fresco
-
--- 46. Lasaña de berenjena, tomate y queso
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Lasaña de berenjena, tomate y queso',
-  'Plato principal elaborado, sin pasta y bajo en carbohidratos.',
-  '1. Corta 2 berenjenas en láminas y ásalas. Alterna capas de berenjena, 200 g de tomate triturado y 80 g de queso rallado. Hornea 25 minutos.',
-  60, 'difícil', 4,
-  'https://www.demoslavueltaaldia.com/sites/default/files/lasana-berenjena-tomate-queso.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 5, 400.00),    -- berenjena
-(@receta_id, 265, 200.00),  -- tomate triturado
-(@receta_id, 92, 80.00);    -- queso rallado
-
--- 47. Hamburguesas vegetales de lenteja y zanahoria
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Hamburguesas vegetales de lenteja y zanahoria',
-  'Plato principal saludable y elaborado, ideal para vegetarianos.',
-  '1. Tritura 200 g de lenteja cocida con 100 g de zanahoria rallada y 40 g de pan integral rallado. Forma hamburguesas y hornea 20 minutos.',
-  40, 'difícil', 4,
-  'https://www.annaferrer.cat/FitxersWeb/12243/hamburgueses-llenties-pastanaga-fitxa.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 96, 200.00),   -- lenteja cocida
-(@receta_id, 3, 100.00),    -- zanahoria
-(@receta_id, 130, 40.00);   -- pan integral
-
--- 48. Tarta de manzana y nuez
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Tarta de manzana y nuez',
-  'Postre elaborado y vistoso, perfecto para ocasiones especiales.',
-  '1. Prepara una base con 150 g de harina, 50 g de aceite y 50 ml de agua. Mezcla 2 manzanas en láminas con 40 g de nuez y 10 g de miel. Monta la tarta y hornea 35 minutos.',
-  60, 'difícil', 6,
-  'https://www.divinacocina.es/wp-content/uploads/tarta-de-manzana-y-nueces.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 139, 150.00),  -- harina de trigo
-(@receta_id, 242, 50.00),   -- aceite de oliva
-(@receta_id, 165, 50.00),   -- agua mineral
-(@receta_id, 36, 240.00),   -- manzana
-(@receta_id, 156, 40.00),   -- nuez
-(@receta_id, 239, 10.00);   -- miel
-
--- 49. Quiche de brócoli, puerro y queso
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Quiche de brócoli, puerro y queso',
-  'Plato principal elaborado, ideal para compartir.',
-  '1. Prepara una base con 150 g de harina, 50 g de aceite y 50 ml de agua. Mezcla 100 g de brócoli cocido, 50 g de puerro, 2 huevos y 60 g de queso rallado. Vierte sobre la base y hornea 35 minutos.',
-  60, 'difícil', 6,
-  'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiBPqD5J88GfuJaSr38ecel0jPs3ss-tB6UkgEGgyT6-gJiCvYIT4ZRU4UwKGaAjLKGJ56TC3UolW53ong0kCO8OcVgjkL6c0_VC6gaWq-KyUU2mkmdfJcKNPEu0XKUUgupwxOU3rY21jbm/s1600/tarta+integral+1.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 139, 150.00),  -- harina de trigo
-(@receta_id, 242, 50.00),   -- aceite de oliva
-(@receta_id, 165, 50.00),   -- agua mineral
-(@receta_id, 8, 100.00),    -- brócoli
-(@receta_id, 14, 50.00),    -- puerro
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 92, 60.00);    -- queso rallado
-
--- 50. Pastel de pera, manzana y almendra
-INSERT INTO receta (
-    nombre,
-    descripcion,
-    instrucciones,
-    tiempo_preparacion,
-    dificultad,
-    raciones,
-    imagen_url,
-    visible
-) VALUES (
-  'Pastel de pera, manzana y almendra',
-  'Postre elaborado, jugoso y con contraste de texturas.',
-  '1. Mezcla 100 g de pera, 100 g de manzana y 80 g de almendra molida con 2 huevos y 10 g de miel. Hornea en molde 30 minutos.',
-  45, 'difícil', 6,
-  'https://assets.tmecosys.com/image/upload/t_web_rdp_recipe_584x480_1_5x/img/recipe/ras/Assets/9650EB40-74A8-41C1-A892-C08F7DEFCCF4/Derivates/129E0502-A75A-4118-A088-0CE4884C0109.jpg',
-  TRUE
-);
-SET @receta_id = LAST_INSERT_ID();
-INSERT INTO receta_ingrediente VALUES
-(@receta_id, 39, 100.00),   -- pera
-(@receta_id, 36, 100.00),   -- manzana
-(@receta_id, 155, 80.00),   -- almendra cruda
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 239, 10.00);   -- miel
-
-(@receta_id, 155, 80.00),   -- almendra cruda
-(@receta_id, 276, 2.00),    -- huevo
-(@receta_id, 239, 10.00);   -- miel
