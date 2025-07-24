@@ -1,4 +1,12 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 interface GraficoNotasComidaProps {
   notas: string[];
@@ -10,6 +18,14 @@ const NOTAS_VALIDAS = [
   "Me ha sentado mal",
   "Me ha gustado mucho",
 ];
+
+// Mapeo para mostrar etiquetas cortas en el eje X
+const ETIQUETAS_CORTAS: Record<string, string> = {
+  "He comido menos cantidad": "He comido menos",
+  "No me ha gustado": "No me ha gustado",
+  "Me ha sentado mal": "Me ha sentado mal",
+  "Me ha gustado mucho": "Me ha encantado",
+};
 
 export const GraficoNotasComida: React.FC<GraficoNotasComidaProps> = ({ notas }) => {
   const conteo: Record<string, number> = {};
@@ -30,7 +46,7 @@ export const GraficoNotasComida: React.FC<GraficoNotasComidaProps> = ({ notas })
   });
 
   const data = NOTAS_VALIDAS.map((nota) => ({
-    nombre: nota,
+    nombre: ETIQUETAS_CORTAS[nota],
     frecuencia: conteo[nota],
   }));
 
@@ -41,7 +57,13 @@ export const GraficoNotasComida: React.FC<GraficoNotasComidaProps> = ({ notas })
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="nombre" tick={{ fontSize: 10 }} interval={0} />
+            <XAxis
+              dataKey="nombre"
+              tick={{ fontSize: 11 }}
+              interval={0}
+              height={60}
+              tickLine={false}
+            />
             <YAxis allowDecimals={false} />
             <Tooltip />
             <Bar dataKey="frecuencia" fill="#3B82F6" />
