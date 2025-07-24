@@ -1,9 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useSeguimientoDieta, type Seguimiento } from "../hooks/useSeguimientoDieta";
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ModalComida } from "../components/ModalComida";
 import { generarPDFMensualSimple } from "../utils/pdfGenerator";
+import Swal from "sweetalert2";
+
 
 export const Calendar = () => {
   const [modoVista, setModoVista] = useState<"monthly" | "weekly" | "daily">("monthly");
@@ -15,6 +17,23 @@ export const Calendar = () => {
   const { seguimiento, setSeguimiento } = useSeguimientoDieta(dietaIdNumber);
 
   const capitalizar = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1);
+
+  useEffect(() => {
+  if (seguimiento.length === 0) {
+    Swal.fire({
+      title: "Cargando calendario...",
+      text: "Por favor espera un momento",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  } else {
+    Swal.close();
+  }
+}, [seguimiento]);
+
 
   const guardarCambio = async () => {
     if (!comidaSeleccionada) return;

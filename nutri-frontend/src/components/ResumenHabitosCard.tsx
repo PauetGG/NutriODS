@@ -24,7 +24,7 @@ export const ResumenHabitosCard: React.FC<ResumenHabitosCardProps> = ({
   const items = [
     { label: "Agua", emoji: "💧", valor: agua },
     { label: "Sueño", emoji: "😴", valor: sueno },
-    { label: "Ejercicio", emoji: "🏃‍♂️", valor: ejercicio },
+    { label: "Pasos", emoji: "🏃‍♂️", valor: ejercicio },
   ];
 
   return (

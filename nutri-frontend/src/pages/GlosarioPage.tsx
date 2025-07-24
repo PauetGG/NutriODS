@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import Modal from "react-modal";
+import { Modal, Paper, Badge, ScrollArea } from '@mantine/core';
+import { IconBook, IconInfoCircle, IconCategory, IconExternalLink, IconSearch, IconCheck, IconChevronDown, IconApple, IconVaccine, IconRun, IconQuestionMark } from '@tabler/icons-react';
+import { Combobox, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
+import RadialCategoryMenu from '../components/RadialCategoryMenu';
 
 type GlosarioItem = {
   id: number;
@@ -10,8 +14,6 @@ type GlosarioItem = {
   imagenUrl: string;
   visible: boolean;
 };
-
-Modal.setAppElement("#root");
 
 export default function GlosarioPage() {
   const [glosario, setGlosario] = useState<GlosarioItem[]>([]);
@@ -26,6 +28,33 @@ export default function GlosarioPage() {
     "concepto", "macronutriente", "micronutriente", "vitamina", "mineral",
     "suplemento", "dieta", "deporte", "otro"
   ];
+
+  // Para autocompletado
+  const [query, setQuery] = useState("");
+  const glosarioFiltradoAutocomplete =
+    query === ""
+      ? glosario
+      : glosario.filter((item) =>
+          item.termino.toLowerCase().includes(query.toLowerCase())
+        );
+
+  // Emojis únicos para cada categoría
+  const categoryEmojis: Record<string, string> = {
+    concepto: '💡',
+    macronutriente: '🍗',
+    micronutriente: '🧬',
+    vitamina: '🍊',
+    mineral: '🧂',
+    suplemento: '💊',
+    dieta: '🥗',
+    deporte: '🏃‍♂️',
+    otro: '❓',
+  };
+  const radialCategories = categorias.map(cat => ({
+    value: cat,
+    label: cat.charAt(0).toUpperCase() + cat.slice(1),
+    icon: <span className="text-3xl">{categoryEmojis[cat] || '❓'}</span>,
+  }));
 
   useEffect(() => {
     aplicarFiltros("", "");
@@ -77,25 +106,90 @@ export default function GlosarioPage() {
     <div className="p-6 pt-10 min-h-screen bg-gray-100">
       <h1 className="text-4xl font-bold text-center text-emerald-700 mb-8">Glosario Nutricional</h1>
 
-      {/* Filtros */}
-      <div className="flex flex-wrap gap-4 justify-center items-center mb-8">
-        <input
-          type="text"
-          placeholder="Buscar término..."
-          value={busqueda}
-          onChange={handleBusqueda}
-          className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-        />
-        <select
-          value={categoriaSeleccionada}
-          onChange={handleCategoria}
-          className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm w-full md:w-1/4 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-        >
-          <option value="">Todas las categorías</option>
-          {categorias.map((cat) => (
-            <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
-          ))}
-        </select>
+      {/* Filtros tipo recetas */}
+      <div className="w-full flex flex-row flex-wrap justify-center items-end gap-3 md:gap-6 mb-8">
+        {/* Buscador tipo recetas */}
+        <div className="w-72">
+          <Combobox value={busqueda} onChange={v => setBusqueda(v ?? "")}> {/* wrapper para evitar null */}
+            <div className="relative w-full">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-4">
+                <IconSearch className="h-5 w-5 text-emerald-400" />
+              </span>
+              <Combobox.Input
+                className="pl-12 pr-10 py-3 border border-gray-200 rounded-full shadow focus:shadow-lg w-full text-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400 transition placeholder-gray-400"
+                displayValue={(t: string) => t}
+                onChange={event => {
+                  setQuery(event.target.value);
+                  setBusqueda(event.target.value);
+                }}
+                placeholder="Buscar término..."
+              />
+              <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-3">
+                <IconChevronDown className="h-5 w-5 text-gray-300" aria-hidden="true" />
+              </Combobox.Button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-150"
+                enterFrom="opacity-0 -translate-y-2"
+                enterTo="opacity-100 translate-y-0"
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+                afterLeave={() => setQuery("")}
+              >
+                <Combobox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-base shadow-2xl ring-1 ring-black/5 focus:outline-none border border-gray-100">
+                  {glosarioFiltradoAutocomplete.length === 0 && query !== "" ? (
+                    <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
+                      No se encontró ningún término.
+                    </div>
+                  ) :
+                    glosarioFiltradoAutocomplete.slice(0, 8).map((item) => (
+                      <Combobox.Option
+                        key={item.id}
+                        className={({ active }) =>
+                          `relative cursor-pointer select-none py-2 pl-8 pr-4 rounded-lg flex items-center gap-2.5 ${
+                            active ? "bg-emerald-50 text-emerald-900" : "text-gray-900"
+                          }`
+                        }
+                        value={item.termino}
+                      >
+                        {({ selected, active }) => (
+                          <>
+                            <IconBook className="w-4 h-4 text-emerald-400" />
+                            <span className={`block truncate ${selected ? "font-semibold" : "font-normal"}`}>{item.termino}</span>
+                            {selected ? (
+                              <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-emerald-600">
+                                <IconCheck className="h-4 w-4" aria-hidden="true" />
+                              </span>
+                            ) : null}
+                          </>
+                        )}
+                      </Combobox.Option>
+                    ))
+                  }
+                </Combobox.Options>
+              </Transition>
+            </div>
+          </Combobox>
+        </div>
+        {/* Menú radial de categorías */}
+        <div className="flex items-center justify-center">
+          <RadialCategoryMenu
+            categories={radialCategories}
+            value={categoriaSeleccionada}
+            onSelect={cat => handleCategoria({ target: { value: cat } } as any)}
+            selectedLabel={categoriaSeleccionada ? (radialCategories.find(c => c.value === categoriaSeleccionada)?.label || '') : undefined}
+            selectedIcon={categoriaSeleccionada ? (categoryEmojis[categoriaSeleccionada] ? <span className="text-5xl">{categoryEmojis[categoriaSeleccionada]}</span> : undefined) : undefined}
+          />
+          {categoriaSeleccionada && (
+            <button
+              className="ml-2 text-xs text-red-600 underline"
+              onClick={() => handleCategoria({ target: { value: '' } } as any)}
+            >
+              Limpiar categoría
+            </button>
+          )}
+        </div>
         <button
           onClick={() => {
             setBusqueda("");
@@ -148,30 +242,40 @@ export default function GlosarioPage() {
 
       {/* Modal de detalle */}
       <Modal
-        isOpen={modalOpen}
-        onRequestClose={cerrarModal}
-        contentLabel="Detalle del término"
-        className="max-w-xl mx-auto mt-20 bg-white p-6 rounded-xl shadow-xl relative"
-        overlayClassName="fixed inset-0 backdrop-blur-sm bg-black/20 flex justify-center items-start z-50"
+        opened={modalOpen}
+        onClose={cerrarModal}
+        centered
+        size="lg"
+        withCloseButton={false}
+        overlayProps={{ blur: 3, backgroundOpacity: 0.25 }}
+        styles={{ body: { padding: 0 } }}
       >
         {itemSeleccionado && (
-          <div>
+          <Paper radius="xl" shadow="xl" p={0} style={{ overflow: 'hidden', minWidth: 350, maxWidth: 540 }}>
             <button
               onClick={cerrarModal}
-              className="absolute top-2 right-3 text-red-600 text-xl font-bold"
+              style={{ position: 'absolute', top: 18, right: 22, background: 'none', border: 'none', cursor: 'pointer', zIndex: 2, fontSize: 28, color: '#e11d48', fontWeight: 900 }}
+              aria-label="Cerrar"
             >
               ✕
             </button>
-            <img
-              src={itemSeleccionado.imagenUrl}
-              alt={itemSeleccionado.termino}
-              className="w-full h-52 object-contain rounded-lg mb-4"
-            />
-            <h2 className="text-2xl font-bold mb-2 text-emerald-700">{itemSeleccionado.termino}</h2>
-            <p className="text-gray-700 mb-4">{itemSeleccionado.definicion}</p>
-            <p className="text-sm text-gray-600 mb-1">Fuente: {itemSeleccionado.fuente}</p>
-            <p className="text-sm text-gray-600">Categoría: {itemSeleccionado.categoria}</p>
-          </div>
+            <div className="flex flex-col items-center p-8 pt-10">
+              <img
+                src={itemSeleccionado.imagenUrl}
+                alt={itemSeleccionado.termino}
+                className="w-full h-44 object-contain rounded-lg mb-4"
+                style={{ background: '#f0fdfa' }}
+              />
+              <h2 className="text-2xl font-bold mb-2 text-emerald-700 flex items-center gap-2"><IconBook size={22} />{itemSeleccionado.termino}</h2>
+              <Badge color="teal" variant="light" className="mb-2"><IconCategory size={14} style={{ marginRight: 4 }} /> {itemSeleccionado.categoria}</Badge>
+              <ScrollArea h={120} offsetScrollbars className="w-full mt-2 mb-2">
+                <p className="text-gray-700 text-base mb-2 flex items-start gap-2"><IconInfoCircle size={18} style={{ marginTop: 2 }} />{itemSeleccionado.definicion}</p>
+              </ScrollArea>
+              <div className="flex flex-row gap-4 items-center mt-2">
+                <span className="text-xs text-gray-500 flex items-center gap-1"><IconExternalLink size={14} />Fuente: {itemSeleccionado.fuente}</span>
+              </div>
+            </div>
+          </Paper>
         )}
       </Modal>
     </div>

@@ -14,18 +14,21 @@ interface CaloriasConsumidasCardProps {
 }
 
 export const CaloriasConsumidasCard: React.FC<CaloriasConsumidasCardProps> = ({ datos }) => {
-  const diaHoy = new Date().getDay();
-  const diasOrden = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-  const diasHastaAyer = diasOrden.slice(0, diaHoy === 0 ? 6 : diaHoy);
+  const diasOrden = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"];
 
   const data = datos
-    .filter((d) => diasHastaAyer.includes(d.dia))
-    .map((d) => ({
-      name: d.dia,
-      objetivo: d.objetivo,
-      consumido: d.consumido,
-      diferencia: d.consumido < d.objetivo ? d.objetivo - d.consumido : 0,
-    }));
+    .map((d) => {
+      const dia = d.dia.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return {
+        name: dia.charAt(0).toUpperCase() + dia.slice(1),
+        objetivo: Number(d.objetivo),
+        consumido: Number(d.consumido),
+        diferencia: Math.max(0, Number(d.objetivo) - Number(d.consumido)),
+        indexOrden: diasOrden.indexOf(dia),
+      };
+    })
+    .filter((d) => d.indexOrden !== -1)
+    .sort((a, b) => a.indexOrden - b.indexOrden);
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
@@ -49,8 +52,6 @@ export const CaloriasConsumidasCard: React.FC<CaloriasConsumidasCardProps> = ({ 
             />
             <Tooltip />
             <Legend />
-
-            {/* Área consumida (azul) */}
             <Area
               type="monotone"
               dataKey="consumido"
@@ -59,8 +60,6 @@ export const CaloriasConsumidasCard: React.FC<CaloriasConsumidasCardProps> = ({ 
               name="Consumido"
               stackId="1"
             />
-
-            {/* Diferencia con objetivo (rojo claro encima del azul) */}
             <Area
               type="monotone"
               dataKey="diferencia"
@@ -69,8 +68,6 @@ export const CaloriasConsumidasCard: React.FC<CaloriasConsumidasCardProps> = ({ 
               name="Diferencia"
               stackId="1"
             />
-
-            {/* Línea de objetivo */}
             <Area
               type="monotone"
               dataKey="objetivo"

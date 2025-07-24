@@ -22,8 +22,8 @@ export const ModalComida = ({
     <Modal
       isOpen={isOpen}
       onRequestClose={onClose}
-      className="bg-white p-6 rounded-md max-w-md w-full border border-black/20 shadow-2xl z-50"
-      overlayClassName="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+      className="bg-white p-6 rounded-md max-w-md w-full border border-black/20 shadow-2xl relative z-[9999]"
+      overlayClassName="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-[9998]"
     >
       <h2 className="text-xl font-bold mb-2 capitalize">{comida.comida}</h2>
 

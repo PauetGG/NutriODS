@@ -1,11 +1,14 @@
 import { useState } from "react";
+import { motion } from 'framer-motion';
+import { FaTimes, FaPenFancy } from 'react-icons/fa';
 
 export interface CrearTemaFormProps {
   onClose: () => void;
   onSubmit?: (formData: { titulo: string; contenido: string; categoria: string }) => void;
+  categorias?: string[];
 }
 
-export const CrearTemaForm = ({ onClose, onSubmit }: CrearTemaFormProps) => {
+export const CrearTemaForm = ({ onClose, onSubmit, categorias = ["general", "dieta", "recetas", "entrenamiento"] }: CrearTemaFormProps) => {
   const [formData, setFormData] = useState({
     titulo: "",
     contenido: "",
@@ -31,25 +34,36 @@ export const CrearTemaForm = ({ onClose, onSubmit }: CrearTemaFormProps) => {
   };
 
   return (
-    <div
+    <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm"
       onClick={handleBackdropClick}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
     >
-      <div className="relative w-full max-w-2xl mx-4 bg-white border border-gray-200 rounded-xl shadow-lg p-8 space-y-6">
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ duration: 0.25 }}
+        className="relative w-full max-w-2xl mx-4 bg-white border border-emerald-200 rounded-2xl shadow-2xl p-8 space-y-6"
+      >
         {/* Botón de cierre */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold focus:outline-none"
+          className="absolute top-4 right-4 text-emerald-400 hover:text-emerald-700 text-2xl font-bold focus:outline-none transition-colors"
           aria-label="Cerrar"
         >
-          ×
+          <FaTimes />
         </button>
-        <h2 className="text-3xl font-bold text-center text-gray-800">📝 Crear nuevo tema</h2>
+        <h2 className="text-3xl font-extrabold text-center text-emerald-700 flex items-center justify-center gap-2 drop-shadow">
+          <FaPenFancy className="text-emerald-500" /> Crear nuevo tema
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Título */}
           <div>
-            <label htmlFor="titulo" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="titulo" className="block text-sm font-semibold text-emerald-700 mb-1">
               Título del tema
             </label>
             <input
@@ -60,12 +74,12 @@ export const CrearTemaForm = ({ onClose, onSubmit }: CrearTemaFormProps) => {
               value={formData.titulo}
               onChange={handleChange}
               placeholder="Ej. ¿Qué opinan sobre los ayunos intermitentes?"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
+              className="w-full px-4 py-2 border border-emerald-200 rounded-xl shadow focus:ring-2 focus:ring-emerald-400 focus:outline-none bg-emerald-50/30"
             />
           </div>
           {/* Categoría */}
           <div>
-            <label htmlFor="categoria" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="categoria" className="block text-sm font-semibold text-emerald-700 mb-1">
               Categoría
             </label>
             <select
@@ -74,17 +88,18 @@ export const CrearTemaForm = ({ onClose, onSubmit }: CrearTemaFormProps) => {
               required
               value={formData.categoria}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
+              className="w-full px-4 py-2 border border-emerald-200 rounded-xl shadow focus:ring-2 focus:ring-emerald-400 focus:outline-none bg-emerald-50/30"
             >
-              <option value="general">General</option>
-              <option value="dieta">Dieta</option>
-              <option value="recetas">Recetas</option>
-              <option value="entrenamiento">Entrenamiento</option>
+              {categorias.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                </option>
+              ))}
             </select>
           </div>
           {/* Contenido */}
           <div>
-            <label htmlFor="contenido" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="contenido" className="block text-sm font-semibold text-emerald-700 mb-1">
               Contenido
             </label>
             <textarea
@@ -95,19 +110,21 @@ export const CrearTemaForm = ({ onClose, onSubmit }: CrearTemaFormProps) => {
               value={formData.contenido}
               onChange={handleChange}
               placeholder="Comparte tu pregunta, reflexión o información aquí..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none resize-none"
+              className="w-full px-4 py-2 border border-emerald-200 rounded-xl shadow focus:ring-2 focus:ring-emerald-400 focus:outline-none bg-emerald-50/30 resize-none"
               style={{ minHeight: '40px', maxHeight: '300px', overflowY: 'auto', resize: 'none' }}
             />
           </div>
           {/* Botón */}
-          <button
+          <motion.button
             type="submit"
-            className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-lg"
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.97 }}
+            className="w-full py-3 px-4 bg-gradient-to-r from-green-400 via-emerald-500 to-emerald-700 hover:from-emerald-500 hover:to-green-600 text-white font-extrabold rounded-2xl shadow-xl transition-all text-xl flex items-center justify-center gap-2 drop-shadow-lg"
           >
-            Publicar tema
-          </button>
+            <FaPenFancy className="text-2xl mr-2" /> Publicar tema
+          </motion.button>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };

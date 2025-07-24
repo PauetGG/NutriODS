@@ -4,6 +4,8 @@ import ReactPaginate from "react-paginate";
 import { Popover, Transition, Combobox } from "@headlessui/react";
 import { ClockIcon, CheckIcon, ChevronUpDownIcon, FireIcon, SparklesIcon, FaceSmileIcon, LightBulbIcon } from "@heroicons/react/24/solid";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Modal, Group, Badge, List, ThemeIcon, Loader, Paper, ScrollArea } from '@mantine/core';
+import { IconListCheck, IconClock, IconUsers, IconChefHat } from '@tabler/icons-react';
 
 export default function RecetasPage() {
   const [allRecetas, setAllRecetas] = useState<Receta[]>([]);
@@ -15,6 +17,8 @@ export default function RecetasPage() {
   const [paginaActual, setPaginaActual] = useState(1);
   const [recetaSeleccionada, setRecetaSeleccionada] = useState<Receta | null>(null);
   const [query, setQuery] = useState("");
+  const [ingredientesReceta, setIngredientesReceta] = useState<any[] | null>(null);
+  const [loadingIngredientes, setLoadingIngredientes] = useState(false);
 
   const dificultades = [
     { label: "Todas", value: "todas", icon: SparklesIcon, color: "bg-gradient-to-r from-emerald-400 to-emerald-600" },
@@ -88,6 +92,25 @@ export default function RecetasPage() {
   const cambiarPagina = (num: number) => {
     setPaginaActual(num);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Nuevo: fetch ingredientes al seleccionar receta
+  const handleSeleccionarReceta = async (receta: Receta) => {
+    setRecetaSeleccionada(receta);
+    setLoadingIngredientes(true);
+    setIngredientesReceta(null);
+    try {
+      const res = await fetch(`http://localhost:8080/api/receta-ingredientes/receta/${receta.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setIngredientesReceta(data);
+      } else {
+        setIngredientesReceta([]);
+      }
+    } catch {
+      setIngredientesReceta([]);
+    }
+    setLoadingIngredientes(false);
   };
 
   return (
@@ -258,7 +281,7 @@ export default function RecetasPage() {
             {recetasPagina.map((receta) => (
               <div
                 key={receta.id}
-                onClick={() => setRecetaSeleccionada(receta)}
+                onClick={() => handleSeleccionarReceta(receta)}
                 className="bg-white rounded-xl shadow-md hover:shadow-lg cursor-pointer transition p-4 flex flex-col items-center"
               >
                 <img
@@ -288,58 +311,88 @@ export default function RecetasPage() {
         </>
       )}
       {recetaSeleccionada && (
-        <div
-          className="fixed inset-0 backdrop-blur-sm bg-black/20 flex justify-center items-start z-50"
-          onClick={() => setRecetaSeleccionada(null)}
+        <Modal
+          opened={!!recetaSeleccionada}
+          onClose={() => setRecetaSeleccionada(null)}
+          size="auto"
+          centered
+          padding={0}
+          withCloseButton={false}
+          overlayProps={{ blur: 3, backgroundOpacity: 0.3 }}
+          styles={{ body: { padding: 0 } }}
         >
-          <div
-            className="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[95vh] overflow-y-auto relative shadow-2xl m-4 mt-20"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setRecetaSeleccionada(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
-              aria-label="Cerrar"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <img
-                  src={recetaSeleccionada.imagenUrl || "https://via.placeholder.com/400"}
-                  alt={recetaSeleccionada.nombre}
-                  className="w-full h-auto object-cover rounded-xl shadow-lg"
-                />
+          <Paper radius="xl" shadow="xl" p={0} style={{ overflow: 'hidden', minHeight: '80vh', minWidth: '80vw', maxWidth: '98vw', maxHeight: '98vh', display: 'flex', flexDirection: 'row' }}>
+            {/* IZQUIERDA: Imagen grande */}
+            <div style={{ flex: 1.2, background: 'linear-gradient(180deg,#d1fae5 0%,#fff 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, minWidth: 0 }}>
+              <img
+                src={recetaSeleccionada.imagenUrl || 'https://via.placeholder.com/700x900'}
+                alt={recetaSeleccionada.nombre}
+                style={{ width: '100%', height: 'auto', maxHeight: '90vh', objectFit: 'cover', borderRadius: 0, boxShadow: '0 8px 32px #0001' }}
+              />
+            </div>
+            {/* DERECHA: Info principal */}
+            <div style={{ flex: 1.8, display: 'flex', flexDirection: 'column', padding: 48, position: 'relative', minWidth: 0, height: '100%' }}>
+              <button
+                onClick={() => setRecetaSeleccionada(null)}
+                style={{ position: 'absolute', top: 24, right: 24, background: 'none', border: 'none', cursor: 'pointer', zIndex: 2 }}
+                aria-label="Cerrar"
+              >
+                <svg width={32} height={32} fill="none" stroke="#64748b" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l20 20M6 26L26 6" /></svg>
+              </button>
+              {/* Nombre y descripción */}
+              <div style={{ marginBottom: 18 }}>
+                <h2 style={{ fontSize: 40, fontWeight: 900, color: '#047857', marginBottom: 10, textAlign: 'left', lineHeight: 1.1 }}>{recetaSeleccionada.nombre}</h2>
+                <div style={{ color: '#374151', fontSize: 20, marginBottom: 8, textAlign: 'left', whiteSpace: 'pre-line' }}>{recetaSeleccionada.descripcion}</div>
               </div>
-              <div className="flex flex-col">
-                <h2 className="text-3xl font-extrabold text-emerald-800 mb-2">{recetaSeleccionada.nombre}</h2>
-                <p className="text-gray-600 mb-4">{recetaSeleccionada.descripcion}</p>
-                <div className="flex flex-wrap gap-4 text-sm mb-4">
-                  <span className="flex items-center gap-2 text-gray-700">
-                    <ClockIcon className="w-5 h-5 text-emerald-500" />
-                    {recetaSeleccionada.tiempoPreparacion} min
-                  </span>
-                  <span className="flex items-center gap-2 text-gray-700">
-                    <LightBulbIcon className="w-5 h-5 text-emerald-500" />
-                    {recetaSeleccionada.dificultad}
-                  </span>
-                  <span className="flex items-center gap-2 text-gray-700">
-                    <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    {recetaSeleccionada.raciones} raciones
-                  </span>
+              {/* Instrucciones y ingredientes+badges en grid */}
+              <div style={{ display: 'flex', flexDirection: 'row', gap: 40, flex: 1, minHeight: 0 }}>
+                {/* Instrucciones */}
+                <div style={{ flex: 2, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                  <h3 style={{ fontSize: 24, fontWeight: 700, color: '#334155', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}><IconChefHat size={24} /> Instrucciones</h3>
+                  <ScrollArea h={340} offsetScrollbars>
+                    <div style={{ color: '#374151', fontSize: 17, whiteSpace: 'pre-line', marginBottom: 12 }}>{recetaSeleccionada.instrucciones || 'No se han proporcionado instrucciones.'}</div>
+                  </ScrollArea>
                 </div>
-                <div className="border-t border-gray-200 pt-4 mt-auto">
-                  <h3 className="text-xl font-bold text-gray-800 mb-3">Instrucciones:</h3>
-                  <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap">
-                    {recetaSeleccionada.instrucciones || "No se han proporcionado instrucciones."}
+                {/* Ingredientes y badges */}
+                <div style={{ flex: 1.2, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+                  <div>
+                    <h4 style={{ fontSize: 20, fontWeight: 700, color: '#334155', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}><IconListCheck size={22} /> Ingredientes</h4>
+                    {loadingIngredientes ? (
+                      <Loader size="sm" color="teal" />
+                    ) : ingredientesReceta && ingredientesReceta.length > 0 ? (
+                      <List
+                        spacing="xs"
+                        size="md"
+                        icon={<ThemeIcon color="teal" size={24} radius="xl"><IconListCheck size={16} /></ThemeIcon>}
+                        style={{ color: '#334155', fontSize: 17 }}
+                      >
+                        {ingredientesReceta.map((ing: any) => (
+                          <List.Item key={ing.ingrediente?.id || ing.id}>
+                            {ing.ingrediente?.nombre || 'Ingrediente'}
+                            {ing.cantidad ? ` – ${ing.cantidad}${ing.unidad ? ' ' + ing.unidad : ''}` : ''}
+                          </List.Item>
+                        ))}
+                      </List>
+                    ) : (
+                      <div style={{ color: '#64748b', fontSize: 15 }}>No hay ingredientes para esta receta.</div>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
+                    <Badge color="teal" size="lg" leftSection={<IconClock size={20} />}>{recetaSeleccionada.tiempoPreparacion} min</Badge>
+                    <Badge color="yellow" size="lg" leftSection={<IconUsers size={20} />}>{recetaSeleccionada.raciones} raciones</Badge>
+                    <Badge
+                      color={recetaSeleccionada.dificultad === 'fácil' ? 'teal' : recetaSeleccionada.dificultad === 'media' ? 'yellow' : 'red'}
+                      size="lg"
+                      leftSection={<IconChefHat size={20} />}
+                    >
+                      {recetaSeleccionada.dificultad.charAt(0).toUpperCase() + recetaSeleccionada.dificultad.slice(1)}
+                    </Badge>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </Paper>
+        </Modal>
       )}
     </div>
   );

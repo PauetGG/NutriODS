@@ -20,6 +20,7 @@ import EstadisticasPage from "./pages/EstadisticasPage";
 import DashboardPage from "./pages/DashboardPage";
 import ForoPage from "./pages/ForoPage";
 import TemaPage from "./pages/TemaPage";
+import SoportePage from "./pages/SoportePage";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
         <Route path="/recetas" element={<RecetaPage />} /> 
         <Route path="/foro" element={<ForoPage />} />
         <Route path="/foro/temas/:id" element={<TemaPage />} />
+        <Route path="/soporte" element={<SoportePage />} />
       </Routes>
       <Footer />
     </>
