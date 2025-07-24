@@ -423,6 +423,7 @@ export const ProgresoPage = () => {
                 type="number"
                 min={30}
                 max={200}
+                step="0.1"
                 value={pesoRegistro ?? ""}
                 onChange={(e) => setPesoRegistro(parseFloat(e.target.value))}
                 className="w-full border rounded px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"

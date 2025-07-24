@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nutri.DTOs.ResumenHabitosDTO;
 import com.nutri.entities.SeguimientoHabitos;
 import com.nutri.services.SeguimientoHabitosService;
 
@@ -71,4 +72,15 @@ public class SeguimientoHabitosController {
         seguimientoHabitosService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @GetMapping("/resumen/{dietaId}")
+    public ResumenHabitosDTO getResumenActual(@PathVariable Integer dietaId) {
+        return seguimientoHabitosService.calcularResumenSemanal(dietaId, 0);
+    }
+
+    @GetMapping("/resumen/{dietaId}/semana/{n}")
+    public ResumenHabitosDTO getResumenSemana(@PathVariable Integer dietaId, @PathVariable int n) {
+        return seguimientoHabitosService.calcularResumenSemanal(dietaId, n);
+    }
+
 }
