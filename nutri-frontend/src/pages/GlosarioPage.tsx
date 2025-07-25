@@ -4,6 +4,8 @@ import { IconBook, IconInfoCircle, IconCategory, IconExternalLink, IconSearch, I
 import { Combobox, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import RadialCategoryMenu from '../components/RadialCategoryMenu';
+import Header from "../components/Header";
+import { useRadialMenu } from "../context/RadialMenuContext";
 
 type GlosarioItem = {
   id: number;
@@ -23,6 +25,7 @@ export default function GlosarioPage() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
   const itemsPorPagina = 9;
+  const { isOpen, setIsOpen } = useRadialMenu();
 
   const categorias = [
     "concepto", "macronutriente", "micronutriente", "vitamina", "mineral",
@@ -103,26 +106,36 @@ export default function GlosarioPage() {
   const totalPaginas = Math.ceil(glosario.length / itemsPorPagina);
 
   return (
-    <div className="p-6 pt-10 min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold text-center text-emerald-700 mb-8">Glosario Nutricional</h1>
+    <div className="p-6 pt-6 min-h-screen bg-gray-100">
+      <h1 className="text-3xl font-bold text-center text-emerald-700 mb-4">Glosario Nutricional</h1>
 
       {/* Filtros tipo recetas */}
-      <div className="w-full flex flex-row flex-wrap justify-center items-end gap-3 md:gap-6 mb-8">
+      <div className="w-full flex flex-wrap justify-center items-end gap-2 md:gap-4 mb-4">
         {/* Buscador tipo recetas */}
-        <div className="w-72">
+        <div className="w-60">
           <Combobox value={busqueda} onChange={v => setBusqueda(v ?? "")}> {/* wrapper para evitar null */}
             <div className="relative w-full">
               <span className="absolute inset-y-0 left-0 flex items-center pl-4">
                 <IconSearch className="h-5 w-5 text-emerald-400" />
               </span>
               <Combobox.Input
-                className="pl-12 pr-10 py-3 border border-gray-200 rounded-full shadow focus:shadow-lg w-full text-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400 transition placeholder-gray-400"
+                className={
+                  `pl-12 pr-10 py-3 border rounded-full shadow focus:shadow-lg w-full text-lg bg-white focus:outline-none transition placeholder-gray-400 ` +
+                  `border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400 ` +
+                  `focus:bg-emerald-50 focus:drop-shadow-[0_0_16px_#6ee7b7] focus:brightness-105`
+                }
+                style={{
+                  boxShadow: '0 0 16px 0 #6ee7b7bb, 0 2px 12px #05966933',
+                  borderWidth: 2,
+                  borderColor: '#6ee7b7',
+                  transition: 'box-shadow 0.2s, border-color 0.2s, background 0.2s',
+                }}
                 displayValue={(t: string) => t}
                 onChange={event => {
                   setQuery(event.target.value);
                   setBusqueda(event.target.value);
                 }}
-                placeholder="Buscar término..."
+                placeholder="Buscar por término..."
               />
               <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-3">
                 <IconChevronDown className="h-5 w-5 text-gray-300" aria-hidden="true" />
@@ -173,34 +186,26 @@ export default function GlosarioPage() {
           </Combobox>
         </div>
         {/* Menú radial de categorías */}
-        <div className="flex items-center justify-center">
-          <RadialCategoryMenu
-            categories={radialCategories}
-            value={categoriaSeleccionada}
-            onSelect={cat => handleCategoria({ target: { value: cat } } as any)}
-            selectedLabel={categoriaSeleccionada ? (radialCategories.find(c => c.value === categoriaSeleccionada)?.label || '') : undefined}
-            selectedIcon={categoriaSeleccionada ? (categoryEmojis[categoriaSeleccionada] ? <span className="text-5xl">{categoryEmojis[categoriaSeleccionada]}</span> : undefined) : undefined}
-          />
-          {categoriaSeleccionada && (
-            <button
-              className="ml-2 text-xs text-red-600 underline"
-              onClick={() => handleCategoria({ target: { value: '' } } as any)}
-            >
-              Limpiar categoría
-            </button>
-          )}
-        </div>
-        <button
-          onClick={() => {
-            setBusqueda("");
-            setCategoriaSeleccionada("");
-            aplicarFiltros("", "");
-          }}
-          className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition"
-        >
-          Limpiar filtros
-        </button>
+        <RadialCategoryMenu
+          categories={radialCategories}
+          value={categoriaSeleccionada}
+          onSelect={cat => handleCategoria({ target: { value: cat } } as any)}
+          selectedLabel={categoriaSeleccionada ? (radialCategories.find(c => c.value === categoriaSeleccionada)?.label || '') : undefined}
+          selectedIcon={categoriaSeleccionada ? (categoryEmojis[categoriaSeleccionada] ? <span className="text-5xl">{categoryEmojis[categoriaSeleccionada]}</span> : undefined) : undefined}
+          open={isOpen}
+          onOpenChange={setIsOpen}
+        />
       </div>
+      <button
+        onClick={() => {
+          setBusqueda("");
+          setCategoriaSeleccionada("");
+          aplicarFiltros("", "");
+        }}
+        className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition text-sm mb-2"
+      >
+        Limpiar filtros
+      </button>
 
       {/* Tarjetas del glosario */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">

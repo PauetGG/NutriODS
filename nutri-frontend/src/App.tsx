@@ -21,11 +21,13 @@ import DashboardPage from "./pages/DashboardPage";
 import ForoPage from "./pages/ForoPage";
 import TemaPage from "./pages/TemaPage";
 import SoportePage from "./pages/SoportePage";
+import { RadialMenuProvider, useRadialMenu } from "./context/RadialMenuContext";
 
-function App() {
+function AppContent() {
+  const { isOpen } = useRadialMenu();
   return (
     <>
-      <Header />
+      {!isOpen && <Header />}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/dieta" element={<DietaPage />} />
@@ -50,6 +52,14 @@ function App() {
       </Routes>
       <Footer />
     </>
+  );
+}
+
+function App() {
+  return (
+    <RadialMenuProvider>
+      <AppContent />
+    </RadialMenuProvider>
   );
 }
 
