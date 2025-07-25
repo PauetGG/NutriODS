@@ -17,7 +17,6 @@ interface Props {
 }
 
 function GraficoCalistenia({ titulo, seguimientoFisico }: Props) {
-  // Transformar SeguimientoFisico[] a DatosCalistenia[]
   const datosEvolucion = useMemo(() => {
     return seguimientoFisico.flatMap((sf) =>
       sf.calisteniaEjercicios.map((ej) => ({
@@ -44,11 +43,16 @@ function GraficoCalistenia({ titulo, seguimientoFisico }: Props) {
 
     const maxReps = Math.max(...datosEjercicio.map((e) => e.reps), 0);
 
-    return datosEjercicio.map((d) => ({
-      fecha: new Date(d.fecha).toLocaleDateString(),
-      repeticiones: d.reps,
-      objetivo: maxReps,
-    }));
+    return datosEjercicio.map((d) => {
+      const date = new Date(d.fecha);
+      const dia = date.getDate().toString().padStart(2, "0");
+      const mes = (date.getMonth() + 1).toString().padStart(2, "0");
+      return {
+        fecha: `${dia}/${mes}`,
+        repeticiones: d.reps,
+        objetivo: maxReps,
+      };
+    });
   }, [ejercicioSeleccionado, datosEvolucion]);
 
   return (

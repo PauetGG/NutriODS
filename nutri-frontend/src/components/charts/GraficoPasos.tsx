@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   Tooltip,
   ReferenceLine,
+  Label,
 } from "recharts";
 
 interface DatosPasos {
@@ -23,10 +24,15 @@ function GraficoPasos({ datos }: Props) {
     (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
   );
 
-  const datosFormateados = datosOrdenados.map((d) => ({
-    ...d,
-    fecha: new Date(d.fecha).toLocaleDateString(),
-  }));
+  const datosFormateados = datosOrdenados.map((d) => {
+    const date = new Date(d.fecha);
+    const dia = date.getDate().toString().padStart(2, "0");
+    const mes = (date.getMonth() + 1).toString().padStart(2, "0");
+    return {
+      ...d,
+      fecha: `${dia}/${mes}`,
+    };
+  });
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
@@ -35,9 +41,21 @@ function GraficoPasos({ datos }: Props) {
         <LineChart data={datosFormateados}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="fecha" tick={{ fill: "#6b7280" }} />
-          <YAxis domain={[0, 'auto']} tick={{ fill: "#6b7280" }} />
-          <Tooltip />
-          <ReferenceLine y={10000} stroke="#fbbf24" strokeDasharray="3 3" label="Recomendado (10k)" />
+          <YAxis domain={[0, "auto"]} tick={{ fill: "#6b7280" }} />
+          <Tooltip
+            labelFormatter={(label) => `Fecha: ${label}`}
+            formatter={(value: number) => [`${value} pasos`, "Pasos"]}
+          />
+          <ReferenceLine y={10000} stroke="#fbbf24" strokeDasharray="3 3">
+            <Label
+              value="Recomendado (10k)"
+              position="top"
+              dy={24}
+              fill="#000000"
+              fontSize={14}
+              fontWeight={600}
+            />
+          </ReferenceLine>
           <Line
             type="monotone"
             dataKey="pasos"

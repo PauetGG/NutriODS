@@ -6,7 +6,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ReferenceLine,
 } from "recharts";
 
 interface DatosPantallas {
@@ -25,7 +24,10 @@ function GraficoPantallas({ datos }: Props) {
 
   const datosFormateados = datosOrdenados.map((d) => ({
     ...d,
-    fecha: new Date(d.fecha).toLocaleDateString(),
+    fecha: new Date(d.fecha).toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+    }),
   }));
 
   return (
@@ -35,15 +37,16 @@ function GraficoPantallas({ datos }: Props) {
         <BarChart data={datosFormateados}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="fecha" tick={{ fill: "#6b7280" }} />
-          <YAxis domain={[0, 12]} unit=" h" tick={{ fill: "#6b7280" }} />
+          <YAxis domain={[0, 6]} unit=" h" tick={{ fill: "#6b7280" }} />
           <Tooltip />
-          <ReferenceLine y={2} stroke="#a855f7" strokeDasharray="3 3" label="Recomendado < 2h" />
+
+
           <Bar
             dataKey="pantallas"
             name="Horas de pantalla"
             fill="#c084fc"
             radius={[6, 6, 0, 0]}
-            barSize={35}
+            barSize={60} // más anchas aún
           />
         </BarChart>
       </ResponsiveContainer>

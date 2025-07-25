@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/useAuth";
+import Swal from "sweetalert2";
+
 
 type Usuario = {
   id: number;
@@ -79,25 +81,42 @@ export default function PerfilPage() {
     };
 
   const handleSubmit = async () => {
-    if (!id || !usuario) return;
+  if (!id || !usuario) return;
 
-    try {
-      const res = await fetch(`http://localhost:8080/api/usuarios/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(usuario),
+  try {
+    const res = await fetch(`http://localhost:8080/api/usuarios/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(usuario),
+    });
+
+    if (res.ok) {
+      setMensaje("");
+      await Swal.fire({
+        icon: "success",
+        title: "Cambios guardados",
+        text: "Tus datos se han actualizado correctamente.",
+        confirmButtonColor: "#10B981", // verde
       });
-
-      if (res.ok) {
-        setMensaje("✅ Datos actualizados correctamente");
-      } else {
-        setMensaje("❌ Error al actualizar los datos");
-      }
-    } catch (error) {
-      console.error(error);
-      setMensaje("❌ Error de red al guardar");
+    } else {
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudieron guardar los cambios.",
+        confirmButtonColor: "#EF4444", // rojo
+      });
     }
-  };
+  } catch (error) {
+    console.error(error);
+    await Swal.fire({
+      icon: "error",
+      title: "Error de red",
+      text: "Ha ocurrido un problema al intentar guardar.",
+      confirmButtonColor: "#EF4444",
+    });
+  }
+};
+
 
   if (!usuario) return <p className="p-4">Cargando datos del perfil...</p>;
 

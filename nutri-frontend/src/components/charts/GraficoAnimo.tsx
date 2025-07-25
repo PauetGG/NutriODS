@@ -24,7 +24,11 @@ function GraficoAnimo({ datos }: Props) {
 
   const datosFormateados = datosOrdenados.map((d) => ({
     ...d,
-    fecha: new Date(d.fecha).toLocaleDateString(),
+    // Formato solo día/mes (ej: 24/07)
+    fecha: new Date(d.fecha).toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+    }),
   }));
 
   return (
@@ -41,7 +45,7 @@ function GraficoAnimo({ datos }: Props) {
             name="Ánimo"
             fill="#ec4899"
             radius={[6, 6, 0, 0]}
-            barSize={35}
+            barSize={50} // <-- más ancho
           />
         </BarChart>
       </ResponsiveContainer>
