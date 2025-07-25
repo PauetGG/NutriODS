@@ -1,5 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Swal from "sweetalert2"; // Opcional para otros casos
+import { groupBy } from "lodash";
+
+// Toast config (reutilizable)
+const Toast = Swal.mixin({
+  toast: true,
+  position: "bottom-end",
+  showConfirmButton: false,
+  timer: 2500,
+  timerProgressBar: true,
+  background: "#fff",
+  color: "#333",
+});
+
 import { useSeguimientoDieta } from "../hooks/useSeguimientoDieta";
 import { ResumenSemanalCard } from "../components/ResumenSemanalCard";
 import { CaloriasConsumidasCard } from "../components/CaloriasConsumidasCard";
@@ -10,9 +24,8 @@ function DashboardPage() {
   const { dietaId } = useParams<{ dietaId: string }>();
   const dietaIdNumber = Number(dietaId);
   const [mostrarFrase, setMostrarFrase] = useState(false);
-
+  const [fechaCreacion, setFechaCreacion] = useState<Date | null>(null);
   const { seguimiento } = useSeguimientoDieta(dietaIdNumber);
-
   const [semanaActual, setSemanaActual] = useState(0);
 
   const hoy = new Date();
@@ -37,10 +50,6 @@ function DashboardPage() {
   const total = comidasSemana.length;
   const completadas = comidasSemana.filter((s) => s.consumido).length;
 
-  const [caloriasSemanales, setCaloriasSemanales] = useState<
-    { dia: string; objetivo: number; consumido: number }[]
-  >([]);
-
   const [estadoHabitos, setEstadoHabitos] = useState<{
     energia: number;
     estres: number;
@@ -52,9 +61,12 @@ function DashboardPage() {
 
   useEffect(() => {
     if (!isNaN(dietaIdNumber)) {
-      fetch(`http://localhost:8080/api/seguimiento-dieta/calorias-semanales/dieta/${dietaIdNumber}`)
+      // Obtener fecha de creación
+      fetch(`http://localhost:8080/api/dietas/${dietaIdNumber}`)
         .then((res) => res.json())
-        .then(setCaloriasSemanales)
+        .then((data) => {
+          setFechaCreacion(new Date(data.created));
+        })
         .catch(console.error);
 
       fetch(`http://localhost:8080/api/seguimiento-habitos/resumen/${dietaIdNumber}/semana/${semanaActual}`)
@@ -64,14 +76,28 @@ function DashboardPage() {
     }
   }, [dietaIdNumber, semanaActual]);
 
-  const diasMap = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-  const caloriasFiltradas = caloriasSemanales.filter((d) => {
-    const index = diasMap.indexOf(d.dia.toLowerCase());
-    if (index === -1) return false;
-    const fecha = new Date(lunes);
-    fecha.setDate(lunes.getDate() + index);
-    return fecha >= lunes && fecha <= finSemana;
-  });
+ const caloriasAgrupadas = groupBy(comidasSemana, (c) => c.fecha.split("T")[0]);
+
+const caloriasFiltradas = Object.entries(caloriasAgrupadas)
+  .map(([fecha, comidasDelDia]) => {
+    const consumido = comidasDelDia
+      .filter((c) => c.consumido)
+      .reduce((acc, c) => acc + c.comidaModelo.caloriasTotales, 0);
+
+    const objetivo = comidasDelDia.reduce(
+      (acc, c) => acc + c.comidaModelo.caloriasTotales,
+      0
+    );
+
+    return {
+      fecha, // es string, como se espera en el componente
+      consumido,
+      objetivo,
+    };
+  })
+  .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
+
+
 
   const frasesMotivacionales = [
     "Cada día es una nueva oportunidad para mejorar.",
@@ -107,11 +133,33 @@ function DashboardPage() {
   ];
   const fraseSeleccionada = frasesMotivacionales[Math.floor(Math.random() * frasesMotivacionales.length)];
 
+  const handleSemanaAnterior = () => {
+  const lunesAnterior = new Date(lunes);
+  lunesAnterior.setDate(lunesAnterior.getDate() - 7);
+
+  const domingoAnterior = new Date(lunesAnterior);
+  domingoAnterior.setDate(lunesAnterior.getDate() + 6);
+
+  if (
+    fechaCreacion &&
+    (fechaCreacion < lunesAnterior || fechaCreacion > domingoAnterior)
+  ) {
+    Toast.fire({
+      icon: "warning",
+      title: "No puedes ver semanas antes de la creación de tu dieta.",
+    });
+    return;
+  }
+
+  setSemanaActual((prev) => prev + 1);
+};
+
+
   return (
-    <div className="p-6 space-y-6">
+   <div className="p-6 bg-gray-100 min-h-screen space-y-6">
       {/* Cabecera con controles */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Seguimiento Semanal</h1>
+        <h1 className="text-3xl font-bold text-emerald-700">Seguimiento Semanal</h1>
 
         <div className="flex items-center gap-2 flex-wrap">
           <button
@@ -123,13 +171,18 @@ function DashboardPage() {
 
           <button
             className="px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 font-semibold transition-all shadow-sm"
-            onClick={() => setSemanaActual((prev) => prev + 1)}
+            onClick={handleSemanaAnterior}
           >
             ⬅️ Semana anterior
           </button>
 
-          <span className="text-sm font-medium text-gray-500 px-2">
-            Semana {semanaActual === 0 ? "actual" : `-${semanaActual}`}
+          <span className="text-sm font-medium text-emerald-700 px-2">
+            Semana{" "}
+            {semanaActual === 0
+              ? "actual"
+              : semanaActual === 1
+              ? "anterior"
+              : `x${semanaActual}`}
           </span>
 
           {semanaActual > 0 && (
@@ -143,7 +196,7 @@ function DashboardPage() {
         </div>
       </div>
 
-      {/* Contenido del dashboard */}
+      {/* Contenido */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <ResumenSemanalCard completadas={completadas} total={total} />
         <EstadoGeneralCard
@@ -160,22 +213,26 @@ function DashboardPage() {
 
       <CaloriasConsumidasCard datos={caloriasFiltradas} />
 
-      {/* Modal de frase motivacional */}
+      {/* Modal frase */}
       {mostrarFrase && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
-          <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full relative animate-fade-in">
-            <button
-              onClick={() => setMostrarFrase(false)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl font-bold"
-              aria-label="Cerrar"
-            >
-              ×
-            </button>
-            <h2 className="text-xl font-bold text-emerald-700 mb-4 text-center">Tu frase de hoy 💬</h2>
-            <p className="text-gray-700 text-center text-lg italic">{fraseSeleccionada}</p>
-          </div>
+      <div className="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl border border-emerald-400 shadow-xl p-8 max-w-md w-full relative animate-fade-in">
+          <button
+            onClick={() => setMostrarFrase(false)}
+            className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer"
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+          <h2 className="text-xl font-bold text-emerald-700 mb-4 text-center">
+            Tu frase de hoy 💬
+          </h2>
+          <p className="text-gray-700 text-center text-lg italic">
+            {fraseSeleccionada}
+          </p>
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 }

@@ -50,7 +50,11 @@ function GraficoEvolucionPeso({ datos }: Props) {
     },
   };
 
-  return <Line options={options} data={data} />;
+  return (
+    <div className="bg-white p-4 rounded-lg shadow-md">
+      <Line options={options} data={data} />
+    </div>
+  );
 }
 
-export default GraficoEvolucionPeso; 
+export default GraficoEvolucionPeso;
