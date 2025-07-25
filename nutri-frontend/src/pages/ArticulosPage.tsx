@@ -4,6 +4,8 @@ import type { Articulo } from "../types/Articulo";
 import { Combobox, Transition } from '@headlessui/react';
 import { IconSearch, IconCategory, IconCheck, IconChevronDown, IconBook, IconApple, IconVaccine, IconRun, IconQuestionMark } from '@tabler/icons-react';
 import RadialCategoryMenu from '../components/RadialCategoryMenu';
+import Header from "../components/Header";
+import { useRadialMenu } from "../context/RadialMenuContext";
 
 export default function ArticulosPage() {
   const [articulos, setArticulos] = useState<Articulo[]>([]);
@@ -12,6 +14,7 @@ export default function ArticulosPage() {
   const [paginaActual, setPaginaActual] = useState(1);
   const articulosPorPagina = 6;
   const navigate = useNavigate();
+  const { isOpen, setIsOpen } = useRadialMenu();
 
   useEffect(() => {
     fetch("http://localhost:8080/api/articulos")
@@ -49,38 +52,52 @@ export default function ArticulosPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Iconos para cada categoría (puedes personalizar según tus categorías)
-  const categoryIcons: Record<string, React.ReactNode> = {
-    nutricion: <IconApple />,
-    salud: <IconVaccine />,
-    deporte: <IconRun />,
-    recetas: <IconBook />,
-    otro: <IconQuestionMark />,
+  // Emojis únicos y representativos para cada categoría
+  const categoryEmojis: Record<string, string> = {
+    salud: '🩺',
+    nutricion: '🥦',
+    ejercicio: '🏃‍♂️',
+    bienestar: '🧘‍♀️',
+    psicologia: '🧠',
+    alimentacion: '🍽️',
+    deporte: '⚽',
+    hidratacion: '💧',
+    descanso: '😴',
+    otro: '📚',
   };
   const radialCategories = categoriasUnicas.map(cat => ({
     value: cat,
     label: cat.charAt(0).toUpperCase() + cat.slice(1),
-    icon: categoryIcons[cat] || <IconCategory />,
+    icon: <span className="text-3xl">{categoryEmojis[cat] || '📚'}</span>,
   }));
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-10 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 min-h-screen pt-6 px-2 sm:px-4 lg:px-8"> {/* pt-6 y menos padding horizontal */}
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-center text-emerald-700 mb-10">
+        <h1 className="text-3xl font-bold text-center text-emerald-700 mb-4"> {/* mb-4 en vez de mb-10, text-3xl */}
           Artículos Educativos
         </h1>
-
         {/* Filtros tipo recetas */}
-        <div className="w-full flex flex-wrap justify-center items-end gap-3 md:gap-6 mb-10">
+        <div className="w-full flex flex-wrap justify-center items-end gap-2 md:gap-4 mb-4"> {/* gap-2 y mb-4 */}
           {/* Buscador tipo recetas */}
-          <div className="w-72">
+          <div className="w-60"> {/* w-60 en vez de w-72 */}
             <Combobox value={busqueda} onChange={v => setBusqueda(v ?? "")}> {/* wrapper para evitar null */}
               <div className="relative w-full">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-4">
                   <IconSearch className="h-5 w-5 text-emerald-400" />
                 </span>
                 <Combobox.Input
-                  className="pl-12 pr-10 py-3 border border-gray-200 rounded-full shadow focus:shadow-lg w-full text-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400 transition placeholder-gray-400"
+                  className={
+                    `pl-12 pr-10 py-3 border rounded-full shadow focus:shadow-lg w-full text-lg bg-white focus:outline-none transition placeholder-gray-400 ` +
+                    `border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400 ` +
+                    `focus:bg-emerald-50 focus:drop-shadow-[0_0_16px_#6ee7b7] focus:brightness-105`
+                  }
+                  style={{
+                    boxShadow: '0 0 16px 0 #6ee7b7bb, 0 2px 12px #05966933',
+                    borderWidth: 2,
+                    borderColor: '#6ee7b7',
+                    transition: 'box-shadow 0.2s, border-color 0.2s, background 0.2s',
+                  }}
                   displayValue={(t: string) => t}
                   onChange={event => {
                     setQuery(event.target.value);
@@ -137,85 +154,75 @@ export default function ArticulosPage() {
             </Combobox>
           </div>
           {/* Menú radial de categorías */}
-          <div className="flex items-center justify-center">
-            <RadialCategoryMenu
-              categories={radialCategories}
-              value={categoriaFiltro}
-              onSelect={cat => {
-                setCategoriaFiltro(cat);
-                setPaginaActual(1);
-              }}
-            />
-            {categoriaFiltro && (
-              <button
-                className="ml-2 text-xs text-red-600 underline"
-                onClick={() => {
-                  setCategoriaFiltro("");
-                  setPaginaActual(1);
-                }}
-              >
-                Limpiar categoría
-              </button>
-            )}
-          </div>
-          <button
-            onClick={() => {
-              setBusqueda("");
-              setCategoriaFiltro("");
+          <RadialCategoryMenu
+            categories={radialCategories}
+            value={categoriaFiltro}
+            onSelect={cat => {
+              setCategoriaFiltro(cat);
               setPaginaActual(1);
             }}
-            className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition"
-          >
-            Limpiar
-          </button>
+            selectedLabel={categoriaFiltro ? (radialCategories.find(c => c.value === categoriaFiltro)?.label || '') : undefined}
+            selectedIcon={categoriaFiltro ? (categoryEmojis[categoriaFiltro] ? <span className="text-5xl">{categoryEmojis[categoriaFiltro]}</span> : undefined) : undefined}
+            open={isOpen}
+            onOpenChange={setIsOpen}
+          />
         </div>
-
-        {/* Artículos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articulosPagina.map((articulo) => (
-            <div
-              key={articulo.id}
-              onClick={() => navigate(`/articulo/${articulo.id}`)}
-              className="bg-white shadow-md hover:shadow-lg rounded-xl overflow-hidden cursor-pointer transition duration-300"
-            >
-              <img
-                src={articulo.imagenUrl}
-                alt={articulo.titulo}
-                className="w-full h-48 object-contain"
-              />
-              <div className="p-5">
-                <h2 className="text-lg font-semibold text-gray-800 mb-1">{articulo.titulo}</h2>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-3">{articulo.resumen}</p>
-                <p className="text-xs text-gray-500 mb-2">
-                  {new Date(articulo.fechaPublicacion).toLocaleDateString("es-ES")} · {articulo.autor}
-                </p>
-                <span className="inline-block bg-emerald-100 text-emerald-700 text-xs px-3 py-1 rounded-full">
-                  {articulo.categoria}
-                </span>
-              </div>
+        <button
+          onClick={() => {
+            setBusqueda("");
+            setCategoriaFiltro("");
+            setPaginaActual(1);
+          }}
+          className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition text-sm mb-2"
+        >
+          Limpiar
+        </button>
+      </div>
+      {/* Artículos */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {articulosPagina.map((articulo) => (
+          <div
+            key={articulo.id}
+            onClick={() => navigate(`/articulo/${articulo.id}`)}
+            className="bg-white shadow-md hover:shadow-lg rounded-xl overflow-hidden cursor-pointer transition duration-300"
+          >
+            <img
+              src={articulo.imagenUrl}
+              alt={articulo.titulo}
+              className="w-full h-48 object-contain"
+            />
+            <div className="p-5">
+              <h2 className="text-lg font-semibold text-gray-800 mb-1">{articulo.titulo}</h2>
+              <p className="text-sm text-gray-600 mb-2 line-clamp-3">{articulo.resumen}</p>
+              <p className="text-xs text-gray-500 mb-2">
+                {new Date(articulo.fechaPublicacion).toLocaleDateString("es-ES")} · {articulo.autor}
+              </p>
+              <span className="inline-block bg-emerald-100 text-emerald-700 text-xs px-3 py-1 rounded-full">
+                {articulo.categoria}
+              </span>
             </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Paginación */}
+      {totalPaginas > 1 && (
+        <div className="flex justify-center mt-10 space-x-2">
+          {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((num) => (
+            <button
+              key={num}
+              onClick={() => cambiarPagina(num)}
+              className={`px-4 py-2 rounded-lg border text-sm ${
+                num === paginaActual
+                  ? "bg-emerald-600 text-white font-semibold shadow"
+                  : "bg-white hover:bg-gray-100 text-gray-700 border-gray-300"
+              }`}
+            >
+              {num}
+            </button>
           ))}
         </div>
-
-        {/* Paginación */}
-        {totalPaginas > 1 && (
-          <div className="flex justify-center mt-10 space-x-2">
-            {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((num) => (
-              <button
-                key={num}
-                onClick={() => cambiarPagina(num)}
-                className={`px-4 py-2 rounded-lg border text-sm ${
-                  num === paginaActual
-                    ? "bg-emerald-600 text-white font-semibold shadow"
-                    : "bg-white hover:bg-gray-100 text-gray-700 border-gray-300"
-                }`}
-              >
-                {num}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }

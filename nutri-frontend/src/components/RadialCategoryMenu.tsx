@@ -13,6 +13,8 @@ interface RadialCategoryMenuProps {
   onSelect: (value: string) => void;
   selectedLabel?: string;
   selectedIcon?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const RADIUS_CLOSED = 0;
@@ -22,8 +24,15 @@ const SIZE_OPEN = 160;
 const OPTION_SIZE_CLOSED = 64;
 const OPTION_SIZE_OPEN = 110;
 
-export default function RadialCategoryMenu({ categories, value, onSelect, selectedLabel, selectedIcon }: RadialCategoryMenuProps) {
-  const [open, setOpen] = useState(false);
+export default function RadialCategoryMenu({ categories, value, onSelect, selectedLabel, selectedIcon, open: openProp, onOpenChange }: RadialCategoryMenuProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = openProp !== undefined;
+  const open = isControlled ? openProp : internalOpen;
+
+  const setOpen = (val: boolean) => {
+    if (onOpenChange) onOpenChange(val);
+    if (!isControlled) setInternalOpen(val);
+  };
 
   const handleSelect = (cat: Category) => {
     onSelect(cat.value);
@@ -65,7 +74,7 @@ export default function RadialCategoryMenu({ categories, value, onSelect, select
       {/* Bola central rediseñada */}
       <button
         className={`flex items-center justify-center rounded-full border-4 border-white transition-all duration-300 z-50 relative group ${open ? 'scale-110' : ''}`}
-        onClick={() => setOpen(o => !o)}
+        onClick={() => setOpen(!open)}
         aria-label="Seleccionar categoría"
         type="button"
         style={{

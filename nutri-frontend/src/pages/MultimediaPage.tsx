@@ -4,6 +4,8 @@ import { IconSearch, IconCategory, IconCheck, IconChevronDown, IconBook, IconApp
 import { Combobox, Transition } from '@headlessui/react';
 import { Fragment, useState as useStateReact } from 'react';
 import RadialCategoryMenu from '../components/RadialCategoryMenu';
+import Header from "../components/Header";
+import { useRadialMenu } from "../context/RadialMenuContext";
 
 type MultimediaItem = {
   id: number;
@@ -23,6 +25,7 @@ export default function MultimediaPage() {
   const [categoriaFiltro, setCategoriaFiltro] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
   const recursosPorPagina = 9;
+  const { isOpen, setIsOpen } = useRadialMenu();
 
   useEffect(() => {
     fetch("http://localhost:8080/api/multimedia")
@@ -60,33 +63,50 @@ export default function MultimediaPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Iconos para cada categoría (puedes personalizar según tus categorías)
-  const categoryIcons: Record<string, React.ReactNode> = {
-    video: <IconBook />,
-    web: <IconApple />,
-    otro: <IconQuestionMark />,
+  // Emojis únicos y representativos para cada categoría
+  const categoryEmojis: Record<string, string> = {
+    video: '🎬',
+    web: '🌐',
+    podcast: '🎧',
+    libro: '📖',
+    infografia: '🖼️',
+    app: '📱',
+    conferencia: '🎤',
+    documental: '🎥',
+    noticia: '📰',
+    otro: '📦',
   };
   const radialCategories = categoriasUnicas.map(cat => ({
     value: cat,
     label: cat.charAt(0).toUpperCase() + cat.slice(1),
-    icon: categoryIcons[cat] || <IconCategory />,
+    icon: <span className="text-3xl">{categoryEmojis[cat] || '📦'}</span>,
   }));
 
   return (
-    <div className="p-6 pt-10 min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold text-center text-emerald-700 mb-8">Recursos Educativos</h1>
+    <div className="p-6 pt-6 min-h-screen bg-gray-100">
+      <h1 className="text-3xl font-bold text-center text-emerald-700 mb-4">Recursos Educativos</h1>
 
       {/* Filtros tipo recetas */}
-      <div className="w-full flex flex-wrap justify-center items-end gap-3 md:gap-6 mb-10">
+      <div className="w-full flex flex-wrap justify-center items-end gap-2 md:gap-4 mb-4">
         {/* Buscador tipo recetas */}
-        <div className="w-72">
+        <div className="w-60">
           <Combobox value={busqueda} onChange={v => setBusqueda(v ?? "")}> {/* wrapper para evitar null */}
             <div className="relative w-full">
               <span className="absolute inset-y-0 left-0 flex items-center pl-4">
                 <IconSearch className="h-5 w-5 text-emerald-400" />
               </span>
               <Combobox.Input
-                className="pl-12 pr-10 py-3 border border-gray-200 rounded-full shadow focus:shadow-lg w-full text-lg bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400 transition placeholder-gray-400"
+                className={
+                  `pl-12 pr-10 py-3 border rounded-full shadow focus:shadow-lg w-full text-lg bg-white focus:outline-none transition placeholder-gray-400 ` +
+                  `border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400 ` +
+                  `focus:bg-emerald-50 focus:drop-shadow-[0_0_16px_#6ee7b7] focus:brightness-105`
+                }
+                style={{
+                  boxShadow: '0 0 16px 0 #6ee7b7bb, 0 2px 12px #05966933',
+                  borderWidth: 2,
+                  borderColor: '#6ee7b7',
+                  transition: 'box-shadow 0.2s, border-color 0.2s, background 0.2s',
+                }}
                 displayValue={(t: string) => t}
                 onChange={event => {
                   setQuery(event.target.value);
@@ -141,86 +161,74 @@ export default function MultimediaPage() {
             </div>
           </Combobox>
         </div>
-        {/* Botones de tipo (video/web) */}
+        {/* Botones de tipo (video/web) usando Mantine Button y Tabler Icons */}
         <div className="flex flex-row items-end gap-3">
-          <div className="flex gap-3">
-            <Button
-              leftSection={<IconVideo size={22} />}
-              size="lg"
-              radius="xl"
-              variant={tipoFiltro === 'video' ? 'filled' : 'outline'}
-              color={tipoFiltro === 'video' ? 'red' : 'gray'}
-              onClick={() => {
-                setTipoFiltro(tipoFiltro === 'video' ? '' : 'video');
-                setPaginaActual(1);
-              }}
-              style={{
-                fontWeight: 700,
-                fontSize: 18,
-                minWidth: 110,
-                boxShadow: tipoFiltro === 'video' ? '0 0 16px 0 #fca5a5bb, 0 2px 12px #f87171' : undefined,
-                filter: tipoFiltro === 'video' ? 'brightness(1.08) drop-shadow(0 0 8px #fca5a5)' : undefined,
-                transition: 'box-shadow 0.2s, filter 0.2s',
-              }}
-            >
-              Video
-            </Button>
-            <Button
-              leftSection={<IconWorld size={22} />}
-              size="lg"
-              radius="xl"
-              variant={tipoFiltro === 'web' ? 'filled' : 'outline'}
-              color={tipoFiltro === 'web' ? 'cyan' : 'gray'}
-              onClick={() => {
-                setTipoFiltro(tipoFiltro === 'web' ? '' : 'web');
-                setPaginaActual(1);
-              }}
-              style={{
-                fontWeight: 700,
-                fontSize: 18,
-                minWidth: 110,
-                boxShadow: tipoFiltro === 'web' ? '0 0 16px 0 #22d3ee88, 0 2px 12px #06b6d4' : undefined,
-                filter: tipoFiltro === 'web' ? 'brightness(1.08) drop-shadow(0 0 8px #67e8f9)' : undefined,
-                transition: 'box-shadow 0.2s, filter 0.2s',
-              }}
-            >
-              Web
-            </Button>
-          </div>
-          <div className="flex items-center justify-center">
-            <RadialCategoryMenu
-              categories={radialCategories}
-              value={categoriaFiltro}
-              onSelect={cat => {
-                setCategoriaFiltro(cat);
-                setPaginaActual(1);
-              }}
-            />
-            {categoriaFiltro && (
-              <button
-                className="ml-2 text-xs text-red-600 underline"
-                onClick={() => {
-                  setCategoriaFiltro("");
-                  setPaginaActual(1);
-                }}
-              >
-                Limpiar categoría
-              </button>
-            )}
-          </div>
+          <Button
+            leftSection={<IconVideo size={22} />}
+            size="lg"
+            radius="xl"
+            variant={tipoFiltro === 'video' ? 'filled' : 'outline'}
+            color={tipoFiltro === 'video' ? 'red' : 'gray'}
+            onClick={() => {
+              setTipoFiltro(tipoFiltro === 'video' ? '' : 'video');
+              setPaginaActual(1);
+            }}
+            style={{
+              fontWeight: 700,
+              fontSize: 18,
+              minWidth: 110,
+              boxShadow: tipoFiltro === 'video' ? '0 0 16px 0 #fca5a5bb, 0 2px 12px #f87171' : undefined,
+              filter: tipoFiltro === 'video' ? 'brightness(1.08) drop-shadow(0 0 8px #fca5a5)' : undefined,
+              transition: 'box-shadow 0.2s, filter 0.2s',
+            }}
+          >
+            Video
+          </Button>
+          <Button
+            leftSection={<IconWorld size={22} />}
+            size="lg"
+            radius="xl"
+            variant={tipoFiltro === 'web' ? 'filled' : 'outline'}
+            color={tipoFiltro === 'web' ? 'cyan' : 'gray'}
+            onClick={() => {
+              setTipoFiltro(tipoFiltro === 'web' ? '' : 'web');
+              setPaginaActual(1);
+            }}
+            style={{
+              fontWeight: 700,
+              fontSize: 18,
+              minWidth: 110,
+              boxShadow: tipoFiltro === 'web' ? '0 0 16px 0 #22d3ee88, 0 2px 12px #06b6d4' : undefined,
+              filter: tipoFiltro === 'web' ? 'brightness(1.08) drop-shadow(0 0 8px #67e8f9)' : undefined,
+              transition: 'box-shadow 0.2s, filter 0.2s',
+            }}
+          >
+            Web
+          </Button>
         </div>
-        <button
-          onClick={() => {
-            setBusqueda("");
-            setTipoFiltro("");
-            setCategoriaFiltro("");
-            setPaginaActual(1);
-          }}
-          className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition"
-        >
-          Limpiar filtros
-        </button>
+        <div className="flex items-center justify-center">
+          <RadialCategoryMenu
+            categories={radialCategories}
+            value={categoriaFiltro}
+            onSelect={cat => setCategoriaFiltro(cat)}
+            selectedLabel={categoriaFiltro ? (radialCategories.find(c => c.value === categoriaFiltro)?.label || '') : undefined}
+            selectedIcon={categoriaFiltro ? (categoryEmojis[categoriaFiltro] ? <span className="text-5xl">{categoryEmojis[categoriaFiltro]}</span> : undefined) : undefined}
+            open={isOpen}
+            onOpenChange={setIsOpen}
+          />
+        </div>
       </div>
+      <button
+        onClick={() => {
+          setBusqueda("");
+          setTipoFiltro("");
+          setCategoriaFiltro("");
+          setPaginaActual(1);
+        }}
+        className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition text-sm mb-2"
+      >
+        Limpiar filtros
+      </button>
 
       {/* Recursos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

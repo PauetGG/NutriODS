@@ -6,6 +6,18 @@ import { ClockIcon, CheckIcon, ChevronUpDownIcon, FireIcon, SparklesIcon, FaceSm
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Modal, Group, Badge, List, ThemeIcon, Loader, Paper, ScrollArea } from '@mantine/core';
 import { IconListCheck, IconClock, IconUsers, IconChefHat } from '@tabler/icons-react';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { useRef } from 'react';
+import '@zachleat/hypercard';
+
+// Para TypeScript: declara el tipo de 'hyper-card' como elemento JSX
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'hyper-card': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    }
+  }
+}
 
 export default function RecetasPage() {
   const [allRecetas, setAllRecetas] = useState<Receta[]>([]);
@@ -114,15 +126,13 @@ export default function RecetasPage() {
   };
 
   return (
-    <div className="p-6 pt-10 min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold text-center text-emerald-700 mb-8">
-        Encuentra tu Receta Perfecta
-      </h1>
-      <div className="flex flex-col gap-8 justify-center items-center mb-10 p-8 bg-gray-100 rounded-2xl shadow-lg">
-        {/* Filtros en línea: buscador, dificultad, tiempo */}
-        <div className="w-full flex flex-wrap justify-center items-end gap-3 md:gap-6">
-          {/* Buscador grande a la izquierda */}
-          <div className="w-72">
+    <>
+    <div className="p-6 pt-6 min-h-screen bg-gray-100">
+      <h1 className="text-3xl font-bold text-center text-emerald-700 mb-4">Recetas</h1>
+      {/* Filtros tipo recetas */}
+      <div className="w-full flex flex-wrap justify-center items-end gap-2 md:gap-4 mb-4">
+        {/* Buscador tipo recetas */}
+        <div className="w-60">
             <Combobox value={busqueda} onChange={v => setBusqueda(v ?? "")}> {/* <-- wrapper para evitar null */}
               <div className="relative w-full">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-4">
@@ -189,8 +199,8 @@ export default function RecetasPage() {
               </div>
             </Combobox>
           </div>
-          {/* Dificultad en línea con título arriba */}
-          <div className="flex flex-col items-center">
+        {/* Dificultad en línea con título arriba */}
+        <div className="flex flex-col items-center">
             <span className="text-sm font-medium text-gray-700 mb-1">Dificultad</span>
             <div className="flex flex-wrap justify-center gap-3">
               {dificultades.map(({ label, value, icon: Icon, color }) => (
@@ -269,7 +279,6 @@ export default function RecetasPage() {
               )}
             </Popover>
           </div>
-        </div>
       </div>
       {recetasPagina.length === 0 ? (
         <p className="text-center text-gray-600 mt-10">
@@ -277,12 +286,20 @@ export default function RecetasPage() {
         </p>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key="recetas-grid"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] } }}
+                exit={{ opacity: 0, y: -40, transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] } }}
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+              >
             {recetasPagina.map((receta) => (
+                  <hyper-card key={receta.id} style={{ display: 'block', background: 'none', border: 'none', boxShadow: 'none', padding: 0, margin: 0 }}>
               <div
-                key={receta.id}
                 onClick={() => handleSeleccionarReceta(receta)}
-                className="bg-white rounded-xl shadow-md hover:shadow-lg cursor-pointer transition p-4 flex flex-col items-center"
+                      className="bg-white rounded-xl shadow-md cursor-pointer transition p-4 flex flex-col items-center will-change-transform"
+                      style={{ minHeight: 0 }}
               >
                 <img
                   src={receta.imagenUrl || "https://via.placeholder.com/300"}
@@ -292,8 +309,10 @@ export default function RecetasPage() {
                 <h2 className="text-xl font-semibold text-emerald-700 text-center">{receta.nombre}</h2>
                 <p className="text-sm text-gray-600 mt-1">Dificultad: {receta.dificultad} | Tiempo: {receta.tiempoPreparacion} min</p>
               </div>
+                  </hyper-card>
             ))}
-          </div>
+              </motion.div>
+            </AnimatePresence>
           <ReactPaginate
             pageCount={totalPaginas}
             onPageChange={(e) => cambiarPagina(e.selected + 1)}
@@ -310,61 +329,102 @@ export default function RecetasPage() {
           />
         </>
       )}
+        <AnimatePresence>
       {recetaSeleccionada && (
         <Modal
           opened={!!recetaSeleccionada}
           onClose={() => setRecetaSeleccionada(null)}
-          size="auto"
+              size="100vw"
           centered
           padding={0}
           withCloseButton={false}
           overlayProps={{ blur: 3, backgroundOpacity: 0.3 }}
           styles={{ body: { padding: 0 } }}
         >
-          <Paper radius="xl" shadow="xl" p={0} style={{ overflow: 'hidden', minHeight: '80vh', minWidth: '80vw', maxWidth: '98vw', maxHeight: '98vh', display: 'flex', flexDirection: 'row' }}>
-            {/* IZQUIERDA: Imagen grande */}
-            <div style={{ flex: 1.2, background: 'linear-gradient(180deg,#d1fae5 0%,#fff 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, minWidth: 0 }}>
+              <motion.div
+                initial={{ opacity: 0, rotateY: -90, scale: 0.8, filter: 'blur(12px)' }}
+                animate={{ opacity: 1, rotateY: 0, scale: 1, filter: 'blur(0px)', transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] } }}
+                exit={{ opacity: 0, rotateY: 90, scale: 0.8, filter: 'blur(12px)', transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] } }}
+                style={{ perspective: 1200 }}
+              >
+                <Paper radius="xl" shadow="xl" p={0} style={{ overflow: 'hidden', minHeight: '100vh', minWidth: '100vw', maxWidth: '100vw', maxHeight: '100vh', display: 'flex', flexDirection: 'row' }}>
+                  {/* IZQUIERDA: Imagen más pequeña */}
+                  <div style={{ flex: 0.8, background: 'linear-gradient(180deg,#d1fae5 0%,#fff 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, minWidth: 0 }}>
               <img
                 src={recetaSeleccionada.imagenUrl || 'https://via.placeholder.com/700x900'}
                 alt={recetaSeleccionada.nombre}
-                style={{ width: '100%', height: 'auto', maxHeight: '90vh', objectFit: 'cover', borderRadius: 0, boxShadow: '0 8px 32px #0001' }}
+                      style={{ width: '100%', height: 'auto', maxHeight: '60vh', objectFit: 'cover', borderRadius: 0, boxShadow: '0 8px 32px #0001' }}
               />
             </div>
             {/* DERECHA: Info principal */}
-            <div style={{ flex: 1.8, display: 'flex', flexDirection: 'column', padding: 48, position: 'relative', minWidth: 0, height: '100%' }}>
+                  <div style={{ flex: 1.8, display: 'flex', flexDirection: 'column', padding: 24, position: 'relative', minWidth: 0, height: '100%' }}>
+                    {/* Nombre y descripción */}
+                    <div style={{ marginBottom: 10 }}>
+                      <h2 style={{ fontSize: 28, fontWeight: 900, color: '#047857', marginBottom: 6, textAlign: 'left', lineHeight: 1.1 }}>{recetaSeleccionada.nombre}</h2>
+                      <div
+                        style={{
+                          color: '#374151',
+                          fontSize: 15,
+                          marginBottom: 6,
+                          textAlign: 'left',
+                          whiteSpace: 'normal',
+                          wordBreak: 'break-word',
+                          maxWidth: '80ch',
+                          width: '100%',
+                          overflowX: 'hidden',
+                          overflowWrap: 'break-word',
+                        }}
+                        title={recetaSeleccionada.descripcion}
+                      >
+                        {recetaSeleccionada.descripcion}
+                      </div>
+                    </div>
+                    {/* Instrucciones y ingredientes+badges en grid */}
+                    <div style={{ display: 'flex', flexDirection: 'row', gap: 24, flex: 1, minHeight: 0 }}>
+                      {/* Instrucciones */}
+                      <div style={{ flex: 2, minWidth: 0, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                        <h3 style={{ fontSize: 17, fontWeight: 700, color: '#334155', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}><IconChefHat size={18} /> Instrucciones</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                          <ScrollArea h={220} offsetScrollbars scrollbarSize={8} style={{ width: '100%', maxWidth: '48ch', marginRight: 0 }}>
+                            <div style={{ color: '#374151', fontSize: 13, whiteSpace: 'pre-line', marginBottom: 8, maxWidth: '48ch', wordBreak: 'break-word', overflowWrap: 'break-word' }}>{recetaSeleccionada.instrucciones || 'No se han proporcionado instrucciones.'}</div>
+                          </ScrollArea>
+                          {/* Botón de cerrar centrado justo debajo de instrucciones */}
               <button
                 onClick={() => setRecetaSeleccionada(null)}
-                style={{ position: 'absolute', top: 24, right: 24, background: 'none', border: 'none', cursor: 'pointer', zIndex: 2 }}
                 aria-label="Cerrar"
+                            style={{
+                              marginTop: 8,
+                              background: '#fff',
+                              border: '2px solid #e5e7eb',
+                              borderRadius: '50%',
+                              boxShadow: '0 2px 8px #0002',
+                              width: 38,
+                              height: 38,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              zIndex: 10,
+                              pointerEvents: 'auto',
+                              transition: 'box-shadow 0.2s',
+                            }}
               >
-                <svg width={32} height={32} fill="none" stroke="#64748b" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l20 20M6 26L26 6" /></svg>
+                            <svg width={22} height={22} fill="none" stroke="#64748b" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l10 10M6 16L16 6" /></svg>
               </button>
-              {/* Nombre y descripción */}
-              <div style={{ marginBottom: 18 }}>
-                <h2 style={{ fontSize: 40, fontWeight: 900, color: '#047857', marginBottom: 10, textAlign: 'left', lineHeight: 1.1 }}>{recetaSeleccionada.nombre}</h2>
-                <div style={{ color: '#374151', fontSize: 20, marginBottom: 8, textAlign: 'left', whiteSpace: 'pre-line' }}>{recetaSeleccionada.descripcion}</div>
               </div>
-              {/* Instrucciones y ingredientes+badges en grid */}
-              <div style={{ display: 'flex', flexDirection: 'row', gap: 40, flex: 1, minHeight: 0 }}>
-                {/* Instrucciones */}
-                <div style={{ flex: 2, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                  <h3 style={{ fontSize: 24, fontWeight: 700, color: '#334155', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}><IconChefHat size={24} /> Instrucciones</h3>
-                  <ScrollArea h={340} offsetScrollbars>
-                    <div style={{ color: '#374151', fontSize: 17, whiteSpace: 'pre-line', marginBottom: 12 }}>{recetaSeleccionada.instrucciones || 'No se han proporcionado instrucciones.'}</div>
-                  </ScrollArea>
                 </div>
                 {/* Ingredientes y badges */}
-                <div style={{ flex: 1.2, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+                      <div style={{ flex: 1.2, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 0 }}>
                   <div>
-                    <h4 style={{ fontSize: 20, fontWeight: 700, color: '#334155', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}><IconListCheck size={22} /> Ingredientes</h4>
+                          <h4 style={{ fontSize: 15, fontWeight: 700, color: '#334155', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}><IconListCheck size={16} /> Ingredientes</h4>
                     {loadingIngredientes ? (
-                      <Loader size="sm" color="teal" />
+                            <Loader size="xs" color="teal" />
                     ) : ingredientesReceta && ingredientesReceta.length > 0 ? (
                       <List
                         spacing="xs"
-                        size="md"
-                        icon={<ThemeIcon color="teal" size={24} radius="xl"><IconListCheck size={16} /></ThemeIcon>}
-                        style={{ color: '#334155', fontSize: 17 }}
+                              size="sm"
+                              icon={<ThemeIcon color="teal" size={18} radius="xl"><IconListCheck size={12} /></ThemeIcon>}
+                              style={{ color: '#334155', fontSize: 13 }}
                       >
                         {ingredientesReceta.map((ing: any) => (
                           <List.Item key={ing.ingrediente?.id || ing.id}>
@@ -374,16 +434,16 @@ export default function RecetasPage() {
                         ))}
                       </List>
                     ) : (
-                      <div style={{ color: '#64748b', fontSize: 15 }}>No hay ingredientes para esta receta.</div>
+                            <div style={{ color: '#64748b', fontSize: 12 }}>No hay ingredientes para esta receta.</div>
                     )}
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
-                    <Badge color="teal" size="lg" leftSection={<IconClock size={20} />}>{recetaSeleccionada.tiempoPreparacion} min</Badge>
-                    <Badge color="yellow" size="lg" leftSection={<IconUsers size={20} />}>{recetaSeleccionada.raciones} raciones</Badge>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
+                          <Badge color="teal" size="md" leftSection={<IconClock size={15} />}>{recetaSeleccionada.tiempoPreparacion} min</Badge>
+                          <Badge color="yellow" size="md" leftSection={<IconUsers size={15} />}>{recetaSeleccionada.raciones} raciones</Badge>
                     <Badge
                       color={recetaSeleccionada.dificultad === 'fácil' ? 'teal' : recetaSeleccionada.dificultad === 'media' ? 'yellow' : 'red'}
-                      size="lg"
-                      leftSection={<IconChefHat size={20} />}
+                            size="md"
+                            leftSection={<IconChefHat size={15} />}
                     >
                       {recetaSeleccionada.dificultad.charAt(0).toUpperCase() + recetaSeleccionada.dificultad.slice(1)}
                     </Badge>
@@ -392,8 +452,11 @@ export default function RecetasPage() {
               </div>
             </div>
           </Paper>
+              </motion.div>
         </Modal>
       )}
+        </AnimatePresence>
     </div>
+    </>
   );
 }
