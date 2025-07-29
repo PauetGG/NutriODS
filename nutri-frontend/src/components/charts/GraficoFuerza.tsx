@@ -7,49 +7,63 @@ import {
   Title,
   Tooltip,
   type TooltipItem,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import { useState } from 'react';
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
+import { useState } from "react";
+import type { GimnasioEjercicio } from "../../types/SeguimientoFisico";
 
-// ✅ Importa desde tu archivo de tipos
-import type { GimnasioEjercicio } from '../../types/SeguimientoFisico';
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-// ✅ Tipo para gráfico resumen horizontal (por zona muscular o repeticiones máximas)
 interface ResumenProps {
   titulo: string;
   label: string;
   datos: Record<string, number>;
 }
 
-// ✅ Tipo para gráfico de evolución por ejercicio (usando tu GimnasioEjercicio)
 interface EvolucionProps {
   titulo: string;
   evolucionPorEjercicio: true;
-  datosEvolucion: (GimnasioEjercicio & { fecha: string })[]; // añadimos fecha
+  datosEvolucion: (GimnasioEjercicio & { fecha: string })[];
 }
 
-// ✅ Unión de props
 type Props = ResumenProps | EvolucionProps;
 
 function GraficoFuerza(props: Props) {
-  const isEvolucion =
-    'evolucionPorEjercicio' in props && props.evolucionPorEjercicio;
+  const isEvolucion = "evolucionPorEjercicio" in props && props.evolucionPorEjercicio;
 
   const ejerciciosUnicos = isEvolucion
     ? Array.from(new Set(props.datosEvolucion.map((e) => e.ejercicio))).sort()
     : [];
 
-  const [ejercicioSeleccionado, setEjercicioSeleccionado] = useState(
-    ejerciciosUnicos[0] || ''
+  const [ejercicioSeleccionado, setEjercicioSeleccionado] = useState(ejerciciosUnicos[0] || "");
+
+  // Clasificación manual
+  const ejerciciosInferiores = [
+    "adductores",
+    "curl femoral",
+    "extension cuadriceps",
+    "gemelos",
+    "hip trust",
+    "peso muerto",
+    "prensa",
+    "sentadilla",
+  ];
+
+  const ejerciciosSuperiores = [
+    "biceps",
+    "elevaciones laterales",
+    "face pull",
+    "jalon pecho",
+    "press banca",
+    "press militar",
+    "remo",
+    "triceps",
+  ];
+
+  const superiores = ejerciciosUnicos.filter((ej) => ejerciciosSuperiores.includes(ej));
+  const inferiores = ejerciciosUnicos.filter((ej) => ejerciciosInferiores.includes(ej));
+  const otros = ejerciciosUnicos.filter(
+    (ej) => !superiores.includes(ej) && !inferiores.includes(ej)
   );
 
   if (isEvolucion) {
@@ -59,15 +73,20 @@ function GraficoFuerza(props: Props) {
 
     const data = {
       labels: datosFiltrados.map((d) =>
-        new Date(d.fecha).toLocaleDateString()
+        new Date(d.fecha).toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "short",
+        })
       ),
       datasets: [
         {
           label: `Volumen (Peso + Reps) en ${ejercicioSeleccionado}`,
           data: datosFiltrados.map((d) => d.peso + d.reps),
-          backgroundColor: 'rgba(255, 159, 64, 0.6)',
-          borderColor: 'rgba(255, 159, 64, 1)',
+          backgroundColor: "rgba(255, 159, 64, 0.6)",
+          borderColor: "rgba(255, 159, 64, 1)",
           borderWidth: 1,
+          barPercentage: 0.5,
+          categoryPercentage: 0.5,
         },
       ],
     };
@@ -76,7 +95,7 @@ function GraficoFuerza(props: Props) {
       responsive: true,
       plugins: {
         legend: {
-          position: 'top' as const,
+          position: "top" as const,
         },
         title: {
           display: true,
@@ -84,7 +103,7 @@ function GraficoFuerza(props: Props) {
         },
         tooltip: {
           callbacks: {
-            label: function (context: TooltipItem<'bar'>) {
+            label: function (context: TooltipItem<"bar">) {
               const index = context.dataIndex;
               const originalData = datosFiltrados[index];
               const total = context.parsed.y;
@@ -102,32 +121,55 @@ function GraficoFuerza(props: Props) {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Volumen (Peso + Reps)',
+            text: "Volumen (Peso + Reps)",
           },
         },
       },
     };
 
     return (
-      <div>
+      <div className="bg-white p-4 rounded-lg shadow-md">
         <label className="block mb-2 font-semibold">Selecciona ejercicio:</label>
         <select
           className="mb-4 p-2 border rounded w-full"
           value={ejercicioSeleccionado}
           onChange={(e) => setEjercicioSeleccionado(e.target.value)}
         >
-          {ejerciciosUnicos.map((ej) => (
-            <option key={ej} value={ej}>
-              {ej}
-            </option>
-          ))}
+          {superiores.length > 0 && (
+            <optgroup label="Parte superior">
+              {superiores.map((ej) => (
+                <option key={ej} value={ej}>
+                  {ej}
+                </option>
+              ))}
+            </optgroup>
+          )}
+          {inferiores.length > 0 && (
+            <optgroup label="Parte inferior">
+              {inferiores.map((ej) => (
+                <option key={ej} value={ej}>
+                  {ej}
+                </option>
+              ))}
+            </optgroup>
+          )}
+          {otros.length > 0 && (
+            <optgroup label="Otros">
+              {otros.map((ej) => (
+                <option key={ej} value={ej}>
+                  {ej}
+                </option>
+              ))}
+            </optgroup>
+          )}
         </select>
+
         <Bar options={options} data={data} />
       </div>
     );
   }
 
-  // Vista resumen horizontal
+  // Gráfico resumen horizontal
   const { titulo, label, datos } = props as ResumenProps;
 
   const barData = {
@@ -136,19 +178,19 @@ function GraficoFuerza(props: Props) {
       {
         label: label,
         data: Object.values(datos),
-        backgroundColor: 'rgba(153, 102, 255, 0.6)',
-        borderColor: 'rgba(153, 102, 255, 1)',
+        backgroundColor: "rgba(153, 102, 255, 0.6)",
+        borderColor: "rgba(153, 102, 255, 1)",
         borderWidth: 1,
       },
     ],
   };
 
   const barOptions = {
-    indexAxis: 'y' as const,
+    indexAxis: "y" as const,
     responsive: true,
     plugins: {
       legend: {
-        position: 'top' as const,
+        position: "top" as const,
         display: false,
       },
       title: {
@@ -163,7 +205,11 @@ function GraficoFuerza(props: Props) {
     },
   };
 
-  return <Bar options={barOptions} data={barData} />;
+  return (
+    <div className="bg-white p-4 rounded-lg shadow-md">
+      <Bar options={barOptions} data={barData} />
+    </div>
+  );
 }
 
 export default GraficoFuerza;

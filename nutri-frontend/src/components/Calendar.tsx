@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { ModalComida } from "../components/ModalComida";
 import { generarPDFMensualSimple } from "../utils/pdfGenerator";
 import Swal from "sweetalert2";
+import logo from "../assets/logo.png";
 
 
 export const Calendar = () => {
@@ -22,17 +23,41 @@ export const Calendar = () => {
   if (seguimiento.length === 0) {
     Swal.fire({
       title: "Cargando calendario...",
-      text: "Por favor espera un momento",
+      html: `
+        <div style="
+          display: flex; 
+          flex-direction: column; 
+          align-items: center; 
+          justify-content: center; 
+          padding: 10px;
+          max-height: 100%;
+          overflow: hidden;
+        ">
+          <p style="margin-bottom: 20px;">Por favor espera un momento</p>
+          <img 
+            src="${logo}" 
+            alt="Logo" 
+            style="
+              width: 120px; 
+              padding: 10px;
+              animation: spin 1.2s linear infinite;
+            " 
+          />
+        </div>
+      `,
+      showConfirmButton: false,
       allowOutsideClick: false,
       allowEscapeKey: false,
-      didOpen: () => {
-        Swal.showLoading();
+      background: "#fff",
+      customClass: {
+        popup: 'w-[400px] max-w-full border-emerald-500 border-4 rounded-xl',
       },
     });
   } else {
     Swal.close();
   }
 }, [seguimiento]);
+
 
 
   const guardarCambio = async () => {
@@ -201,9 +226,14 @@ export const Calendar = () => {
         </div>
       );
     } else {
+      const orden = ["desayuno", "almuerzo", "comida", "merienda", "cena"];
+      const comidasOrdenadas = [...comidas].sort(
+        (a, b) => orden.indexOf(a.comida) - orden.indexOf(b.comida)
+      );
+
       return (
         <div className="space-y-3 mt-3 max-w-3xl mx-auto px-4">
-          {comidas.map((c, i) => (
+          {comidasOrdenadas.map((c, i) => (
             <div
               key={i}
               className="p-4 bg-gray-50 rounded-lg shadow border text-sm cursor-pointer hover:bg-gray-100 transition"
@@ -216,8 +246,14 @@ export const Calendar = () => {
                 {c.comidaModelo.nombre}
                 {c.notas && <span className="ml-2">📝</span>}
               </div>
-              <div className="text-xs text-gray-500 mt-1">Calorías: {c.comidaModelo.caloriasTotales}</div>
-              {c.notas && <div className="text-xs italic text-gray-400 mt-1">Notas: {c.notas}</div>}
+              <div className="text-xs text-gray-500 mt-1">
+                Calorías: {c.comidaModelo.caloriasTotales}
+              </div>
+              {c.notas && (
+                <div className="text-xs italic text-gray-400 mt-1">
+                  Notas: {c.notas}
+                </div>
+              )}
               <div className="mt-1 text-xs text-gray-400">
                 Estado: {c.consumido ? "✔ Consumido" : "✘ Pendiente"}
               </div>
@@ -277,40 +313,40 @@ export const Calendar = () => {
   return (
     <div className="bg-white rounded-lg shadow pt-5">
       {/* Cabecera */}
-     <div className="p-4 flex items-center justify-between border-b border-gray-200">
+    <div className="p-4 flex items-center justify-between border-b border-gray-200">
       <div className="flex items-center">
-        <button onClick={irAtras} className="p-1 hover:bg-gray-100 rounded-md">
+        <button onClick={irAtras} className="p-1 hover:bg-gray-100 rounded-md text-emerald-700">
           <ChevronLeftIcon size={20} />
         </button>
-        <h2 className="mx-4 font-medium capitalize text-lg">{formatearCabecera(fechaActual)}</h2>
-        <button onClick={irAdelante} className="p-1 hover:bg-gray-100 rounded-md">
+        <h2 className="mx-4 font-medium capitalize text-2xl text-emerald-700">{formatearCabecera(fechaActual)}</h2>
+        <button onClick={irAdelante} className="p-1 hover:bg-gray-100 rounded-md text-emerald-700">
           <ChevronRightIcon size={20} />
         </button>
       </div>
 
       <div className="flex items-center gap-2">
-        <button
+       <button
           onClick={() => generarPDFMensualSimple(seguimiento, fechaActual)}
-          className="bg-blue-500 text-white text-sm px-3 py-1 rounded hover:bg-blue-600 transition"
+          className="px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 font-semibold transition-all shadow-sm"
         >
-          Descargar PDF
+          📄 Descargar PDF
         </button>
 
-        <div className="relative">
-          <select
-            className="appearance-none bg-white border border-gray-200 rounded-md px-3 py-1 pr-8 text-sm"
-            value={modoVista}
-            onChange={(e) => setModoVista(e.target.value as "monthly" | "weekly" | "daily")}
-          >
-            <option value="monthly">Mensual</option>
-            <option value="weekly">Semanal</option>
-            <option value="daily">Diaria</option>
-          </select>
-          <ChevronDownIcon
-            size={16}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-          />
-        </div>
+       <div className="relative">
+        <select
+          className="appearance-none px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 font-semibold transition-all shadow-sm pr-8"
+          value={modoVista}
+          onChange={(e) => setModoVista(e.target.value as "monthly" | "weekly" | "daily")}
+        >
+          <option value="monthly">Mensual</option>
+          <option value="weekly">Semanal</option>
+          <option value="daily">Diaria</option>
+        </select>
+        <ChevronDownIcon
+          size={16}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+        />
+      </div>
       </div>
     </div>
 

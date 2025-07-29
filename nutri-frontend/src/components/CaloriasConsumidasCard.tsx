@@ -8,27 +8,23 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { isBefore, startOfToday } from "date-fns";
 
 interface CaloriasConsumidasCardProps {
-  datos: { dia: string; objetivo: number; consumido: number }[];
+  datos: { fecha: string; objetivo: number; consumido: number }[];
 }
 
 export const CaloriasConsumidasCard: React.FC<CaloriasConsumidasCardProps> = ({ datos }) => {
-  const diasOrden = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"];
-
-  const data = datos
-    .map((d) => {
-      const dia = d.dia.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      return {
-        name: dia.charAt(0).toUpperCase() + dia.slice(1),
-        objetivo: Number(d.objetivo),
-        consumido: Number(d.consumido),
-        diferencia: Math.max(0, Number(d.objetivo) - Number(d.consumido)),
-        indexOrden: diasOrden.indexOf(dia),
-      };
-    })
-    .filter((d) => d.indexOrden !== -1)
-    .sort((a, b) => a.indexOrden - b.indexOrden);
+  const hoy = startOfToday();
+  
+    const data = datos
+      .filter((d) => isBefore((d.fecha), hoy))
+      .map((d) => ({
+        name: new Date(d.fecha).toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short" }),
+        objetivo: d.objetivo,
+        consumido: d.consumido,
+        diferencia: d.consumido < d.objetivo ? d.objetivo - d.consumido : 0,
+      }));
 
   return (
     <div className="bg-white rounded-lg shadow p-4">

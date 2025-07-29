@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { AvatarViewer } from "../components/AvatarViewer";
+import { AuthContext } from "../context/useAuth";
 import { useAuth } from "../context/useAuth";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -24,6 +25,7 @@ export const ProgresoPage = () => {
   const { id } = useAuth();
   const { dietaId } = useParams<{ dietaId: string }>();
   const [avatarActual, setAvatarActual] = useState("");
+  const { username } = useContext(AuthContext);
   const [avatarDeseado, setAvatarDeseado] = useState("");
   const [imc, setImc] = useState<number | null>(null);
   const [genero, setGenero] = useState("");
@@ -198,14 +200,13 @@ export const ProgresoPage = () => {
         setTipoFuerza(e.target.value as "calistenia" | "gimnasio");
         setZonaMuscular("");
       }}
-      className="w-full border rounded px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="w-full border border-gray-300 rounded-full px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
     >
       <option value="">Selecciona</option>
       <option value="calistenia">Calistenia</option>
       <option value="gimnasio">Gimnasio</option>
     </select>
 
-    {/* BLOQUE CALISTENIA */}
     {tipoFuerza === "calistenia" && (
       <div className="mt-4">
         <label className="text-sm font-medium mb-1 block">Ejercicios de calistenia</label>
@@ -213,7 +214,7 @@ export const ProgresoPage = () => {
           <select
             value={ejercicioSeleccionado}
             onChange={(e) => setEjercicioSeleccionado(e.target.value)}
-            className="border rounded px-4 py-2 shadow-sm w-full md:w-1/2"
+            className="border border-gray-300 rounded-full px-4 py-2 shadow-sm w-full md:w-1/2"
           >
             <option value="">Selecciona ejercicio</option>
             <option value="flexiones">Flexiones</option>
@@ -231,7 +232,7 @@ export const ProgresoPage = () => {
             min={1}
             value={repsSeleccionadas ?? ""}
             onChange={(e) => setRepsSeleccionadas(parseInt(e.target.value))}
-            className="border rounded px-4 py-2 shadow-sm w-full md:w-1/2"
+            className="border border-gray-300 rounded-full px-4 py-2 shadow-sm w-full md:w-1/2"
           />
         </div>
 
@@ -247,7 +248,7 @@ export const ProgresoPage = () => {
               setRepsSeleccionadas(null);
             }
           }}
-          className="mt-2 bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+          className="mt-3 px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 font-semibold transition-all shadow-sm"
         >
           Añadir ejercicio
         </button>
@@ -255,7 +256,7 @@ export const ProgresoPage = () => {
         {ejerciciosCalistenia.length > 0 && (
           <ul className="mt-3 space-y-1 text-sm text-gray-700">
             {ejerciciosCalistenia.map((item, index) => (
-              <li key={index} className="flex justify-between items-center bg-gray-100 px-3 py-1 rounded">
+              <li key={index} className="flex justify-between items-center bg-gray-100 px-3 py-1 rounded-xl shadow-sm">
                 <span>{item.ejercicio} – {item.repeticiones} reps</span>
                 <button
                   type="button"
@@ -271,7 +272,6 @@ export const ProgresoPage = () => {
       </div>
     )}
 
-    {/* BLOQUE GIMNASIO */}
     {tipoFuerza === "gimnasio" && (
       <div className="mt-4">
         <label className="text-sm font-medium mb-1 block">Zona muscular</label>
@@ -281,7 +281,7 @@ export const ProgresoPage = () => {
             setZonaMuscular(e.target.value as "superior" | "inferior");
             setEjercicioGym("");
           }}
-          className="border rounded px-4 py-2 shadow-sm mb-4 w-full"
+          className="border border-gray-300 rounded-full px-4 py-2 shadow-sm mb-4 w-full"
         >
           <option value="">Selecciona zona</option>
           <option value="superior">Parte superior</option>
@@ -294,33 +294,18 @@ export const ProgresoPage = () => {
               <select
                 value={ejercicioGym}
                 onChange={(e) => setEjercicioGym(e.target.value)}
-                className="border rounded px-4 py-2 shadow-sm"
+                className="border border-gray-300 rounded-full px-4 py-2 shadow-sm"
               >
                 <option value="">Selecciona ejercicio</option>
-                {zonaMuscular === "superior" && (
-                  <>
-                    <option value="press banca">Press banca</option>
-                    <option value="remo">Remo</option>
-                    <option value="triceps">Tríceps</option>
-                    <option value="biceps">Bíceps</option>
-                    <option value="press militar">Press militar</option>
-                    <option value="elevaciones laterales">Elevaciones laterales</option>
-                    <option value="face pull">Face pull</option>
-                    <option value="jalon pecho">Jalón al pecho</option>
-                  </>
-                )}
-                {zonaMuscular === "inferior" && (
-                  <>
-                    <option value="sentadilla">Sentadilla</option>
-                    <option value="peso muerto">Peso muerto</option>
-                    <option value="prensa">Prensa</option>
-                    <option value="gemelos">Gemelos</option>
-                    <option value="extension cuadriceps">Extensión de cuádriceps</option>
-                    <option value="curl femoral">Curl femoral</option>
-                    <option value="adductores">Adductores</option>
-                    <option value="hip trust">Hip Trust</option>
-                  </>
-                )}
+                {(zonaMuscular === "superior" ? [
+                  "press banca", "remo", "triceps", "biceps", "press militar",
+                  "elevaciones laterales", "face pull", "jalon pecho"
+                ] : [
+                  "sentadilla", "peso muerto", "prensa", "gemelos",
+                  "extension cuadriceps", "curl femoral", "adductores", "hip trust"
+                ]).map((ej, i) => (
+                  <option key={i} value={ej}>{ej}</option>
+                ))}
               </select>
 
               <input
@@ -329,7 +314,7 @@ export const ProgresoPage = () => {
                 placeholder="Kg movidos"
                 value={pesoEjercicio ?? ""}
                 onChange={(e) => setPesoEjercicio(parseFloat(e.target.value))}
-                className="border rounded px-4 py-2 shadow-sm"
+                className="border border-gray-300 rounded-full px-4 py-2 shadow-sm"
               />
 
               <input
@@ -338,34 +323,24 @@ export const ProgresoPage = () => {
                 placeholder="Reps"
                 value={repsEjercicio ?? ""}
                 onChange={(e) => setRepsEjercicio(parseInt(e.target.value))}
-                className="border rounded px-4 py-2 shadow-sm"
+                className="border border-gray-300 rounded-full px-4 py-2 shadow-sm"
               />
             </div>
 
             <button
               type="button"
               onClick={() => {
-                if (
-                  ejercicioGym &&
-                  zonaMuscular &&
-                  pesoEjercicio !== null &&
-                  repsEjercicio !== null
-                ) {
+                if (ejercicioGym && zonaMuscular && pesoEjercicio !== null && repsEjercicio !== null) {
                   setEjerciciosGimnasio((prev) => [
                     ...prev,
-                    {
-                      ejercicio: ejercicioGym,
-                      zona: zonaMuscular,
-                      peso: pesoEjercicio,
-                      reps: repsEjercicio,
-                    },
+                    { ejercicio: ejercicioGym, zona: zonaMuscular, peso: pesoEjercicio, reps: repsEjercicio }
                   ]);
                   setEjercicioGym("");
                   setPesoEjercicio(null);
                   setRepsEjercicio(null);
                 }
               }}
-              className="mt-2 bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+              className="mt-3 px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 font-semibold transition-all shadow-sm"
             >
               Añadir ejercicio
             </button>
@@ -373,18 +348,11 @@ export const ProgresoPage = () => {
             {ejerciciosGimnasio.length > 0 && (
               <ul className="mt-3 space-y-1 text-sm text-gray-700">
                 {ejerciciosGimnasio.map((item, index) => (
-                  <li
-                    key={index}
-                    className="flex justify-between items-center bg-gray-100 px-3 py-1 rounded"
-                  >
-                    <span>
-                      {item.zona} – {item.ejercicio}: {item.peso} kg, {item.reps} reps
-                    </span>
+                  <li key={index} className="flex justify-between items-center bg-gray-100 px-3 py-1 rounded-xl shadow-sm">
+                    <span>{item.zona} – {item.ejercicio}: {item.peso} kg, {item.reps} reps</span>
                     <button
                       type="button"
-                      onClick={() =>
-                        setEjerciciosGimnasio((prev) => prev.filter((_, i) => i !== index))
-                      }
+                      onClick={() => setEjerciciosGimnasio((prev) => prev.filter((_, i) => i !== index))}
                       className="text-red-500 text-xs hover:underline"
                     >
                       Eliminar
@@ -400,149 +368,163 @@ export const ProgresoPage = () => {
   </div>
 );
 
+ return (
+  <div className="p-6 space-y-10 bg-gray-100 min-h-screen">
+    <h2 className="text-3xl font-bold text-center text-emerald-700">Tu progreso</h2>
 
-  return (
-    <div className="p-6 space-y-10 bg-gray-100 min-h-screen">
-      <h2 className="text-2xl font-bold text-center text-blue-800">Tu progreso</h2>
+    {/* AVATAR + FORMULARIO */}
+    <div className="flex flex-col md:flex-row gap-8 justify-around items-start">
+      <div className="bg-white rounded-2xl shadow-md border border-emerald-300 w-full md:w-1/2 text-center p-6">
+      <h3 className="text-lg font-semibold text-emerald-700 mb-2">Estado actual</h3>
 
-      {/* AVATAR + FORMULARIO */}
-      <div className="flex flex-col md:flex-row gap-8 justify-around items-start">
-        <div className="bg-white shadow-lg px-4 pt-4 pb-1 rounded-xl border w-full md:w-1/2 text-center">
-          <h3 className="text-lg font-semibold text-blue-700 mb-2">Estado actual</h3>
-          {pesoActual && <p className="text-sm text-gray-600">Peso actual: {pesoActual} kg</p>}
-          {imc && <p className="text-sm text-gray-600 mb-1">IMC actual: {imc.toFixed(1)}</p>}
-          {avatarActual && <AvatarViewer url={avatarActual} height={350} />}
-        </div>
-
-        <div className="w-full md:w-1/2 bg-white shadow-xl border border-blue-300 p-6 rounded-xl">
-          <h3 className="text-lg font-semibold text-blue-700 mb-4">Registrar progreso físico</h3>
-          <form onSubmit={handleGuardarProgreso} className="grid grid-cols-1 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-1 block">Peso (kg)</label>
-              <input
-                type="number"
-                min={30}
-                max={200}
-                step="0.1"
-                value={pesoRegistro ?? ""}
-                onChange={(e) => setPesoRegistro(parseFloat(e.target.value))}
-                className="w-full border rounded px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div className="flex gap-4">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="entreno"
-                  value="si"
-                  checked={entrenoHoy === "si"}
-                  onChange={() => setEntrenoHoy("si")}
-                  className="mr-2 accent-blue-600"
-                />
-                Entrené hoy
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="entreno"
-                  value="no"
-                  checked={entrenoHoy === "no"}
-                  onChange={() => setEntrenoHoy("no")}
-                  className="mr-2 accent-blue-600"
-                />
-                No entrené
-              </label>
-            </div>
-
-            {entrenoHoy === "si" && (
-              <>
-                <select
-                  value={tipoEntreno}
-                  onChange={(e) => setTipoEntreno(e.target.value)}
-                  className="border rounded px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Tipo de entrenamiento</option>
-                  <option value="fuerza">Fuerza</option>
-                  <option value="resistencia">Resistencia</option>
-                  <option value="ambas">Ambas</option>
-                </select>
-
-               {(tipoEntreno === "resistencia" || tipoEntreno === "ambas") && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium mb-1 block">Velocidad (km/h)</label>
-                      <input
-                        type="number"
-                        min={0}
-                        value={velocidad ?? ""}
-                        onChange={(e) => setVelocidad(parseFloat(e.target.value))}
-                        className="w-full border rounded px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-1 block">Tiempo (min)</label>
-                      <input
-                        type="number"
-                        min={0}
-                        value={tiempo ?? ""}
-                        onChange={(e) => setTiempo(parseFloat(e.target.value))}
-                        className="w-full border rounded px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {(tipoEntreno === "fuerza" || tipoEntreno === "ambas") && renderFuerza()}
-              </>
-            )}
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow"
-            >
-              {idSeguimientoExistente ? "Actualizar progreso" : "Guardar progreso"}
-            </button>
-          </form>
-        </div>
-        </div>
-      {/* PESTAÑA AVATAR DESEADO */}
-      <div className="text-center mt-10">
-        <button
-          onClick={() => setMostrarAvatarDeseado((prev) => !prev)}
-          className="flex items-center justify-center gap-2 mx-auto bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold px-4 py-2 rounded-full shadow transition"
-        >
-          {mostrarAvatarDeseado ? (
-            <>
-              Ocultar vista de peso deseado <ChevronUpIcon size={18} />
-            </>
-          ) : (
-            <>
-              ¿Cómo te verás con tu peso deseado? <ChevronDownIcon size={18} />
-            </>
+      {pesoActual && (
+        <p className="text-sm text-gray-600">Peso actual: {pesoActual} kg</p>
+      )}
+      {imc && (
+        <p className="text-sm text-gray-600 mb-1">IMC actual: {imc.toFixed(1)}</p>
+      )}
+      {avatarActual && (
+        <>
+          <AvatarViewer url={avatarActual} height={350} />
+          {username && (
+            <p className="mt-2 text-xl font-medium text-emerald-700">{username}</p>
           )}
-        </button>
+        </>
+      )}
+    </div>
 
-        {mostrarAvatarDeseado && (
-          <div className="mt-6 bg-white rounded-xl shadow-md border p-6 w-full max-w-lg mx-auto transition-all duration-300">
-            <h3 className="text-lg font-semibold text-blue-700 mb-2">Peso deseado</h3>
+      <div className="w-full md:w-1/2 bg-white shadow-md border border-emerald-300 p-6 rounded-2xl">
+        <h3 className="text-lg font-semibold text-emerald-700 mb-4">Registrar progreso físico</h3>
+        <form onSubmit={handleGuardarProgreso} className="grid grid-cols-1 gap-4">
+          <div>
+            <label className="text-sm font-medium mb-1 block">Peso (kg)</label>
             <input
               type="number"
               min={30}
-              max={150}
-              value={pesoDeseado ?? ""}
-              onChange={handlePesoDeseadoChange}
-              className="border px-4 py-2 rounded text-center mb-2 shadow focus:ring-2 focus:ring-blue-500 w-full"
+              max={200}
+              step="0.1"
+              value={pesoRegistro ?? ""}
+              onChange={(e) => setPesoRegistro(parseFloat(e.target.value))}
+              className="w-full border border-gray-300 rounded-full px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              required
             />
-            {imcDeseado && (
-              <p className="text-sm text-gray-600 mb-2">IMC estimado: {imcDeseado.toFixed(1)}</p>
-            )}
-            {avatarDeseado && <AvatarViewer url={avatarDeseado} height={420} />}
           </div>
-        )}
+
+          <div className="flex gap-4">
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="entreno"
+                value="si"
+                checked={entrenoHoy === "si"}
+                onChange={() => setEntrenoHoy("si")}
+                className="mr-2 accent-emerald-500"
+              />
+              Entrené hoy
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="entreno"
+                value="no"
+                checked={entrenoHoy === "no"}
+                onChange={() => setEntrenoHoy("no")}
+                className="mr-2 accent-emerald-500"
+              />
+              No entrené
+            </label>
+          </div>
+
+          {entrenoHoy === "si" && (
+            <>
+              <select
+                value={tipoEntreno}
+                onChange={(e) => setTipoEntreno(e.target.value)}
+                className="border border-gray-300 rounded-full px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              >
+                <option value="">Tipo de entrenamiento</option>
+                <option value="fuerza">Fuerza</option>
+                <option value="resistencia">Resistencia</option>
+                <option value="ambas">Ambas</option>
+              </select>
+
+              {(tipoEntreno === "resistencia" || tipoEntreno === "ambas") && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Velocidad (km/h)</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={velocidad ?? ""}
+                      onChange={(e) => setVelocidad(parseFloat(e.target.value))}
+                      className="w-full border border-gray-300 rounded-full px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Tiempo (min)</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={tiempo ?? ""}
+                      onChange={(e) => setTiempo(parseFloat(e.target.value))}
+                      className="w-full border border-gray-300 rounded-full px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {(tipoEntreno === "fuerza" || tipoEntreno === "ambas") && renderFuerza()}
+            </>
+          )}
+
+          <button
+            type="submit"
+            className="px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 font-semibold transition-all shadow-sm"
+          >
+            {idSeguimientoExistente ? "Actualizar progreso" : "Guardar progreso"}
+          </button>
+        </form>
       </div>
     </div>
-  );
+
+    {/* PESTAÑA AVATAR DESEADO */}
+    <div className="text-center mt-10">
+      <button
+        onClick={() => setMostrarAvatarDeseado((prev) => !prev)}
+        className="flex items-center justify-center gap-2 mx-auto px-4 py-2 rounded-full border border-emerald-300 bg-white text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 font-semibold shadow-sm transition"
+      >
+        {mostrarAvatarDeseado ? (
+          <>
+            Ocultar vista de peso deseado <ChevronUpIcon size={18} />
+          </>
+        ) : (
+          <>
+            ¿Cómo te verás con tu peso deseado? <ChevronDownIcon size={18} />
+          </>
+        )}
+      </button>
+
+      {mostrarAvatarDeseado && (
+        <div className="mt-6 bg-white rounded-2xl shadow-md border border-gray-200 p-6 w-full max-w-lg mx-auto transition-all duration-300">
+          <h3 className="text-lg font-semibold text-emerald-700 mb-2">Peso deseado</h3>
+          <input
+            type="number"
+            min={30}
+            max={150}
+            value={pesoDeseado ?? ""}
+            onChange={handlePesoDeseadoChange}
+            className="border border-gray-300 px-4 py-2 rounded-full text-center mb-2 shadow-sm focus:ring-2 focus:ring-emerald-400 w-full"
+          />
+          {imcDeseado && (
+            <p className="text-sm text-gray-600 mb-2">IMC estimado: {imcDeseado.toFixed(1)}</p>
+          )}
+          {avatarDeseado && <AvatarViewer url={avatarDeseado} height={420} />}
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 
 };
 

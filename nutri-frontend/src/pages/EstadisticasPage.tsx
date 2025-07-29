@@ -65,15 +65,16 @@ function EstadisticasPage() {
   } = useEstadisticasMentales();
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-800">
+    <div className="max-w-7xl mx-auto p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6 text-center text-emerald-700">
         Tus estadísticas
       </h1>
 
       {/* NUTRITIVAS */}
       <details className="mb-6 border rounded-lg shadow-sm">
-        <summary className="cursor-pointer bg-gray-100 px-4 py-2 font-semibold text-lg">🥗 Estadísticas nutritivas</summary>
-        <div className="p-4 text-gray-700">
+      <summary className="cursor-pointer bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 px-4 py-2 font-semibold text-lg text-emerald-800 rounded-t-lg transition-colors duration-200">
+      🥗 Estadísticas nutritivas</summary>
+        <div className="p-4 text-gray-700 bg-emerald-50">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ResumenGlobalCard completadas={totalComidasConsumidas} total={totalComidasPlanificadas} />
            <GraficoNotasComida notas={comidasHastaAyer.map(c => c.notas)} />
@@ -86,35 +87,51 @@ function EstadisticasPage() {
 
       {/* FÍSICAS */}
       <details className="mb-6 border rounded-lg shadow-sm">
-        <summary className="cursor-pointer bg-gray-100 px-4 py-2 font-semibold text-lg">🏋️ Estadísticas físicas</summary>
-        <div className="p-4 text-gray-700">
+       <summary className="cursor-pointer bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 px-4 py-2 font-semibold text-lg text-emerald-800 rounded-t-lg transition-colors duration-200">
+        🏋️ Estadísticas físicas</summary>
+        <div className="p-4 text-gray-700 bg-emerald-50">
           {loading && <p>Cargando gráficos...</p>}
           {error && <p className="text-red-500">{error}</p>}
           {!loading && !error && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Primer gráfico en una columna */}
               {pesoEvolucion?.length > 0 && (
-                <GraficoEvolucionPeso datos={pesoEvolucion} />
+                <div className="col-span-1">
+                  <GraficoEvolucionPeso datos={pesoEvolucion} />
+                </div>
               )}
+
+              {/* Segundo gráfico en una columna */}
               {entrenosResistencia?.length > 0 && (
-                <GraficoEntrenamientoResistencia datos={entrenosResistencia} />
+                <div className="col-span-1">
+                  <GraficoEntrenamientoResistencia datos={entrenosResistencia} />
+                </div>
               )}
-              {datos?.some(d => d.gimnasioEjercicios?.length > 0) && (
-                <GraficoFuerza
-                  titulo="Evolución del peso en ejercicios de gimnasio"
-                  evolucionPorEjercicio={true}
-                  datosEvolucion={datos.flatMap((d) =>
-                    d.gimnasioEjercicios.map((ej) => ({
-                      ...ej,
-                      fecha: d.fecha
-                    }))
-                  )}
-                />
+
+              {/* Tercero: Calistenia (izquierda) */}
+              {datos?.some((d) => d.calisteniaEjercicios?.length > 0) && (
+                <div className="col-span-1">
+                  <GraficoCalistenia
+                    titulo="Evolución de repeticiones en Calistenia"
+                    seguimientoFisico={datos}
+                  />
+                </div>
               )}
-              {datos?.some(d => d.calisteniaEjercicios?.length > 0) && (
-                <GraficoCalistenia
-                  titulo="Evolución de repeticiones en Calistenia"
-                  seguimientoFisico={datos}
-                />
+
+              {/* Cuarto: Fuerza (derecha) */}
+              {datos?.some((d) => d.gimnasioEjercicios?.length > 0) && (
+                <div className="col-span-1">
+                  <GraficoFuerza
+                    titulo="Evolución del peso en ejercicios de gimnasio"
+                    evolucionPorEjercicio={true}
+                    datosEvolucion={datos.flatMap((d) =>
+                      d.gimnasioEjercicios.map((ej) => ({
+                        ...ej,
+                        fecha: d.fecha,
+                      }))
+                    )}
+                  />
+                </div>
               )}
             </div>
           )}
@@ -123,8 +140,9 @@ function EstadisticasPage() {
 
       {/* SUEÑO */}
       <details className="mb-6 border rounded-lg shadow-sm">
-        <summary className="cursor-pointer bg-gray-100 px-4 py-2 font-semibold text-lg">💤 Estadísticas del sueño</summary>
-        <div className="p-4 text-gray-700">
+       <summary className="cursor-pointer bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 px-4 py-2 font-semibold text-lg text-emerald-800 rounded-t-lg transition-colors duration-200">
+       💤 Estadísticas del sueño</summary>
+        <div className="p-4 text-gray-700 bg-emerald-50">
           {loadingMentales && <p>Cargando datos del sueño...</p>}
           {errorMentales && <p className="text-red-500">{errorMentales}</p>}
           {!loadingMentales && !errorMentales && datosMentales?.length > 0 && (
@@ -136,24 +154,37 @@ function EstadisticasPage() {
         </div>
       </details>
 
-      {/* ANÍMICAS */}
+     {/* ANÍMICAS */}
       <details className="mb-6 border rounded-lg shadow-sm">
-        <summary className="cursor-pointer bg-gray-100 px-4 py-2 font-semibold text-lg">💖 Estadísticas anímicas</summary>
-        <div className="p-4 text-gray-700">
+       <summary className="cursor-pointer bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 px-4 py-2 font-semibold text-lg text-emerald-800 rounded-t-lg transition-colors duration-200">
+       💖 Estadísticas anímicas</summary>
+        <div className="p-4 text-gray-700 bg-emerald-50">
           {!loadingMentales && !errorMentales && datosMentales?.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <GraficoEstres datos={datosMentales.map(d => ({ fecha: d.fecha, estres: d.estres }))} />
-              <GraficoAnimo datos={datosMentales.map(d => ({ fecha: d.fecha, animo: d.animo }))} />
-              <GraficoMotivacion datos={datosMentales.map(d => ({ fecha: d.fecha, motivacion: d.motivacion }))} />
+              <GraficoEstres
+                datos={datosMentales.map((d) => ({ fecha: d.fecha, estres: d.estres }))}
+              />
+              <GraficoAnimo
+                datos={datosMentales.map((d) => ({ fecha: d.fecha, animo: d.animo }))}
+              />
+              <div className="md:col-span-2 flex justify-center">
+                <div className="w-full md:max-w-xl">
+                  <GraficoMotivacion
+                    datos={datosMentales.map((d) => ({ fecha: d.fecha, motivacion: d.motivacion }))}
+                  />
+                </div>
+              </div>
             </div>
           )}
         </div>
       </details>
 
+
       {/* HÁBITOS */}
       <details className="mb-6 border rounded-lg shadow-sm">
-        <summary className="cursor-pointer bg-gray-100 px-4 py-2 font-semibold text-lg">🧼 Estadísticas de hábitos</summary>
-        <div className="p-4 text-gray-700">
+        <summary className="cursor-pointer bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 px-4 py-2 font-semibold text-lg text-emerald-800 rounded-t-lg transition-colors duration-200">
+        🧼 Estadísticas de hábitos </summary>
+        <div className="p-4 text-gray-700 bg-emerald-50">
           {loadingMentales && <p>Cargando hábitos...</p>}
           {errorMentales && <p className="text-red-500">{errorMentales}</p>}
           {!loadingMentales && !errorMentales && datosMentales?.length > 0 && (

@@ -82,6 +82,7 @@ const HomePage = () => {
         >
           <div className="max-w-3xl space-y-10">
             {/* Elemento decorativo */}
+<<<<<<< HEAD
             <motion.div
               className="inline-flex items-center justify-center px-6 py-2 rounded-full bg-emerald-200/20 backdrop-blur-sm border border-emerald-200/40 mb-6 gap-2"
               initial={{ opacity: 0, scale: 0.8 }}
@@ -101,6 +102,16 @@ const HomePage = () => {
             >
               Bienvenido a <span className="text-emerald-300">NutriODS</span>
             </motion.h1>
+=======
+            <div className="inline-flex items-center justify-center px-6 py-2 rounded-full bg-emerald-100/10 backdrop-blur-sm border border-emerald-100/20 mb-6">
+              <span className="text-sm font-medium text-emerald-100">BIENVENIDO 2025</span>
+            </div>
+
+            {/* Título principal */}
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-white">
+              Bienvenido a <span className="text-emerald-300">BIONUT</span>
+            </h1>
+>>>>>>> e97145ceb618664ba0f8f8c50b9e81bc2d7ff904
 
             {/* Subtítulo */}
             <motion.p
@@ -159,6 +170,7 @@ const HomePage = () => {
       {/* Sección de Funcionalidades */}
       <section id="funcionalidades" className="bg-gradient-to-b from-white to-[#f8faf7] py-20 px-4">
         <div className="max-w-6xl mx-auto text-center">
+<<<<<<< HEAD
           <motion.div
             className="mb-16"
             initial={{ opacity: 0, y: 40 }}
@@ -168,6 +180,11 @@ const HomePage = () => {
           >
             <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
               Descubre Nutri<span className="text-emerald-500">ODS</span>
+=======
+          <div className="mb-12">
+            <h2 className="text-4xl font-serif font-semibold text-gray-900 mb-4">
+              Descubre BIO<span className="text-emerald-500">NUT</span>
+>>>>>>> e97145ceb618664ba0f8f8c50b9e81bc2d7ff904
             </h2>
             <p className="text-gray-500 max-w-2xl mx-auto text-xl font-medium">
               Herramientas inteligentes para transformar tu relación con la alimentación

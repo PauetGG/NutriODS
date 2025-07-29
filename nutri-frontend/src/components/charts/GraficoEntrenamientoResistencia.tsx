@@ -75,13 +75,17 @@ function GraficoEntrenamientoResistencia({ datos }: Props) {
           text: 'Tiempo (min)',
         },
         grid: {
-          drawOnChartArea: false, // only want the grid lines for one axis to show up
+          drawOnChartArea: false,
         },
       },
     },
   };
 
-  return <Line options={options} data={data} />;
+  return (
+    <div className="bg-white p-4 rounded-lg shadow-md">
+      <Line options={options} data={data} />
+    </div>
+  );
 }
 
-export default GraficoEntrenamientoResistencia; 
+export default GraficoEntrenamientoResistencia;

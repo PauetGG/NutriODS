@@ -4,15 +4,32 @@ import { useAuth } from "../context/useAuth";
 import LoginModal from "../components/LoginModal";
 import RegisterModal from "../components/RegisterModal";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Menu, Burger, Transition, rem } from '@mantine/core';
-import { IconUser, IconLogout, IconChevronDown, IconChevronUp, IconHome, IconBook2, IconList, IconWorld, IconSettings, IconLogin } from '@tabler/icons-react';
+import { Avatar, Menu, Burger, Transition } from '@mantine/core';
+import { IconUser, IconLogout, IconChevronDown, IconBook2, IconList, IconWorld, IconLogin } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 
 const headerVariants = {
   initial: { opacity: 0, y: -40, filter: 'blur(8px)' },
-  animate: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } },
-  exit: { opacity: 0, y: -40, filter: 'blur(8px)', transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] } }
+  animate: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: {
+      duration: 0.5,
+      ease: [0.4, 0, 0.2, 1] as [number, number, number, number]
+    }
+  },
+  exit: {
+    opacity: 0,
+    y: -40,
+    filter: 'blur(8px)',
+    transition: {
+      duration: 0.4,
+      ease: [0.4, 0, 0.2, 1] as [number, number, number, number]
+    }
+  }
 };
+
 
 function Header() {
   const { nombre, logout } = useAuth();
@@ -28,12 +45,11 @@ function Header() {
     navigate('/');
   };
 
-  // Links de navegación extendidos (sin Inicio)
   const navLinks = [
     { to: "/dieta", label: "Generar Dieta", icon: null },
     { to: "/recetas", label: "Recetas", icon: null },
   ];
-  // Menú educación mejorado
+
   const educacionLinks = [
     { to: "/articulos", label: "Artículos", icon: <IconBook2 size={20} />, desc: "Guías y artículos de nutrición" },
     { to: "/glosario", label: "Glosario", icon: <IconList size={20} />, desc: "Términos y conceptos clave" },
@@ -41,6 +57,7 @@ function Header() {
   ];
 
   return (
+    <>
     <motion.header
       className="sticky top-0 w-full z-[100] backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border-b border-emerald-100 dark:border-emerald-900 shadow-lg"
       initial="initial"
@@ -55,7 +72,6 @@ function Header() {
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between h-20 relative">
-        {/* Menú hamburguesa móvil */}
         <div className="flex items-center md:hidden">
           <Burger
             opened={menuOpen}
@@ -66,9 +82,8 @@ function Header() {
             className="mr-2"
           />
         </div>
-        {/* Navegación desktop mejorada */}
+
         <nav className="hidden md:flex items-center gap-3 flex-1 justify-between w-full">
-          {/* Botones verdes a la izquierda */}
           <motion.div
             className="flex items-center gap-3 ml-2"
             initial={{ opacity: 0, x: -60 }}
@@ -90,7 +105,7 @@ function Header() {
                 </Link>
               </motion.div>
             ))}
-            {/* Menú Educación mejorado */}
+
             <Menu shadow="xl" width={280} position="bottom" withinPortal>
               <Menu.Target>
                 <motion.button
@@ -99,7 +114,8 @@ function Header() {
                   whileHover={{ scale: 1.08 }}
                   whileTap={{ scale: 1.15, y: -8, opacity: 0.8 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 12 }}
-                  className="px-5 py-2 rounded-full font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 text-white shadow-lg hover:shadow-emerald-200 flex items-center gap-2 text-lg transition-all duration-200 border-2 border-emerald-200 hover:border-emerald-500">
+                  className="px-5 py-2 rounded-full font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 text-white shadow-lg hover:shadow-emerald-200 flex items-center gap-2 text-lg transition-all duration-200 border-2 border-emerald-200 hover:border-emerald-500"
+                >
                   <IconBook2 size={20} />
                   Educación
                   <IconChevronDown size={18} className="ml-1" />
@@ -118,7 +134,7 @@ function Header() {
               </Menu.Dropdown>
             </Menu>
           </motion.div>
-          {/* Logo perfectamente centrado */}
+
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-10" style={{ pointerEvents: 'auto' }}>
             <Link to="/" className="group block">
               <motion.div
@@ -133,13 +149,12 @@ function Header() {
               </motion.div>
             </Link>
           </div>
-          {/* Botones a la derecha del logo */}
+
           <motion.div
             className="flex items-center gap-3 ml-auto"
             initial={{ opacity: 0, x: 60 }}
             animate={{ opacity: 1, x: 0, transition: { duration: 0.9, delay: 0.2, ease: [0.4, 0, 0.2, 1] } }}
           >
-            {/* Botón Foro mejorado */}
             <motion.div
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 1.15, y: -8, opacity: 0.8 }}
@@ -153,7 +168,7 @@ function Header() {
                 Foro
               </Link>
             </motion.div>
-            {/* Avatar/Login */}
+
             <div className="flex items-center gap-2 ml-2">
               {nombre ? (
                 <Menu
@@ -190,9 +205,6 @@ function Header() {
                         <Menu.Item leftSection={<IconUser size={18} />} component={Link} to="/perfil">
                           Mi perfil
                         </Menu.Item>
-                        <Menu.Item leftSection={<IconSettings size={18} />} component={Link} to="/ajustes">
-                          Ajustes
-                        </Menu.Item>
                         <Menu.Divider />
                         <Menu.Item leftSection={<IconLogout size={18} />} color="red" onClick={handleLogout}>
                           Cerrar sesión
@@ -216,8 +228,7 @@ function Header() {
             </div>
           </motion.div>
         </nav>
-        {/* Menú móvil animado */}
-        {/* The AnimatePresence block was removed as per the edit hint. */}
+
         {menuOpen && (
           <motion.nav
             initial={{ y: -40, opacity: 0 }}
@@ -237,78 +248,53 @@ function Header() {
                 {link.label}
               </Link>
             ))}
-            <div className="mt-4">
-              {nombre ? (
-                <button
-                  onClick={handleLogout}
-                  className="w-full px-5 py-2 rounded-full font-bold bg-gradient-to-r from-emerald-500 to-emerald-700 text-white shadow-lg hover:shadow-emerald-200 flex items-center gap-2 text-lg transition-all duration-200"
-                >
-                  <IconLogout size={20} />
-                  Cerrar sesión
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    setMostrarLoginModal(true);
-                    setMenuOpen(false);
-                  }}
-                  className="w-full px-5 py-2 rounded-full font-bold bg-gradient-to-r from-emerald-500 to-emerald-700 text-white shadow-lg hover:shadow-emerald-200 flex items-center gap-2 text-lg transition-all duration-200"
-                >
-                  <IconLogin size={20} />
-                  Iniciar sesión
-                </button>
-              )}
-            </div>
           </motion.nav>
         )}
       </div>
-      {/* Modales - FUERA del header */}
-      {mostrarLoginModal && (
-        <div className="fixed inset-0 z-[200]">
-          <div
-            className="absolute inset-0 backdrop-blur-md bg-black/10"
-            onClick={() => setMostrarLoginModal(false)}
-          ></div>
-          <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div
-              className="bg-white rounded-xl shadow-2xl max-w-md w-full border border-gray-200 relative z-10"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <LoginModal
-                onClose={() => setMostrarLoginModal(false)}
-                onOpenRegister={() => {
-                  setMostrarLoginModal(false);
-                  setMostrarRegisterModal(true);
-                }}
-              />
-            </div>
-          </div>
+     </motion.header>
+     {mostrarLoginModal && (
+      <div className="fixed inset-0 z-[200] flex justify-center items-center p-4">
+        <div
+          className="absolute inset-0 bg-black/10 backdrop-blur-md"
+          onClick={() => setMostrarLoginModal(false)}
+        ></div>
+        <div
+          className="relative z-10 bg-white rounded-xl shadow-2xl max-w-md w-full border border-gray-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <LoginModal
+            onClose={() => setMostrarLoginModal(false)}
+            onOpenRegister={() => {
+              setMostrarLoginModal(false);
+              setMostrarRegisterModal(true);
+            }}
+          />
         </div>
-      )}
-      {mostrarRegisterModal && (
-        <div className="fixed inset-0 z-[200]">
-          <div
-            className="absolute inset-0 backdrop-blur-md bg-black/10"
-            onClick={() => setMostrarRegisterModal(false)}
-          ></div>
-          <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div
-              className="bg-white rounded-xl shadow-2xl max-w-md w-full border border-gray-200 relative z-10"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <RegisterModal
-                onClose={() => setMostrarRegisterModal(false)}
-                onOpenLogin={() => {
-                  setMostrarRegisterModal(false);
-                  setMostrarLoginModal(true);
-                }}
-              />
-            </div>
-          </div>
+      </div>
+    )}
+
+    {mostrarRegisterModal && (
+      <div className="fixed inset-0 z-[200] flex justify-center items-center p-4">
+        <div
+          className="absolute inset-0 bg-black/10 backdrop-blur-md"
+          onClick={() => setMostrarRegisterModal(false)}
+        ></div>
+        <div
+          className="relative z-10 bg-white rounded-xl shadow-2xl max-w-md w-full border border-gray-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <RegisterModal
+            onClose={() => setMostrarRegisterModal(false)}
+            onOpenLogin={() => {
+              setMostrarRegisterModal(false);
+              setMostrarLoginModal(true);
+            }}
+          />
         </div>
-      )}
-    </motion.header>
-  );
+      </div>
+    )}
+  </>
+);
 }
 
 export default Header;

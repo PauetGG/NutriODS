@@ -58,7 +58,7 @@ const SidebarItem = ({ icon, text, to }: SidebarItemProps) => {
       to={to}
       className={`flex items-center py-2 px-3 rounded-md text-sm ${
         isActive
-          ? 'text-blue-600 bg-blue-50 border-l-2 border-blue-600'
+          ? 'text-emerald-600 bg-emerald-50 border-l-2 border-emerald-600'
           : 'text-gray-700 hover:bg-gray-100'
       }`}
     >
@@ -67,3 +67,4 @@ const SidebarItem = ({ icon, text, to }: SidebarItemProps) => {
     </Link>
   )
 }
+
