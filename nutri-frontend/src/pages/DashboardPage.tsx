@@ -134,26 +134,22 @@ const caloriasFiltradas = Object.entries(caloriasAgrupadas)
   const fraseSeleccionada = frasesMotivacionales[Math.floor(Math.random() * frasesMotivacionales.length)];
 
   const handleSemanaAnterior = () => {
-  const lunesAnterior = new Date(lunes);
-  lunesAnterior.setDate(lunesAnterior.getDate() - 7);
+    const lunesAnterior = new Date(lunes);
+    lunesAnterior.setDate(lunesAnterior.getDate() - 7);
 
-  const domingoAnterior = new Date(lunesAnterior);
-  domingoAnterior.setDate(lunesAnterior.getDate() + 6);
+    const domingoAnterior = new Date(lunesAnterior);
+    domingoAnterior.setDate(lunesAnterior.getDate() + 6);
 
-  if (
-    fechaCreacion &&
-    (fechaCreacion < lunesAnterior || fechaCreacion > domingoAnterior)
-  ) {
-    Toast.fire({
-      icon: "warning",
-      title: "No puedes ver semanas antes de la creación de tu dieta.",
-    });
-    return;
-  }
-
-  setSemanaActual((prev) => prev + 1);
-};
-
+    // Solo impedir si toda la semana es anterior a la creación
+    if (fechaCreacion && domingoAnterior < fechaCreacion) {
+      Toast.fire({
+        icon: "warning",
+        title: "No puedes ver semanas antes de la creación de tu dieta.",
+      });
+      return;
+    }
+    setSemanaActual((prev) => prev + 1);
+  };
 
   return (
    <div className="p-6 bg-gray-100 min-h-screen space-y-6">
