@@ -171,7 +171,6 @@ function Header() {
                       whileTap={{ scale: 1.15, y: -8, opacity: 0.8 }}
                       transition={{ type: 'spring', stiffness: 500, damping: 12 }}
                     >
-<<<<<<< HEAD
                       <Avatar
                         color="teal"
                         radius="xl"
@@ -180,7 +179,7 @@ function Header() {
                         onClick={() => setUserMenuOpen((o) => !o)}
                         src={null}
                       >
-                        {nombre[0]}
+                        {nombre ? nombre[0] : ''}
                       </Avatar>
                     </motion.div>
                   </Menu.Target>
@@ -213,75 +212,6 @@ function Header() {
                   <IconLogin size={20} />
                   Iniciar sesión
                 </motion.button>
-=======
-                      Artículos
-                    </Link>
-                    <Link 
-                      to="/glosario" 
-                      className="block px-4 py-2 text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-sm"
-                    >
-                      Glosario
-                    </Link>
-                    <Link 
-                      to="/multimedia" 
-                      className="block px-4 py-2 text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors text-sm"
-                    >
-                      Recursos
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </nav>
-
-            {/* Botón sesión */}
-            <div className="relative group h-full flex items-center">
-              <button
-                onClick={() => !nombre && setMostrarLoginModal(true)}
-                className={`px-4 py-2 rounded-full font-medium transition-all duration-300 flex items-center space-x-2 text-sm ${
-                  nombre 
-                    ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200"
-                    : "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:shadow-lg hover:shadow-emerald-200"
-                }`}
-              >
-                {nombre ? (
-                  <>
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>Mi cuenta</span>
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                    <span>Iniciar sesión</span>
-                  </>
-                )}
-              </button>
-
-              {nombre && (
-                <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 origin-top-right z-50">
-                  <div className="py-1">
-                    <Link
-                      to="/perfil"
-                      className=" px-4 py-2.5 text-gray-700 hover:bg-emerald-50 transition-colors flex items-center space-x-2 text-sm"
-                    >
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                      </svg>
-                      <span>Mi perfil</span>
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors flex items-center space-x-2 text-sm"
-                    >
-                      <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                      </svg>
-                      <span>Cerrar sesión</span>
-                    </button>
-                  </div>
-                </div>
->>>>>>> 332505484eb9d3645924817e692090b854baa078
               )}
             </div>
           </motion.div>
