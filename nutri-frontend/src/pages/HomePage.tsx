@@ -174,11 +174,6 @@ const HomePage = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Tarjeta 1 */}
-            <motion.div
-              className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-emerald-100 group text-center"
-              variants={cardVariants}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
