@@ -39,6 +39,9 @@ export default function ForoPage() {
 
   const reglasRef = useRef<HTMLDivElement>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
   // Cargar temas
   const cargarTemas = () => {
     axios
@@ -60,6 +63,14 @@ export default function ForoPage() {
   const postsRecientes = [...temas]
     .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime())
     .slice(0, 5);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentTemas = temasFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(temasFiltrados.length / itemsPerPage);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   // Crear tema
   const handleCrearTema = async (formData: { titulo: string; contenido: string; categoria: string }) => {
@@ -306,7 +317,7 @@ export default function ForoPage() {
               <p className="text-gray-500 text-center mt-20">No hay temas disponibles por ahora.</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {temasFiltrados.map((tema) => (
+                {currentTemas.map((tema) => (
                   <Link
                     key={tema.id}
                     to={`/foro/temas/${tema.id}`}
@@ -320,7 +331,7 @@ export default function ForoPage() {
                         {new Date(tema.created).toLocaleDateString("es-ES")}
                       </span>
                     </div>
-                    <h2 className="text-lg font-semibold text-gray-800 mb-2">{tema.titulo}</h2>
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">{tema.titulo.length > 50 ? tema.titulo.substring(0, 50) + '...' : tema.titulo}</h2>
                     <p className="text-sm text-gray-600 mb-4 line-clamp-3">{tema.contenido}</p>
                     <div className="flex justify-between text-sm text-gray-500">
                       <span>👤 {tema.usuario.username}</span>
@@ -328,6 +339,19 @@ export default function ForoPage() {
                       <span>👁️ {tema.visitas}</span>
                     </div>
                   </Link>
+                ))}
+              </div>
+            )}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-8 space-x-2">
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => paginate(index + 1)}
+                    className={`px-4 py-2 rounded-lg font-semibold ${currentPage === index + 1 ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                  >
+                    {index + 1}
+                  </button>
                 ))}
               </div>
             )}
