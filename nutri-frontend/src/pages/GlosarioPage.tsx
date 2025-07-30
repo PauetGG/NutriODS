@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Modal, Paper, Badge, ScrollArea } from '@mantine/core';
-import { IconBook, IconInfoCircle, IconCategory, IconExternalLink, IconSearch, IconCheck, IconChevronDown, IconApple, IconVaccine, IconRun, IconQuestionMark } from '@tabler/icons-react';
+import { Modal, Paper, ScrollArea } from '@mantine/core';
+import { IconBook, IconInfoCircle, IconCategory, IconExternalLink, IconSearch, IconCheck, IconChevronDown, IconX } from '@tabler/icons-react';
 import { Combobox, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import RadialCategoryMenu from '../components/RadialCategoryMenu';
-import Header from "../components/Header";
 import { useRadialMenu } from "../context/RadialMenuContext";
 
 type GlosarioItem = {
@@ -77,12 +76,6 @@ export default function GlosarioPage() {
       console.error("Error al aplicar filtros:", err);
       setGlosario([]);
     }
-  };
-
-  const handleBusqueda = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valor = e.target.value;
-    setBusqueda(valor);
-    aplicarFiltros(valor, categoriaSeleccionada);
   };
 
   const handleCategoria = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -166,7 +159,7 @@ export default function GlosarioPage() {
                         }
                         value={item.termino}
                       >
-                        {({ selected, active }) => (
+                        {({ selected}) => (
                           <>
                             <IconBook className="w-4 h-4 text-emerald-400" />
                             <span className={`block truncate ${selected ? "font-semibold" : "font-normal"}`}>{item.termino}</span>
@@ -195,18 +188,17 @@ export default function GlosarioPage() {
           open={isOpen}
           onOpenChange={setIsOpen}
         />
-      </div>
       <button
         onClick={() => {
           setBusqueda("");
           setCategoriaSeleccionada("");
           aplicarFiltros("", "");
         }}
-        className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition text-sm mb-2"
+        className="px-4 py-2 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition text-sm shadow border border-red-200 flex items-center gap-2"
       >
-        Limpiar filtros
+        ❌ Limpiar filtros
       </button>
-
+      </div>
       {/* Tarjetas del glosario */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {glosarioPaginado.map((item) => (
@@ -246,43 +238,68 @@ export default function GlosarioPage() {
       )}
 
       {/* Modal de detalle */}
-      <Modal
-        opened={modalOpen}
-        onClose={cerrarModal}
-        centered
-        size="lg"
-        withCloseButton={false}
-        overlayProps={{ blur: 3, backgroundOpacity: 0.25 }}
-        styles={{ body: { padding: 0 } }}
+     <Modal
+  opened={modalOpen}
+  onClose={cerrarModal}
+  centered
+  size="lg"
+  withCloseButton={false}
+  overlayProps={{ blur: 3, backgroundOpacity: 0.25 }}
+  styles={{ body: { padding: 0 } }}
+>
+  {itemSeleccionado && (
+    <Paper
+      radius="xl"
+      shadow="xl"
+      p={0}
+      className="relative m-10 bg-white max-w-[560px] mx-auto overflow-hidden"
+    >
+      {/* Botón cerrar redondeado */}
+      <button
+        onClick={cerrarModal}
+        className="absolute top-3 right-3 cursor-pointer bg-rose-100 text-rose-600 hover:bg-rose-200 hover:text-rose-800 rounded-full p-2 z-10 transition"
+        aria-label="Cerrar"
       >
-        {itemSeleccionado && (
-          <Paper radius="xl" shadow="xl" p={0} style={{ overflow: 'hidden', minWidth: 350, maxWidth: 540 }}>
-            <button
-              onClick={cerrarModal}
-              style={{ position: 'absolute', top: 18, right: 22, background: 'none', border: 'none', cursor: 'pointer', zIndex: 2, fontSize: 28, color: '#e11d48', fontWeight: 900 }}
-              aria-label="Cerrar"
-            >
-              ✕
-            </button>
-            <div className="flex flex-col items-center p-8 pt-10">
-              <img
-                src={itemSeleccionado.imagenUrl}
-                alt={itemSeleccionado.termino}
-                className="w-full h-44 object-contain rounded-lg mb-4"
-                style={{ background: '#f0fdfa' }}
-              />
-              <h2 className="text-2xl font-bold mb-2 text-emerald-700 flex items-center gap-2"><IconBook size={22} />{itemSeleccionado.termino}</h2>
-              <Badge color="teal" variant="light" className="mb-2"><IconCategory size={14} style={{ marginRight: 4 }} /> {itemSeleccionado.categoria}</Badge>
-              <ScrollArea h={120} offsetScrollbars className="w-full mt-2 mb-2">
-                <p className="text-gray-700 text-base mb-2 flex items-start gap-2"><IconInfoCircle size={18} style={{ marginTop: 2 }} />{itemSeleccionado.definicion}</p>
-              </ScrollArea>
-              <div className="flex flex-row gap-4 items-center mt-2">
-                <span className="text-xs text-gray-500 flex items-center gap-1"><IconExternalLink size={14} />Fuente: {itemSeleccionado.fuente}</span>
-              </div>
-            </div>
-          </Paper>
-        )}
-      </Modal>
+        <IconX size={18} />
+      </button>
+
+      {/* Imagen superior */}
+      <div className="w-full h-40 bg-gray-200">
+        <img
+          src={itemSeleccionado.imagenUrl}
+          alt={itemSeleccionado.termino}
+          className="w-full h-full object-contain"
+        />
+      </div>
+
+      {/* Contenido principal */}
+      <div className="px-6 py-6">
+        <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
+          <h2 className="text-2xl font-bold text-emerald-700 flex items-center gap-2">
+            <IconBook size={22} /> {itemSeleccionado.termino}
+          </h2>
+          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full text-sm font-semibold shadow-inner w-fit">
+            <IconCategory size={16} />
+            {itemSeleccionado.categoria.toUpperCase()}
+          </div>
+        </div>
+
+        <ScrollArea h={130} offsetScrollbars>
+          <p className="text-gray-700 text-base leading-relaxed flex gap-2">
+            <IconInfoCircle size={18} className="mt-1" />
+            {itemSeleccionado.definicion}
+          </p>
+        </ScrollArea>
+
+        <div className=" text-xs text-gray-500 flex items-center gap-1">
+          <IconExternalLink size={14} />
+          Fuente: {itemSeleccionado.fuente}
+        </div>
+      </div>
+    </Paper>
+  )}
+</Modal>
+
     </div>
   );
 }

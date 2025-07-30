@@ -2,9 +2,8 @@ import { useEffect, useState, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Articulo } from "../types/Articulo";
 import { Combobox, Transition } from '@headlessui/react';
-import { IconSearch, IconCategory, IconCheck, IconChevronDown, IconBook, IconApple, IconVaccine, IconRun, IconQuestionMark } from '@tabler/icons-react';
+import { IconSearch, IconCheck, IconChevronDown } from '@tabler/icons-react';
 import RadialCategoryMenu from '../components/RadialCategoryMenu';
-import Header from "../components/Header";
 import { useRadialMenu } from "../context/RadialMenuContext";
 
 export default function ArticulosPage() {
@@ -134,7 +133,7 @@ export default function ArticulosPage() {
                           }
                           value={item.titulo}
                         >
-                          {({ selected, active }) => (
+                          {({ selected }) => (
                             <>
                               <IconSearch className="w-4 h-4 text-emerald-400" />
                               <span className={`block truncate ${selected ? "font-semibold" : "font-normal"}`}>{item.titulo}</span>
@@ -166,17 +165,17 @@ export default function ArticulosPage() {
             open={isOpen}
             onOpenChange={setIsOpen}
           />
-        </div>
         <button
           onClick={() => {
             setBusqueda("");
             setCategoriaFiltro("");
             setPaginaActual(1);
           }}
-          className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition text-sm mb-2"
+          className="px-4 py-2 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition text-sm shadow border border-red-200 flex items-center gap-2"
         >
-          Limpiar
+          ❌ Limpiar filtros
         </button>
+        </div>
       </div>
       {/* Artículos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

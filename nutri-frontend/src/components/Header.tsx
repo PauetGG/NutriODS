@@ -126,7 +126,7 @@ function Header() {
                   <Menu.Item key={l.to} component={Link} to={l.to} className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/40 transition-all duration-200">
                     <div className="flex-shrink-0">{l.icon}</div>
                     <div className="flex flex-col items-start">
-                      <span className="font-bold text-emerald-800 dark:text-emerald-200 text-base">{l.label}</span>
+                      <span className="font-bold text-emerald-800 dark:text-emerald-700 text-base">{l.label}</span>
                       <span className="text-xs text-gray-500 dark:text-gray-400">{l.desc}</span>
                     </div>
                   </Menu.Item>

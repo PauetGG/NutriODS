@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Select, Button } from '@mantine/core';
-import { IconSearch, IconCategory, IconCheck, IconChevronDown, IconBook, IconApple, IconVaccine, IconRun, IconQuestionMark, IconVideo, IconWorld } from '@tabler/icons-react';
+import { Button } from '@mantine/core';
+import { IconSearch, IconCheck, IconChevronDown, IconVideo, IconWorld } from '@tabler/icons-react';
 import { Combobox, Transition } from '@headlessui/react';
 import { Fragment, useState as useStateReact } from 'react';
 import RadialCategoryMenu from '../components/RadialCategoryMenu';
-import Header from "../components/Header";
 import { useRadialMenu } from "../context/RadialMenuContext";
 
 type MultimediaItem = {
@@ -217,7 +216,7 @@ export default function MultimediaPage() {
             onOpenChange={setIsOpen}
           />
         </div>
-      </div>
+
       <button
         onClick={() => {
           setBusqueda("");
@@ -225,10 +224,11 @@ export default function MultimediaPage() {
           setCategoriaFiltro("");
           setPaginaActual(1);
         }}
-        className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition text-sm mb-2"
+         className="px-4 py-2 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition text-sm shadow border border-red-200 flex items-center gap-2"
       >
-        Limpiar filtros
+      ❌ Limpiar filtros
       </button>
+      </div>
 
       {/* Recursos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

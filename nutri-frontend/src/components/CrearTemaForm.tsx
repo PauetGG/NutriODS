@@ -35,7 +35,7 @@ export const CrearTemaForm = ({ onClose, onSubmit, categorias = ["general", "die
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm"
+      className="fixed inset-0 flex items-center justify-center  bg-opacity-30 backdrop-blur-sm z-[9998]"
       onClick={handleBackdropClick}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
