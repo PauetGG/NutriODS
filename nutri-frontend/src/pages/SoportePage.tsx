@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
-import ChatBot from '../components/ChatBot';
+
 
 export default function SoportePage() {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function SoportePage() {
       </div>
       <div className="bg-white/90 border border-emerald-200 rounded-2xl shadow-xl p-10 flex flex-col items-center mb-8">
         <h1 className="text-3xl font-extrabold text-emerald-700 mb-8">Soporte / Ayudas</h1>
-        <ChatBot />
+
       </div>
       <div className="mb-8 text-center text-gray-700 text-base font-semibold">
         Si necesitas contactarnos: <span className="text-emerald-700">XXXXXXXXXXX</span>

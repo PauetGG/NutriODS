@@ -168,6 +168,7 @@ const HomePage = () => {
           >
             <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
               Descubre Nutri<span className="text-emerald-500">ODS</span>
+            </h2>
             <p className="text-gray-500 max-w-2xl mx-auto text-xl font-medium">
               Herramientas inteligentes para transformar tu relación con la alimentación
             </p>
