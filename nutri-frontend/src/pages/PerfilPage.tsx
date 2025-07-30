@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/useAuth";
 import Swal from "sweetalert2";
-
+import { motion } from "framer-motion";
 
 type Usuario = {
   id: number;
@@ -125,7 +125,7 @@ export default function PerfilPage() {
       <h1 className="text-4xl font-bold text-green-700 mb-10 text-center">👤 Mi Perfil</h1>
 
       {/* Datos personales */}
-      <details open className="mb-6 border rounded-lg shadow-sm bg-white overflow-hidden">
+      <details className="mb-6 border rounded-lg shadow-sm bg-white overflow-hidden">
         <summary className="bg-gray-100 px-5 py-3 cursor-pointer text-lg font-semibold">
           🧍 Datos personales
         </summary>
@@ -241,18 +241,22 @@ export default function PerfilPage() {
       </details>
 
       {/* Guardar cambios */}
-      <div className="text-center mt-10">
-        <button
+      <div className="flex justify-center mt-10">
+        <motion.button
           onClick={handleSubmit}
-          className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold shadow-md transition"
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.97 }}
+          className="py-3 px-6 bg-gradient-to-r from-green-400 via-emerald-500 to-emerald-700 hover:from-emerald-500 hover:to-green-600 text-white font-extrabold rounded-2xl shadow-xl transition-all text-xl flex items-center justify-center gap-2 drop-shadow-lg"
         >
           💾 Guardar cambios
-        </button>
-        {mensaje && <p className="mt-4 text-sm text-green-700">{mensaje}</p>}
+        </motion.button>
       </div>
+
+      {mensaje && (
+        <p className="mt-4 text-sm text-green-700 text-center">{mensaje}</p>
+      )}
     </div>
   );
-
 }
 
 // ✅ Subcomponentes corregidos

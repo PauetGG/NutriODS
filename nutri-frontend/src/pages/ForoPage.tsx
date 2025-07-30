@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { CrearTemaForm } from "../components/CrearTemaForm";
 import { useAuth } from "../context/useAuth";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import '@fontsource/montserrat/700.css';
 import { FaRegComments, FaChevronDown, FaChevronUp, FaRegListAlt, FaRegFileAlt, FaPenFancy } from 'react-icons/fa';
@@ -35,7 +35,6 @@ export default function ForoPage() {
   const [mostrarPostsDropdown, setMostrarPostsDropdown] = useState(false);
   const [vista, setVista] = useState<'recientes' | 'temas' | 'reglas'>('recientes');
   const { id: idUsuario } = useAuth();
-  const navigate = useNavigate();
 
   const reglasRef = useRef<HTMLDivElement>(null);
 
@@ -133,47 +132,62 @@ export default function ForoPage() {
         </div>
 
         {/* Topics Dropdown */}
-        <div className="mb-4">
-          <button
-            onClick={() => {
-              setMostrarPostsDropdown(false);
-              setMostrarTemasDropdown((prev) => !prev);
-            }}
-            className="w-full text-left px-4 py-2 bg-white border border-emerald-200 rounded-lg text-gray-700 flex justify-between items-center hover:bg-emerald-50 transition-all shadow-sm"
-          >
-            <span className="flex items-center gap-2 text-lg font-semibold"><FaRegListAlt className="text-emerald-500" />Temas</span>
-            {mostrarTemasDropdown ? <FaChevronUp /> : <FaChevronDown />}
-          </button>
-          <AnimatePresence initial={false}>
-            {mostrarTemasDropdown && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="overflow-hidden"
-              >
-                <div className="flex flex-col w-full bg-white border border-emerald-100 rounded-b-lg shadow-inner mt-1">
-                  {categoriasFiltro.map((cat) => (
+       <div className="mb-4">
+        <button
+          onClick={() => {
+            setMostrarPostsDropdown(false);
+            setMostrarTemasDropdown((prev) => !prev);
+          }}
+          className="w-full text-left px-4 py-2 bg-white border border-emerald-200 rounded-lg text-gray-700 flex justify-between items-center hover:bg-emerald-50 transition-all shadow-sm"
+        >
+          <span className="flex items-center gap-2 text-lg font-semibold">
+            <FaRegListAlt className="text-emerald-500" />
+            {(!categoriaSeleccionada || categoriaSeleccionada === "todos")
+              ? "Temas"
+              : categoriaSeleccionada.charAt(0).toUpperCase() + categoriaSeleccionada.slice(1)}
+          </span>
+          {mostrarTemasDropdown ? <FaChevronUp /> : <FaChevronDown />}
+        </button>
+
+        <AnimatePresence initial={false}>
+          {mostrarTemasDropdown && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <div className="flex flex-col w-full bg-white border border-emerald-100 rounded-b-lg shadow-inner mt-1">
+                {categoriasFiltro.map((cat) => {
+                  const texto =
+                    cat === "todos"
+                      ? "Todos los temas"
+                      : cat.charAt(0).toUpperCase() + cat.slice(1);
+
+                  return (
                     <button
                       key={cat}
                       onClick={() => {
                         setCategoriaSeleccionada(cat);
-                        setVista('temas');
+                        setVista("temas");
                         setMostrarTemasDropdown(false);
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm capitalize transition-all ${
-                        categoriaSeleccionada === cat && vista === 'temas' ? "bg-emerald-100 text-emerald-700 font-bold" : "text-gray-700 hover:bg-emerald-50"
+                      className={`block w-full text-left px-4 py-2 text-sm transition-all ${
+                        categoriaSeleccionada === cat && vista === "temas"
+                          ? "bg-emerald-100 text-emerald-700 font-bold"
+                          : "text-gray-700 hover:bg-emerald-50"
                       }`}
                     >
-                      {cat === "todos" ? "Todos los temas" : cat}
+                      {texto}
                     </button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
         {/* Community Rules as Button */}
         <div className="mb-4" ref={reglasRef}>
@@ -188,15 +202,6 @@ export default function ForoPage() {
             <FaRegFileAlt className="text-emerald-500 text-xl" />
             <span className="text-lg font-semibold">Reglas de la comunidad</span>
           </button>
-          <div className="mt-4">
-            <button
-              className="w-full text-left px-4 py-2 bg-white border border-emerald-200 rounded-lg text-gray-700 flex items-center gap-2 hover:bg-emerald-50 transition-all shadow-sm font-semibold text-lg"
-              onClick={() => navigate('/soporte')}
-            >
-              <span className="text-emerald-500 text-xl">💬</span>
-              Soporte / Ayudas
-            </button>
-          </div>
         </div>
         {/* Botón Publicar debajo de reglas */}
         <button

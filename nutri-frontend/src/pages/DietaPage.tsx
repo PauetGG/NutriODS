@@ -3,6 +3,7 @@ import { useAuth } from "../context/useAuth";
 import DatosUsuarioForm from "../components/DatosUsuarioForm";
 import type { DatosUsuarioDTO } from "../types/DatosUsuarioDTO";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 type DietaResumen = {
   id: number;
@@ -86,15 +87,19 @@ function DietaPage() {
       <div className="w-full h-px bg-emerald-200 mb-10" />
 
       <div className="text-center">
-        {nombre ? (
-          <button
-            onClick={handleClickGenerar}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-8 rounded-xl text-lg shadow-lg transition"
-          >
-            Generar mi Dieta Personalizada
-          </button>
+       {nombre ? (
+          <div className="flex justify-center mt-6">
+            <motion.button
+              onClick={handleClickGenerar}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              className="py-3 px-6 bg-gradient-to-r from-green-400 via-emerald-500 to-emerald-700 hover:from-emerald-500 hover:to-green-600 text-white font-extrabold rounded-2xl shadow-xl transition-all text-xl flex items-center justify-center gap-2 drop-shadow-lg"
+            >
+              Generar mi Dieta Personalizada
+            </motion.button>
+          </div>
         ) : (
-          <p className="text-lg text-gray-700">
+          <p className="text-lg text-gray-700 text-center mt-6">
             🔒 Para generar tu dieta necesitas{" "}
             <span className="text-emerald-600 font-semibold underline">iniciar sesión</span>.
           </p>

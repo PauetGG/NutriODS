@@ -3,7 +3,7 @@ import { IconChefHat, IconBook2, IconUsers } from '@tabler/icons-react';
 import { UtensilsCrossed, UsersRound } from 'lucide-react';
 import { FaRegLightbulb } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import { Modal, Tooltip, Badge } from '@mantine/core';
+import { Tooltip, Badge } from '@mantine/core';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -11,7 +11,6 @@ const cardVariants = {
 };
 
 const HomePage = () => {
-  const [opened, setOpened] = useState(true);
   // Función para scroll suave
   useEffect(() => {
     const handleSmoothScroll = (e: Event) => {
@@ -49,13 +48,6 @@ const HomePage = () => {
     animate={{ opacity: 1 }}
     transition={{ duration: 0.7 }}
   >
-    {/* Modal de bienvenida Mantine */}
-    <Modal opened={opened} onClose={() => setOpened(false)} title="¡Bienvenido a NutriODS!" centered size="lg" radius="lg" overlayProps={{ blur: 2 }}>
-      <div className="flex flex-col items-center gap-4 py-2">
-        <FaRegLightbulb className="text-emerald-400 w-10 h-10 mb-2" />
-        <p className="text-lg text-gray-700 font-medium text-center">Explora todas las funcionalidades, gráficos, animaciones y comunidad de NutriODS. ¡Disfruta la experiencia!</p>
-      </div>
-    </Modal>
 
     {/* Sección Hero */}
     <motion.main
@@ -87,7 +79,7 @@ const HomePage = () => {
             transition={{ delay: 0.4, duration: 0.7, type: 'spring', stiffness: 80 }}
           >
             <FaRegLightbulb className="text-emerald-400 w-5 h-5" />
-            <span className="text-base font-semibold text-emerald-900 tracking-widest uppercase">BIENVENIDO 2024</span>
+            <span className="text-base font-semibold text-emerald-900 tracking-widest uppercase">BIENVENIDO 2025</span>
           </motion.div>
 
           <motion.h1
@@ -96,7 +88,7 @@ const HomePage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.7, type: 'spring', stiffness: 80 }}
           >
-            Bienvenido a <span className="text-emerald-300">NutriODS</span>
+            Bienvenido a <span className="text-emerald-300">BIONUT</span>
           </motion.h1>
 
           <motion.p
@@ -122,16 +114,6 @@ const HomePage = () => {
                 whileTap={{ scale: 0.97 }}
               >
                 <IconChefHat className="w-6 h-6" /> Ver Funcionalidades
-              </motion.a>
-            </Tooltip>
-            <Tooltip label="Crea tu cuenta gratis" color="teal" withArrow>
-              <motion.a
-                href="#registro"
-                className="px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold backdrop-blur-sm border border-white/20 transition-all duration-300 text-lg flex items-center gap-3"
-                whileHover={{ scale: 1.07 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <IconUsers className="w-6 h-6" /> Registrarse
               </motion.a>
             </Tooltip>
           </motion.div>
@@ -161,7 +143,7 @@ const HomePage = () => {
           transition={{ duration: 0.8, type: 'spring', stiffness: 60 }}
         >
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
-            Descubre Nutri<span className="text-emerald-500">ODS</span>
+            Descubre BIO<span className="text-emerald-500">NUT</span>
           </h2>
           <p className="text-gray-500 max-w-2xl mx-auto text-xl font-medium">
             Herramientas inteligentes para transformar tu relación con la alimentación

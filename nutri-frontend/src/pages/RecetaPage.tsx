@@ -4,10 +4,9 @@ import ReactPaginate from "react-paginate";
 import { Popover, Transition, Combobox } from "@headlessui/react";
 import { ClockIcon, CheckIcon, ChevronUpDownIcon, FireIcon, SparklesIcon, FaceSmileIcon, LightBulbIcon } from "@heroicons/react/24/solid";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Modal, Group, Badge, List, ThemeIcon, Loader, Paper, ScrollArea } from '@mantine/core';
+import { Modal, Badge, List, ThemeIcon, Loader, Paper, ScrollArea } from '@mantine/core';
 import { IconListCheck, IconClock, IconUsers, IconChefHat } from '@tabler/icons-react';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import '@zachleat/hypercard';
 
 // Para TypeScript: declara el tipo de 'hyper-card' como elemento JSX
@@ -176,7 +175,7 @@ export default function RecetasPage() {
                           }
                           value={receta.nombre}
                         >
-                          {({ selected, active }) => (
+                          {({ selected }) => (
                             <>
                               <SparklesIcon className="w-4 h-4 text-emerald-400" />
                               <span
@@ -318,7 +317,7 @@ export default function RecetasPage() {
             onPageChange={(e) => cambiarPagina(e.selected + 1)}
             containerClassName="flex justify-center items-center mt-10 gap-2 flex-wrap"
             pageLinkClassName="px-3 py-1 rounded-lg border bg-white text-gray-700 hover:bg-gray-100 transition-all duration-200"
-            activeLinkClassName="bg-emerald-600 text-white font-semibold shadow-lg scale-110"
+            activeLinkClassName="bg-emerald-300 text-black font-bold shadow-md scale-105 border border-emerald-500"
             previousLabel={<span className="inline-block"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg></span>}
             nextLabel={<span className="inline-block"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg></span>}
             previousLinkClassName="px-3 py-1 rounded-lg border bg-white text-gray-700 hover:bg-gray-100"
