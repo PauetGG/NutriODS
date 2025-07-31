@@ -1,4 +1,3 @@
-import GlobalChatBot from "./components/GlobalChatBot";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
@@ -52,7 +51,6 @@ function AppContent() {
         <Route path="/soporte" element={<SoportePage />} />
       </Routes>
       <Footer />
-      <GlobalChatBot />
     </>
   );
 }

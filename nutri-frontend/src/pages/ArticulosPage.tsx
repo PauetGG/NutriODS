@@ -77,10 +77,11 @@ export default function ArticulosPage() {
           Artículos Educativos
         </h1>
         {/* Filtros tipo recetas */}
-        <div className="w-full flex flex-wrap justify-center items-end gap-2 md:gap-4 mb-4"> {/* gap-2 y mb-4 */}
-          {/* Buscador tipo recetas */}
-          <div className="w-60"> {/* w-60 en vez de w-72 */}
-            <Combobox value={busqueda} onChange={v => setBusqueda(v ?? "")}> {/* wrapper para evitar null */}
+        <div className="w-full flex flex-wrap justify-center items-end gap-2 md:gap-4 mb-4">
+        {/* Buscador + botón limpiar en un mismo contenedor */}
+        <div className="flex items-center gap-2 w-fit">
+          <div className="w-60">
+            <Combobox value={busqueda} onChange={v => setBusqueda(v ?? "")}>
               <div className="relative w-full">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-4">
                   <IconSearch className="h-5 w-5 text-emerald-400" />
@@ -127,9 +128,7 @@ export default function ArticulosPage() {
                         <Combobox.Option
                           key={item.id}
                           className={({ active }) =>
-                            `relative cursor-pointer select-none py-2 pl-8 pr-4 rounded-lg flex items-center gap-2.5 ${
-                              active ? "bg-emerald-50 text-emerald-900" : "text-gray-900"
-                            }`
+                            `relative cursor-pointer select-none py-2 pl-8 pr-4 rounded-lg flex items-center gap-2.5 ${active ? "bg-emerald-50 text-emerald-900" : "text-gray-900"}`
                           }
                           value={item.titulo}
                         >
@@ -152,30 +151,33 @@ export default function ArticulosPage() {
               </div>
             </Combobox>
           </div>
-          {/* Menú radial de categorías */}
-          <RadialCategoryMenu
-            categories={radialCategories}
-            value={categoriaFiltro}
-            onSelect={cat => {
-              setCategoriaFiltro(cat);
-              setPaginaActual(1);
-            }}
-            selectedLabel={categoriaFiltro ? (radialCategories.find(c => c.value === categoriaFiltro)?.label || '') : undefined}
-            selectedIcon={categoriaFiltro ? (categoryEmojis[categoriaFiltro] ? <span className="text-5xl">{categoryEmojis[categoriaFiltro]}</span> : undefined) : undefined}
-            open={isOpen}
-            onOpenChange={setIsOpen}
-          />
-        <button
-          onClick={() => {
-            setBusqueda("");
-            setCategoriaFiltro("");
+          {/* Menú radial aparte, para que se mantenga centrado */}
+        <RadialCategoryMenu
+          categories={radialCategories}
+          value={categoriaFiltro}
+          onSelect={cat => {
+            setCategoriaFiltro(cat);
             setPaginaActual(1);
           }}
-          className="px-4 py-2 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition text-sm shadow border border-red-200 flex items-center gap-2"
-        >
-          ❌ Limpiar filtros
-        </button>
+          selectedLabel={categoriaFiltro ? (radialCategories.find(c => c.value === categoriaFiltro)?.label || '') : undefined}
+          selectedIcon={categoriaFiltro ? (categoryEmojis[categoriaFiltro] ? <span className="text-5xl">{categoryEmojis[categoriaFiltro]}</span> : undefined) : undefined}
+          open={isOpen}
+          onOpenChange={setIsOpen}
+        />         
+          {/* Botón limpiar alineado */}
+          <button
+            onClick={() => {
+              setBusqueda("");
+              setCategoriaFiltro("");
+              setPaginaActual(1);
+            }}
+            className="px-4 py-2 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition text-sm shadow border border-red-200 flex items-center gap-2 h-fit"
+          >
+            ❌ Limpiar filtros
+          </button>
         </div>
+      </div>
+
       </div>
       {/* Artículos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
