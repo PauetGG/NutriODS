@@ -104,101 +104,106 @@ export default function GlosarioPage() {
 
       {/* Filtros tipo recetas */}
       <div className="w-full flex flex-wrap justify-center items-end gap-2 md:gap-4 mb-4">
-        {/* Buscador tipo recetas */}
-        <div className="w-60">
-          <Combobox value={busqueda} onChange={v => setBusqueda(v ?? "")}> {/* wrapper para evitar null */}
-            <div className="relative w-full">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-4">
-                <IconSearch className="h-5 w-5 text-emerald-400" />
-              </span>
-              <Combobox.Input
-                className={
-                  `pl-12 pr-10 py-3 border rounded-full shadow focus:shadow-lg w-full text-lg bg-white focus:outline-none transition placeholder-gray-400 ` +
-                  `border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400 ` +
-                  `focus:bg-emerald-50 focus:drop-shadow-[0_0_16px_#6ee7b7] focus:brightness-105`
-                }
-                style={{
-                  boxShadow: '0 0 16px 0 #6ee7b7bb, 0 2px 12px #05966933',
-                  borderWidth: 2,
-                  borderColor: '#6ee7b7',
-                  transition: 'box-shadow 0.2s, border-color 0.2s, background 0.2s',
-                }}
-                displayValue={(t: string) => t}
-                onChange={event => {
-                  setQuery(event.target.value);
-                  setBusqueda(event.target.value);
-                }}
-                placeholder="Buscar por término..."
-              />
-              <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-3">
-                <IconChevronDown className="h-5 w-5 text-gray-300" aria-hidden="true" />
-              </Combobox.Button>
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-150"
-                enterFrom="opacity-0 -translate-y-2"
-                enterTo="opacity-100 translate-y-0"
-                leave="transition ease-in duration-100"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-                afterLeave={() => setQuery("")}
-              >
-                <Combobox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-base shadow-2xl ring-1 ring-black/5 focus:outline-none border border-gray-100">
-                  {glosarioFiltradoAutocomplete.length === 0 && query !== "" ? (
-                    <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
-                      No se encontró ningún término.
-                    </div>
-                  ) :
-                    glosarioFiltradoAutocomplete.slice(0, 8).map((item) => (
-                      <Combobox.Option
-                        key={item.id}
-                        className={({ active }) =>
-                          `relative cursor-pointer select-none py-2 pl-8 pr-4 rounded-lg flex items-center gap-2.5 ${
-                            active ? "bg-emerald-50 text-emerald-900" : "text-gray-900"
-                          }`
-                        }
-                        value={item.termino}
-                      >
-                        {({ selected}) => (
-                          <>
-                            <IconBook className="w-4 h-4 text-emerald-400" />
-                            <span className={`block truncate ${selected ? "font-semibold" : "font-normal"}`}>{item.termino}</span>
-                            {selected ? (
-                              <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-emerald-600">
-                                <IconCheck className="h-4 w-4" aria-hidden="true" />
-                              </span>
-                            ) : null}
-                          </>
-                        )}
-                      </Combobox.Option>
-                    ))
-                  }
-                </Combobox.Options>
-              </Transition>
-            </div>
-          </Combobox>
+  {/* Contenedor que agrupa buscador, menú radial y botón limpiar */}
+  <div className="flex items-center gap-2 w-fit">
+    
+    {/* Buscador tipo recetas */}
+    <div className="w-60">
+      <Combobox value={busqueda} onChange={v => setBusqueda(v ?? "")}>
+        <div className="relative w-full">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-4">
+            <IconSearch className="h-5 w-5 text-emerald-400" />
+          </span>
+          <Combobox.Input
+            className={
+              `pl-12 pr-10 py-3 border rounded-full shadow focus:shadow-lg w-full text-lg bg-white focus:outline-none transition placeholder-gray-400 ` +
+              `border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400 ` +
+              `focus:bg-emerald-50 focus:drop-shadow-[0_0_16px_#6ee7b7] focus:brightness-105`
+            }
+            style={{
+              boxShadow: '0 0 16px 0 #6ee7b7bb, 0 2px 12px #05966933',
+              borderWidth: 2,
+              borderColor: '#6ee7b7',
+              transition: 'box-shadow 0.2s, border-color 0.2s, background 0.2s',
+            }}
+            displayValue={(t: string) => t}
+            onChange={event => {
+              setQuery(event.target.value);
+              setBusqueda(event.target.value);
+            }}
+            placeholder="Buscar por término..."
+          />
+          <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-3">
+            <IconChevronDown className="h-5 w-5 text-gray-300" aria-hidden="true" />
+          </Combobox.Button>
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-150"
+            enterFrom="opacity-0 -translate-y-2"
+            enterTo="opacity-100 translate-y-0"
+            leave="transition ease-in duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+            afterLeave={() => setQuery("")}
+          >
+            <Combobox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-base shadow-2xl ring-1 ring-black/5 focus:outline-none border border-gray-100">
+              {glosarioFiltradoAutocomplete.length === 0 && query !== "" ? (
+                <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
+                  No se encontró ningún término.
+                </div>
+              ) :
+                glosarioFiltradoAutocomplete.slice(0, 8).map((item) => (
+                  <Combobox.Option
+                    key={item.id}
+                    className={({ active }) =>
+                      `relative cursor-pointer select-none py-2 pl-8 pr-4 rounded-lg flex items-center gap-2.5 ${active ? "bg-emerald-50 text-emerald-900" : "text-gray-900"}`
+                    }
+                    value={item.termino}
+                  >
+                    {({ selected }) => (
+                      <>
+                        <IconBook className="w-4 h-4 text-emerald-400" />
+                        <span className={`block truncate ${selected ? "font-semibold" : "font-normal"}`}>{item.termino}</span>
+                        {selected ? (
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-emerald-600">
+                            <IconCheck className="h-4 w-4" aria-hidden="true" />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Combobox.Option>
+                ))
+              }
+            </Combobox.Options>
+          </Transition>
         </div>
-        {/* Menú radial de categorías */}
-        <RadialCategoryMenu
-          categories={radialCategories}
-          value={categoriaSeleccionada}
-          onSelect={cat => handleCategoria({ target: { value: cat } } as any)}
-          selectedLabel={categoriaSeleccionada ? (radialCategories.find(c => c.value === categoriaSeleccionada)?.label || '') : undefined}
-          selectedIcon={categoriaSeleccionada ? (categoryEmojis[categoriaSeleccionada] ? <span className="text-5xl">{categoryEmojis[categoriaSeleccionada]}</span> : undefined) : undefined}
-          open={isOpen}
-          onOpenChange={setIsOpen}
-        />
-      <button
-        onClick={() => {
-          setBusqueda("");
-          setCategoriaSeleccionada("");
-          aplicarFiltros("", "");
-        }}
-        className="px-4 py-2 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition text-sm shadow border border-red-200 flex items-center gap-2"
-      >
-        ❌ Limpiar filtros
-      </button>
-      </div>
+      </Combobox>
+    </div>
+
+    {/* Menú radial de categorías */}
+    <RadialCategoryMenu
+      categories={radialCategories}
+      value={categoriaSeleccionada}
+      onSelect={cat => handleCategoria({ target: { value: cat } } as any)}
+      selectedLabel={categoriaSeleccionada ? (radialCategories.find(c => c.value === categoriaSeleccionada)?.label || '') : undefined}
+      selectedIcon={categoriaSeleccionada ? (categoryEmojis[categoriaSeleccionada] ? <span className="text-5xl">{categoryEmojis[categoriaSeleccionada]}</span> : undefined) : undefined}
+      open={isOpen}
+      onOpenChange={setIsOpen}
+    />
+
+    {/* Botón limpiar filtros */}
+    <button
+      onClick={() => {
+        setBusqueda("");
+        setCategoriaSeleccionada("");
+        aplicarFiltros("", "");
+      }}
+      className="px-4 py-2 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition text-sm shadow border border-red-200 flex items-center gap-2 h-fit"
+    >
+      ❌ Limpiar filtros
+    </button>
+  </div>
+</div>
       {/* Tarjetas del glosario */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {glosarioPaginado.map((item) => (

@@ -331,128 +331,141 @@ export default function RecetasPage() {
         <AnimatePresence>
       {recetaSeleccionada && (
         <Modal
-          opened={!!recetaSeleccionada}
-          onClose={() => setRecetaSeleccionada(null)}
-              size="100vw"
-          centered
-          padding={0}
-          withCloseButton={false}
-          overlayProps={{ blur: 3, backgroundOpacity: 0.3 }}
-          styles={{ body: { padding: 0 } }}
-        >
-              <motion.div
-                initial={{ opacity: 0, rotateY: -90, scale: 0.8, filter: 'blur(12px)' }}
-                animate={{ opacity: 1, rotateY: 0, scale: 1, filter: 'blur(0px)', transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] } }}
-                exit={{ opacity: 0, rotateY: 90, scale: 0.8, filter: 'blur(12px)', transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] } }}
-                style={{ perspective: 1200 }}
-              >
-                <Paper radius="xl" shadow="xl" p={0} style={{ overflow: 'hidden', minHeight: '100vh', minWidth: '100vw', maxWidth: '100vw', maxHeight: '100vh', display: 'flex', flexDirection: 'row' }}>
-                  {/* IZQUIERDA: Imagen más pequeña */}
-                  <div style={{ flex: 0.8, background: 'linear-gradient(180deg,#d1fae5 0%,#fff 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, minWidth: 0 }}>
-              <img
-                src={recetaSeleccionada.imagenUrl || 'https://via.placeholder.com/700x900'}
-                alt={recetaSeleccionada.nombre}
-                      style={{ width: '100%', height: 'auto', maxHeight: '60vh', objectFit: 'cover', borderRadius: 0, boxShadow: '0 8px 32px #0001' }}
-              />
-            </div>
-            {/* DERECHA: Info principal */}
-                  <div style={{ flex: 1.8, display: 'flex', flexDirection: 'column', padding: 24, position: 'relative', minWidth: 0, height: '100%' }}>
-                    {/* Nombre y descripción */}
-                    <div style={{ marginBottom: 10 }}>
-                      <h2 style={{ fontSize: 28, fontWeight: 900, color: '#047857', marginBottom: 6, textAlign: 'left', lineHeight: 1.1 }}>{recetaSeleccionada.nombre}</h2>
-                      <div
-                        style={{
-                          color: '#374151',
-                          fontSize: 15,
-                          marginBottom: 6,
-                          textAlign: 'left',
-                          whiteSpace: 'normal',
-                          wordBreak: 'break-word',
-                          maxWidth: '80ch',
-                          width: '100%',
-                          overflowX: 'hidden',
-                          overflowWrap: 'break-word',
-                        }}
-                        title={recetaSeleccionada.descripcion}
-                      >
-                        {recetaSeleccionada.descripcion}
-                      </div>
-                    </div>
-                    {/* Instrucciones y ingredientes+badges en grid */}
-                    <div style={{ display: 'flex', flexDirection: 'row', gap: 24, flex: 1, minHeight: 0 }}>
-                      {/* Instrucciones */}
-                      <div style={{ flex: 2, minWidth: 0, display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                        <h3 style={{ fontSize: 17, fontWeight: 700, color: '#334155', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}><IconChefHat size={18} /> Instrucciones</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-                          <ScrollArea h={220} offsetScrollbars scrollbarSize={8} style={{ width: '100%', maxWidth: '48ch', marginRight: 0 }}>
-                            <div style={{ color: '#374151', fontSize: 13, whiteSpace: 'pre-line', marginBottom: 8, maxWidth: '48ch', wordBreak: 'break-word', overflowWrap: 'break-word' }}>{recetaSeleccionada.instrucciones || 'No se han proporcionado instrucciones.'}</div>
-                          </ScrollArea>
-                          {/* Botón de cerrar centrado justo debajo de instrucciones */}
-              <button
-                onClick={() => setRecetaSeleccionada(null)}
-                aria-label="Cerrar"
-                            style={{
-                              marginTop: 8,
-                              background: '#fff',
-                              border: '2px solid #e5e7eb',
-                              borderRadius: '50%',
-                              boxShadow: '0 2px 8px #0002',
-                              width: 38,
-                              height: 38,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              zIndex: 10,
-                              pointerEvents: 'auto',
-                              transition: 'box-shadow 0.2s',
-                            }}
-              >
-                            <svg width={22} height={22} fill="none" stroke="#64748b" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M6 6l10 10M6 16L16 6" /></svg>
-              </button>
+  opened={!!recetaSeleccionada}
+  onClose={() => setRecetaSeleccionada(null)}
+  size="100vw"
+  centered
+  padding={0}
+  withCloseButton={false}
+  overlayProps={{ blur: 3, backgroundOpacity: 0.3 }}
+  styles={{ body: { padding: 0, overflow: 'hidden' } }} // Eliminamos scroll del modal
+>
+  <motion.div
+    initial={{ opacity: 0, rotateY: -90, scale: 0.8, filter: 'blur(12px)' }}
+    animate={{ opacity: 1, rotateY: 0, scale: 1, filter: 'blur(0px)', transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] } }}
+    exit={{ opacity: 0, rotateY: 90, scale: 0.8, filter: 'blur(12px)', transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] } }}
+    style={{ perspective: 1200 }}
+  >
+    <Paper
+      radius="xl"
+      shadow="xl"
+      p={0}
+      style={{
+        overflow: 'hidden',
+        height: '100vh',
+        width: '100vw',
+        display: 'flex',
+        flexDirection: 'row',
+        position: 'relative',
+      }}
+    >
+      {/* Botón de cerrar arriba a la derecha */}
+      <button
+        onClick={() => setRecetaSeleccionada(null)}
+        aria-label="Cerrar"
+        style={{
+          position: 'absolute',
+          top: 20,
+          right: 170,
+          background: '#fff',
+          border: '2px solid #e5e7eb',
+          borderRadius: '50%',
+          boxShadow: '0 2px 8px #0002',
+          width: 38,
+          height: 38,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          zIndex: 20,
+          transition: 'box-shadow 0.2s',
+        }}
+      >
+        <svg width={22} height={22} fill="none" stroke="#64748b" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M6 6l10 10M6 16L16 6" />
+        </svg>
+      </button>
+
+      {/* Imagen a la izquierda con menos ancho */}
+      <div style={{ flex: 0.55, background: '#d1fae5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img
+          src={recetaSeleccionada.imagenUrl || 'https://via.placeholder.com/700x900'}
+          alt={recetaSeleccionada.nombre}
+          style={{
+            width: '100%',
+            height: 'auto',
+            maxHeight: '70vh',
+            objectFit: 'cover',
+            boxShadow: '0 8px 32px #0001',
+          }}
+        />
+      </div>
+
+      {/* Parte derecha con contenido */}
+      <div style={{ flex: 1.45, padding: 24, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <h2 style={{ fontSize: 28, fontWeight: 900, color: '#047857', marginBottom: 8 }}>{recetaSeleccionada.nombre}</h2>
+        <p style={{ color: '#374151', fontSize: 15, marginBottom: 16, maxWidth: '75ch' }}>
+          {recetaSeleccionada.descripcion}
+        </p>
+
+        <div style={{ display: 'flex', flex: 1, gap: 32, overflow: 'hidden' }}>
+          {/* Instrucciones con scroll */}
+          <div style={{ flex: 2, display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: '#334155', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <IconChefHat size={18} /> Instrucciones
+            </h3>
+            <ScrollArea h={300} offsetScrollbars scrollbarSize={8}>
+              <div style={{ fontSize: 13, whiteSpace: 'pre-line', color: '#374151' }}>
+                {recetaSeleccionada.instrucciones || 'No se han proporcionado instrucciones.'}
               </div>
-                </div>
-                {/* Ingredientes y badges */}
-                      <div style={{ flex: 1.2, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start', justifyContent: 'flex-start', marginLeft: 0 }}>
-                  <div>
-                          <h4 style={{ fontSize: 15, fontWeight: 700, color: '#334155', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}><IconListCheck size={16} /> Ingredientes</h4>
-                    {loadingIngredientes ? (
-                            <Loader size="xs" color="teal" />
-                    ) : ingredientesReceta && ingredientesReceta.length > 0 ? (
-                      <List
-                        spacing="xs"
-                              size="sm"
-                              icon={<ThemeIcon color="teal" size={18} radius="xl"><IconListCheck size={12} /></ThemeIcon>}
-                              style={{ color: '#334155', fontSize: 13 }}
-                      >
-                        {ingredientesReceta.map((ing: any) => (
-                          <List.Item key={ing.ingrediente?.id || ing.id}>
-                            {ing.ingrediente?.nombre || 'Ingrediente'}
-                            {ing.cantidad ? ` – ${ing.cantidad}${ing.unidad ? ' ' + ing.unidad : ''}` : ''}
-                          </List.Item>
-                        ))}
-                      </List>
-                    ) : (
-                            <div style={{ color: '#64748b', fontSize: 12 }}>No hay ingredientes para esta receta.</div>
-                    )}
-                  </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
-                          <Badge color="teal" size="md" leftSection={<IconClock size={15} />}>{recetaSeleccionada.tiempoPreparacion} min</Badge>
-                          <Badge color="yellow" size="md" leftSection={<IconUsers size={15} />}>{recetaSeleccionada.raciones} raciones</Badge>
-                    <Badge
-                      color={recetaSeleccionada.dificultad === 'fácil' ? 'teal' : recetaSeleccionada.dificultad === 'media' ? 'yellow' : 'red'}
-                            size="md"
-                            leftSection={<IconChefHat size={15} />}
-                    >
-                      {recetaSeleccionada.dificultad.charAt(0).toUpperCase() + recetaSeleccionada.dificultad.slice(1)}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
+            </ScrollArea>
+          </div>
+
+          {/* Ingredientes y badges */}
+          <div style={{ flex: 1.2, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <h4 style={{ fontSize: 15, fontWeight: 700, color: '#334155', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <IconListCheck size={16} /> Ingredientes
+              </h4>
+              {loadingIngredientes ? (
+                <Loader size="xs" color="teal" />
+              ) : ingredientesReceta?.length > 0 ? (
+                <List
+                  spacing="xs"
+                  size="sm"
+                  icon={<ThemeIcon color="teal" size={18} radius="xl"><IconListCheck size={12} /></ThemeIcon>}
+                  style={{ fontSize: 13, color: '#334155' }}
+                >
+                  {ingredientesReceta.map((ing: any) => (
+                    <List.Item key={ing.ingrediente?.id || ing.id}>
+                      {ing.ingrediente?.nombre || 'Ingrediente'}
+                      {ing.cantidad ? ` – ${ing.cantidad}${ing.unidad ? ' ' + ing.unidad : ''}` : ''}
+                    </List.Item>
+                  ))}
+                </List>
+              ) : (
+                <div style={{ color: '#64748b', fontSize: 12 }}>No hay ingredientes para esta receta.</div>
+              )}
             </div>
-          </Paper>
-              </motion.div>
-        </Modal>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <Badge color="teal" size="md" leftSection={<IconClock size={15} />}>{recetaSeleccionada.tiempoPreparacion} min</Badge>
+              <Badge color="yellow" size="md" leftSection={<IconUsers size={15} />}>{recetaSeleccionada.raciones} raciones</Badge>
+              <Badge
+                color={recetaSeleccionada.dificultad === 'fácil' ? 'teal' : recetaSeleccionada.dificultad === 'media' ? 'yellow' : 'red'}
+                size="md"
+                leftSection={<IconChefHat size={15} />}
+              >
+                {recetaSeleccionada.dificultad.charAt(0).toUpperCase() + recetaSeleccionada.dificultad.slice(1)}
+              </Badge>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Paper>
+  </motion.div>
+</Modal>
+
       )}
         </AnimatePresence>
     </div>

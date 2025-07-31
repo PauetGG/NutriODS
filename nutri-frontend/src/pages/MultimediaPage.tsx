@@ -86,112 +86,155 @@ export default function MultimediaPage() {
       <h1 className="text-3xl font-bold text-center text-emerald-700 mb-4">Recursos Educativos</h1>
 
       {/* Filtros tipo recetas */}
-      <div className="w-full relative flex flex-wrap justify-start items-end gap-2 md:gap-4 mb-4">
-  {/* Buscador tipo recetas */}
-  <div className="w-60">
-    <Combobox value={busqueda} onChange={v => setBusqueda(v ?? "")}>
-      <div className="relative w-full">
-        <span className="absolute inset-y-0 left-0 flex items-center pl-4">
-          <IconSearch className="h-5 w-5 text-emerald-400" />
-        </span>
-        <Combobox.Input
-          className={
-            `pl-12 pr-10 py-3 border rounded-full shadow focus:shadow-lg w-full text-lg bg-white focus:outline-none transition placeholder-gray-400 ` +
-            `border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400 ` +
-            `focus:bg-emerald-50 focus:drop-shadow-[0_0_16px_#6ee7b7] focus:brightness-105`
-          }
-          style={{
-            boxShadow: '0 0 16px 0 #6ee7b7bb, 0 2px 12px #05966933',
-            borderWidth: 2,
-            borderColor: '#6ee7b7',
-            transition: 'box-shadow 0.2s, border-color 0.2s, background 0.2s',
-          }}
-          displayValue={(t: string) => t}
-          onChange={event => {
-            setQuery(event.target.value);
-            setBusqueda(event.target.value);
-          }}
-          placeholder="Buscar por título..."
-        />
-        <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-3">
-          <IconChevronDown className="h-5 w-5 text-gray-300" aria-hidden="true" />
-        </Combobox.Button>
-        <Transition
-          as={Fragment}
-          enter="transition ease-out duration-150"
-          enterFrom="opacity-0 -translate-y-2"
-          enterTo="opacity-100 translate-y-0"
-          leave="transition ease-in duration-100"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-          afterLeave={() => setQuery("")}
-        >
-          <Combobox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-base shadow-2xl ring-1 ring-black/5 focus:outline-none border border-gray-100">
-            {multimediaFiltradaAutocomplete.length === 0 && query !== "" ? (
-              <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
-                No se encontró ningún recurso.
-              </div>
-            ) :
-              multimediaFiltradaAutocomplete.slice(0, 8).map((item) => (
-                <Combobox.Option
-                  key={item.id}
-                  className={({ active }) =>
-                    `relative cursor-pointer select-none py-2 pl-8 pr-4 rounded-lg flex items-center gap-2.5 ${
-                      active ? "bg-emerald-50 text-emerald-900" : "text-gray-900"}`
-                  }
-                  value={item.titulo}
-                >
-                  {({ selected }) => (
-                    <>
-                      <IconSearch className="w-4 h-4 text-emerald-400" />
-                      <span className={`block truncate ${selected ? "font-semibold" : "font-normal"}`}>{item.titulo}</span>
-                      {selected ? (
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-emerald-600">
-                          <IconCheck className="h-4 w-4" aria-hidden="true" />
-                        </span>
-                      ) : null}
-                    </>
-                  )}
-                </Combobox.Option>
-              ))
-            }
-          </Combobox.Options>
-        </Transition>
+      <div className="w-full flex flex-wrap justify-center items-end gap-2 md:gap-4 mb-4">
+      {/* Buscador tipo rescetas */}
+      <div className="w-60">
+        <Combobox value={busqueda} onChange={v => setBusqueda(v ?? "")}>
+          <div className="relative w-full">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-4">
+              <IconSearch className="h-5 w-5 text-emerald-400" />
+            </span>
+            <Combobox.Input
+              className={
+                `pl-12 pr-10 py-3 border rounded-full shadow focus:shadow-lg w-full text-lg bg-white focus:outline-none transition placeholder-gray-400 ` +
+                `border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400 ` +
+                `focus:bg-emerald-50 focus:drop-shadow-[0_0_16px_#6ee7b7] focus:brightness-105`
+              }
+              style={{
+                boxShadow: '0 0 16px 0 #6ee7b7bb, 0 2px 12px #05966933',
+                borderWidth: 2,
+                borderColor: '#6ee7b7',
+                transition: 'box-shadow 0.2s, border-color 0.2s, background 0.2s',
+              }}
+              displayValue={(t: string) => t}
+              onChange={event => {
+                setQuery(event.target.value);
+                setBusqueda(event.target.value);
+              }}
+              placeholder="Buscar por título..."
+            />
+            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-3">
+              <IconChevronDown className="h-5 w-5 text-gray-300" aria-hidden="true" />
+            </Combobox.Button>
+            <Transition
+              as={Fragment}
+              enter="transition ease-out duration-150"
+              enterFrom="opacity-0 -translate-y-2"
+              enterTo="opacity-100 translate-y-0"
+              leave="transition ease-in duration-100"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+              afterLeave={() => setQuery("")}
+            >
+              <Combobox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-base shadow-2xl ring-1 ring-black/5 focus:outline-none border border-gray-100">
+                {multimediaFiltradaAutocomplete.length === 0 && query !== "" ? (
+                  <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
+                    No se encontró ningún recurso.
+                  </div>
+                ) :
+                  multimediaFiltradaAutocomplete.slice(0, 8).map((item) => (
+                    <Combobox.Option
+                      key={item.id}
+                      className={({ active }) =>
+                        `relative cursor-pointer select-none py-2 pl-8 pr-4 rounded-lg flex items-center gap-2.5 ${
+                          active ? "bg-emerald-50 text-emerald-900" : "text-gray-900"
+                        }`
+                      }
+                      value={item.titulo}
+                    >
+                      {({ selected }) => (
+                        <>
+                          <IconSearch className="w-4 h-4 text-emerald-400" />
+                          <span className={`block truncate ${selected ? "font-semibold" : "font-normal"}`}>
+                            {item.titulo}
+                          </span>
+                          {selected ? (
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-emerald-600">
+                              <IconCheck className="h-4 w-4" aria-hidden="true" />
+                            </span>
+                          ) : null}
+                        </>
+                      )}
+                    </Combobox.Option>
+                  ))
+                }
+              </Combobox.Options>
+            </Transition>
+          </div>
+        </Combobox>
       </div>
-    </Combobox>
-  </div>
 
-  {/* Botones tipo video/web */}
-  <div className="flex flex-row items-end gap-3">
-    {/* ... tus botones de filtro de tipo 'video' y 'web' aquí ... */}
-  </div>
+      {/* Botones de tipo (video/web), menú radial y limpiar */}
+      <div className="flex flex-row flex-wrap items-end gap-3">
+        <Button
+          leftSection={<IconVideo size={22} />}
+          size="lg"
+          radius="xl"
+          variant={tipoFiltro === 'video' ? 'filled' : 'outline'}
+          color={tipoFiltro === 'video' ? 'red' : 'gray'}
+          onClick={() => {
+            setTipoFiltro(tipoFiltro === 'video' ? '' : 'video');
+            setPaginaActual(1);
+          }}
+          style={{
+            fontWeight: 700,
+            fontSize: 18,
+            minWidth: 110,
+            boxShadow: tipoFiltro === 'video' ? '0 0 16px 0 #fca5a5bb, 0 2px 12px #f87171' : undefined,
+            filter: tipoFiltro === 'video' ? 'brightness(1.08) drop-shadow(0 0 8px #fca5a5)' : undefined,
+            transition: 'box-shadow 0.2s, filter 0.2s',
+          }}
+        >
+          Video
+        </Button>
 
-  {/* Menú radial */}
-  <div className="flex items-center justify-center">
-    <RadialCategoryMenu
-      categories={radialCategories}
-      value={categoriaFiltro}
-      onSelect={cat => setCategoriaFiltro(cat)}
-      selectedLabel={categoriaFiltro ? (radialCategories.find(c => c.value === categoriaFiltro)?.label || '') : undefined}
-      selectedIcon={categoriaFiltro ? (categoryEmojis[categoriaFiltro] ? <span className="text-5xl">{categoryEmojis[categoriaFiltro]}</span> : undefined) : undefined}
-      open={isOpen}
-      onOpenChange={setIsOpen}
-    />
-  </div>
+        <Button
+          leftSection={<IconWorld size={22} />}
+          size="lg"
+          radius="xl"
+          variant={tipoFiltro === 'web' ? 'filled' : 'outline'}
+          color={tipoFiltro === 'web' ? 'cyan' : 'gray'}
+          onClick={() => {
+            setTipoFiltro(tipoFiltro === 'web' ? '' : 'web');
+            setPaginaActual(1);
+          }}
+          style={{
+            fontWeight: 700,
+            fontSize: 18,
+            minWidth: 110,
+            boxShadow: tipoFiltro === 'web' ? '0 0 16px 0 #22d3ee88, 0 2px 12px #06b6d4' : undefined,
+            filter: tipoFiltro === 'web' ? 'brightness(1.08) drop-shadow(0 0 8px #67e8f9)' : undefined,
+            transition: 'box-shadow 0.2s, filter 0.2s',
+          }}
+        >
+          Web
+        </Button>
 
-  {/* Botón limpiar filtros alineado a la derecha absoluta */}
-  <button
-    onClick={() => {
-      setBusqueda("");
-      setTipoFiltro("");
-      setCategoriaFiltro("");
-      setPaginaActual(1);
-    }}
-    className="absolute right-0 bottom-0 px-4 py-2 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition text-sm shadow border border-red-200 flex items-center gap-2"
-  >
-    ❌ Limpiar filtros
-  </button>
-</div>
+        <div className="flex items-end">
+          <RadialCategoryMenu
+            categories={radialCategories}
+            value={categoriaFiltro}
+            onSelect={cat => setCategoriaFiltro(cat)}
+            selectedLabel={categoriaFiltro ? (radialCategories.find(c => c.value === categoriaFiltro)?.label || '') : undefined}
+            selectedIcon={categoriaFiltro ? (categoryEmojis[categoriaFiltro] ? <span className="text-5xl">{categoryEmojis[categoriaFiltro]}</span> : undefined) : undefined}
+            open={isOpen}
+            onOpenChange={setIsOpen}
+          />
+        </div>
+
+        <button
+          onClick={() => {
+            setBusqueda("");
+            setTipoFiltro("");
+            setCategoriaFiltro("");
+            setPaginaActual(1);
+          }}
+          className="px-4 py-2 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition text-sm shadow border border-red-200 flex items-center gap-2"
+        >
+          ❌ Limpiar filtros
+        </button>
+      </div>
+    </div>
 
       {/* Recursos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
